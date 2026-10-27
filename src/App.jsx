@@ -5,6 +5,7 @@ const IFC_MONTHS = ["January","February","March","April","May","June","Sol","Jul
 const WEEKDAYS = ["Monday","Tuesday","Wednesday","Thursday","Friday","Saturday","Sunday"]
 const SHORT_WD = ["Mon","Tue","Wed","Thu","Fri","Sat","Sun"]
 
+function ordinal(n) { const v = n % 100; return n + ((v > 10 && v < 14) ? 'th' : ({1:'st',2:'nd',3:'rd'}[n % 10] || 'th')) }
 function isLeapYear(y) { return y % 4 === 0 && (y % 100 !== 0 || y % 400 === 0) }
 
 function doy(date) {
@@ -223,7 +224,7 @@ function BirthdayPage() {
       `DTSTART;VALUE=DATE:${yr}${mm}${dd}`,
       `DTEND;VALUE=DATE:${yr}${mm}${String(d.getDate()+1).padStart(2,"0")}`,
       `SUMMARY:🎂 True Birthday — ${ifc.weekday} ${ifc.day} ${ifc.month}`,
-      `DESCRIPTION:In the IFC your birthday is always ${ifc.weekday} the ${ifc.day}th of ${ifc.month}. Forever. sol28.co.uk`,
+      `DESCRIPTION:In the IFC your birthday is always ${ifc.weekday} the ${ordinal(ifc.day)} of ${ifc.month}. Forever. sol28.co.uk`,
       `UID:sol-bday-${mm}${dd}@sol28.co.uk`, "RRULE:FREQ=YEARLY",
       "BEGIN:VALARM", "TRIGGER:-PT0M", "ACTION:DISPLAY",
       `DESCRIPTION:Happy True Birthday!`, "END:VALARM",
@@ -276,8 +277,8 @@ function HistoryPage() {
     { title: "The Month Names Don't Add Up", text: "September means 7 but it's the 9th. October means 8 but it's the 10th. November means 9 but it's the 11th. December means 10 but it's the 12th. Every numbered month is wrong by exactly two positions. Why? The original Roman calendar started in March and had ten months. When January and February were added at the front, the numbered months got pushed forward. Then Julius Caesar and Augustus each claimed a month — July and August. Nobody renumbered anything." },
     { title: "The Pope Who Deleted Ten Days", text: "By the 1500s, the calendar had drifted 10 days from the actual seasons. In 1582, Pope Gregory XIII issued a decree: Thursday October 4th was followed by Friday October 15th. Ten days simply ceased to exist. Catholic countries adopted it immediately. Protestant nations refused for decades or centuries — not because the maths was wrong, but because they wouldn't follow a Pope." },
     { title: "Britain's 1752 Switch", text: "Britain held out until 1752 — 170 years after the reform. By then, 11 days needed to be removed. Wednesday September 2nd was followed by Thursday September 14th. The Treasury shifted the tax year start from March 25th to April 6th to protect revenue. That date remains the UK tax year start to this day." },
-    { title: "The International Fixed Calendar", text: "In 1902, Moses Cotsworth proposed 13 months of exactly 28 days. Every month identical. Every 1st a Monday. Your birthday the same weekday forever. One 'Year Day' outside the weekly cycle. George Eastman adopted it at Kodak in 1928. They used it for 61 years. The League of Nations nearly adopted it globally. It was killed by religious opposition to Year Day breaking the Sabbath, and by the financial sector's inability to divide 13 into quarters." },
-    { title: "Sol — The 13th Month", text: "Sol sits between June and July, over the summer solstice. Latin for 'sun.' The Norse sun goddess. The brightest point of the year. In 2026, it's been 124 years since Cotsworth's proposal. Nobody has commercialised it. Until now." },
+    { title: "The International Fixed Calendar", text: "In 1902, Moses Cotsworth proposed 13 months of exactly 28 days. Every month identical. Your birthday on the same weekday every year. One 'Year Day' sits outside the weekly cycle. Kodak ran 13 equal 28-day accounting periods, 1928–1989; employees lived by the Gregorian calendar." },
+    { title: "Sol — The 13th Month", text: "Sol sits between June and July, over the summer solstice. Latin for 'sun.' The Norse sun goddess. The brightest point of the year. In 2026, it's been 124 years since Cotsworth's proposal. Sol is built on it." },
   ]
 
   return (
