@@ -199,7 +199,7 @@ function dayLength(doy, lat = 53.41) {
   const cosw = (Math.sin(h0) - Math.sin(phi) * Math.sin(decl)) / (Math.cos(phi) * Math.cos(decl))
   return 2 * Math.acos(Math.max(-1, Math.min(1, cosw))) * 180 / Math.PI / 15
 }
-const hm = h => `${Math.floor(h)}h ${String(Math.round((h % 1) * 60)).padStart(2, "0")}m`
+const hm = h => { const t = Math.round(h * 60); return `${Math.floor(t / 60)}h ${String(t % 60).padStart(2, "0")}m` }
 const GARDEN = [
   { sow: "Indoors only, with heat and light: chillies and early tomatoes, peppers and aubergines. Microgreens on a windowsill.", harvest: "Very little. Forced rhubarb kept in the dark; winter lettuce under cover.", jobs: "Prune apple and pear trees while dormant. Plant bare-root trees, hedges and roses if the ground isn't frozen. Insulate cold frames and wrap pots against freezing. Clean and sharpen tools; plan your crop rotation." },
   { sow: "Indoors: more tomatoes, peppers and aubergines. Broad beans in pots and sweet peas in root trainers. Early lettuce under cover.", harvest: "Snowdrops and crocuses appear; rhubarb crowns start to push.", jobs: "Finish bare-root planting before buds break. Prune wisteria back to two or three buds. Cut back ornamental grasses and mulch beds with compost. Keep fleece handy for cold snaps." },
