@@ -181,13 +181,13 @@ ${n === 12 ? `<p class="muted">Year Day follows 28 December and belongs to no we
     ["1712", "Sweden's 30 February", "Sweden had tried to drift into the new calendar gradually, then abandoned the plan. Returning to the old calendar needed one extra day, so 1712 had a 30 February.", "https://tondering.dk/article/en/calendar/60-30feb.php"],
     ["1752", "Britain loses 11 days", "Wednesday 2 September was followed by Thursday 14 September. The tax year was stretched by 11 days to protect revenue, which is why it now starts on 6 April.", "https://theconversation.com/why-the-uk-tax-year-starts-on-april-6-57247"],
     ["1872", "Japan jumps to January", "Japan left its traditional calendar on the 2nd day of the 12th month of 1872; the next day became 1 January 1873.", "https://history.state.gov/historicaldocuments/frus1873p1v1/d251"],
-    ["1918", "Russia skips 13 days", "31 January 1918 was followed by 14 February.", "https://exhibitions.lib.cam.ac.uk/revolutionthefirstbolshevikyear/?p=101"],
+    ["1918", "Russia skips 13 days", "31 January 1918 was followed by 14 February.", "https://seventeenmoments.web.illinois.edu/1917-2/new-letters-and-dates/"],
     ["1923", "Greece, the last in Europe", "15 February 1923 was followed by 1 March, completing Europe's switch more than 340 years after it began.", "https://www.tondering.dk/claus/cal/gregorian.php"],
   ]
   let body = `<h1>Lost Days</h1><p>Seven times the calendar simply skipped — or added — days. Each one was a fix for a system that drifts. Sol is built so it never needs another.</p><div class="tl">`
-  for (const [yr, t, txt, src] of events) body += `<div class="card"><div class="muted">${yr}</div><h2>${t}</h2><p>${txt}</p><p class="muted"><a href="${src}" rel="noopener">Source</a></p></div>`
-  body += `</div><a class="btn" href="/?go=birthday">FIND YOUR TRUE BIRTHDAY</a>`
-  write("lost-days.html", page({ path: "/lost-days", title: "Lost Days: seven times the calendar skipped — Sol", description: "From Caesar's 445-day year to Greece's 1923 switch: the seven times whole days vanished from the calendar.", body }))
+  for (const [yr, t, txt, src] of events) body += `<div class="card"><div class="muted">${yr}</div><h2>${t}</h2><p>${txt}</p><p class="muted"><a href="${src}" target="_blank" rel="noopener">Source</a></p></div>`
+  body += `</div><h2 style="margin-top:2.5rem">And the year that never was</h2><div class="tl"><div class="card"><div class="muted">1 BC → AD 1</div><h2>There is no year 0</h2><p>No days vanished here — a number did. When the 6th-century scholar Dionysius Exiguus began counting years from the birth of Christ, he started at AD 1, and 1 BC sits directly before it. With no year 0, the first century ran from AD 1 to AD 100, which is why the third millennium began on 1 January 2001, not 2000. Astronomers quietly put the missing zero back: in their numbering, year 0 is 1 BC.</p><p class="muted"><a href="https://www.scientificamerican.com/article/when-is-the-beginning-of" target="_blank" rel="noopener">Source</a> · <a href="https://www.eclipsewise.com/help/dates.html" target="_blank" rel="noopener">Source</a></p></div></div><a class="btn" href="/?go=birthday">FIND YOUR TRUE BIRTHDAY</a>`
+  write("lost-days.html", page({ path: "/lost-days", title: "Lost Days: seven times the calendar skipped — Sol", description: "From Caesar's 445-day year to Greece's 1923 switch: the seven times whole days vanished from the calendar — and the year 0 that never existed.", body }))
 }
 
 // ── Gardening by Sol month (Liverpool / NW England)
@@ -261,7 +261,7 @@ const GARDEN = [
     const first = new Date(Date.UTC(ORD_YEAR, 0, n * 28 + 1)), last = new Date(Date.UTC(ORD_YEAR, 0, n * 28 + 28))
     const span = `${first.getUTCDate()} ${G_MONTHS[first.getUTCMonth()].slice(0, 3)} – ${last.getUTCDate()} ${G_MONTHS[last.getUTCMonth()].slice(0, 3)}`
     body += `<div class="card${n === 4 ? " gold" : ""}"><div class="muted">MONTH ${n + 1} · ${span}</div><h2>${SOL_MONTHS[n]}</h2>`
-    for (const [, txt, src, note] of items) body += `<p>${txt} <a href="${src}" rel="noopener">RSPB</a></p>${note ? `<p class="muted">${note}</p>` : ""}`
+    for (const [, txt, src, note] of items) body += `<p>${txt} <a href="${src}" target="_blank" rel="noopener">RSPB</a></p>${note ? `<p class="muted">${note}</p>` : ""}`
     body += `</div>`
   }
   body += `<div class="card"><h2>Keep a Sol bird diary</h2><p>Print the <a href="/routine">same-every-month chart</a> and note first sightings by Sol date. Next year, the same square is the same point in the season.</p></div>
@@ -284,7 +284,7 @@ button.pr{background:var(--gold);color:var(--navy);border:0;border-radius:8px;pa
 <h1>A calendar that doesn't change</h1>
 <p>In Sol every month is identical: 28 days, starting on a Monday and ending on a Sunday. The 13th is always a Saturday. Learn one month and you know all thirteen.</p>
 <div class="card noprint"><h2>Why this might matter</h2>
-<p>The National Autistic Society says many autistic people prefer knowing in advance what will happen, and that routines can help with planning, managing energy and reducing anxiety (<a href="https://www.autism.org.uk/advice-and-guidance/about-autism/preference-for-order-predictability-or-routine" rel="noopener">NAS guidance</a>).</p>
+<p>The National Autistic Society says many autistic people prefer knowing in advance what will happen, and that routines can help with planning, managing energy and reducing anxiety (<a href="https://www.autism.org.uk/advice-and-guidance/about-autism/preference-for-order-predictability-or-routine" target="_blank" rel="noopener">NAS guidance</a>).</p>
 <p>The ordinary calendar keeps shifting: months run from 28 to 31 days, and the 1st lands on a different weekday each month. A Sol month never moves, so one chart can stay on the wall all year.</p>
 <p class="muted">Sol isn't a support service and we make no claim that it suits everyone. If you're autistic, or support someone who is, we'd like to hear whether this is useful: hello@sol28.co.uk.</p></div>
 <div class="card"><h2>Every Sol month</h2><p class="muted">The same grid for all 13 months. The 13th is outlined: always a Saturday.</p>${cal}</div>

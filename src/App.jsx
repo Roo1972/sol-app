@@ -519,7 +519,7 @@ function HistoryPage() {
         </div>
       ))}
       <div style={{ ...card, textAlign: "center" }}>
-        <a href="/lost-days" style={{ color: G, fontSize: 15 }}>The seven Lost Days: every time the calendar skipped →</a>
+        <a href="/lost-days" style={{ color: G, fontSize: 15 }}>The Lost Days: every time the calendar skipped, and the year that never was →</a>
         <div style={{ marginTop: 10 }}><a href="/months" style={{ color: G, fontSize: 15 }}>The 13 months of Sol, day by day →</a></div>
         <div style={{ marginTop: 10 }}><a href="/garden" style={{ color: G, fontSize: 15 }}>The gardening year in 13 months →</a></div>
         <div style={{ marginTop: 10 }}><a href="/birds" style={{ color: G, fontSize: 15 }}>The birding year in 13 months →</a></div>
