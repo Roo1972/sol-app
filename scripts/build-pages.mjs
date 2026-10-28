@@ -81,7 +81,7 @@ function page({ path, title, description, body }) {
 </head><body><main>
 <a class="tag" href="/">SOL</a>
 ${body}
-<nav class="foot"><a href="/?go=birthday">Find your True Birthday</a><a href="/dates">Every date</a><a href="/months">The 13 months</a><a href="/lost-days">Lost Days</a><a href="/?go=privacy">Privacy</a></nav>
+<nav class="foot"><a href="/?go=birthday">Find your True Birthday</a><a href="/dates">Every date</a><a href="/months">The 13 months</a><a href="/lost-days">Lost Days</a><a href="/garden">Gardening</a><a href="/?go=privacy">Privacy</a></nav>
 <p class="muted">Sol — Time, fixed.</p>
 </main></body></html>`
 }
@@ -188,6 +188,50 @@ ${n === 12 ? `<p class="muted">Year Day follows 28 December and belongs to no we
   for (const [yr, t, txt, src] of events) body += `<div class="card"><div class="muted">${yr}</div><h2>${t}</h2><p>${txt}</p><p class="muted"><a href="${src}" rel="noopener">Source</a></p></div>`
   body += `</div><a class="btn" href="/?go=birthday">FIND YOUR TRUE BIRTHDAY</a>`
   write("lost-days.html", page({ path: "/lost-days", title: "Lost Days: seven times the calendar skipped — Sol", description: "From Caesar's 445-day year to Greece's 1923 switch: the seven times whole days vanished from the calendar.", body }))
+}
+
+// ── Gardening by Sol month (Liverpool / NW England)
+// Day length is calculated, not looked up: sunrise-to-sunset at 53.41°N, including refraction.
+function dayLength(doy, lat = 53.41) {
+  const g = 2 * Math.PI / 365 * (doy - 1)
+  const decl = 0.006918 - 0.399912 * Math.cos(g) + 0.070257 * Math.sin(g) - 0.006758 * Math.cos(2 * g) + 0.000907 * Math.sin(2 * g) - 0.002697 * Math.cos(3 * g) + 0.00148 * Math.sin(3 * g)
+  const phi = lat * Math.PI / 180, h0 = -0.833 * Math.PI / 180
+  const cosw = (Math.sin(h0) - Math.sin(phi) * Math.sin(decl)) / (Math.cos(phi) * Math.cos(decl))
+  return 2 * Math.acos(Math.max(-1, Math.min(1, cosw))) * 180 / Math.PI / 15
+}
+const hm = h => `${Math.floor(h)}h ${String(Math.round((h % 1) * 60)).padStart(2, "0")}m`
+const GARDEN = [
+  { sow: "Indoors only, with heat and light: chillies and early tomatoes, peppers and aubergines. Microgreens on a windowsill.", harvest: "Very little. Forced rhubarb kept in the dark; winter lettuce under cover.", jobs: "Prune apple and pear trees while dormant. Plant bare-root trees, hedges and roses if the ground isn't frozen. Insulate cold frames and wrap pots against freezing. Clean and sharpen tools; plan your crop rotation." },
+  { sow: "Indoors: more tomatoes, peppers and aubergines. Broad beans in pots and sweet peas in root trainers. Early lettuce under cover.", harvest: "Snowdrops and crocuses appear; rhubarb crowns start to push.", jobs: "Finish bare-root planting before buds break. Prune wisteria back to two or three buds. Cut back ornamental grasses and mulch beds with compost. Keep fleece handy for cold snaps." },
+  { sow: "Outdoors once the soil warms: broad beans, peas, onion sets and shallots, chitted early potatoes, radish, spinach and beetroot. Carrots under a cloche.", harvest: "Daffodils and early spring bulbs flower; blossom opens on early fruit trees.", jobs: "Spring clean-up: cut back dead stems and edge the beds. Divide perennials. First lawn mow on a high cut. Fleece fruit blossom when frost is forecast; watch for slugs." },
+  { sow: "The main sowing month outdoors: peas, beans, carrots, parsnips, beetroot, turnips and brassicas. Courgettes, squash and sweetcorn indoors.", harvest: "Early radish and lettuce; tulips, bluebells and cherry blossom.", jobs: "Harden off seedlings in a cold frame for 7–10 days. Net brassicas against pigeons. Thin direct-sown rows, hoe weekly and support peas." },
+  { sow: "Succession-sow lettuce, radish and spinach every two to three weeks. Sow tender crops outdoors only once the risk of frost has passed.", harvest: "Broad beans flowering, early peas podding, first strawberries.", jobs: "Watch the forecast: late frosts can still catch tender plants, so keep fleece ready. Stake tall plants. Deadhead spring bulbs but leave the leaves." },
+  { sow: "Runner and French beans, courgettes and squash outdoors once frosts are over. Succession lettuce, rocket and spring onions. Autumn and winter brassicas.", harvest: "First broad beans, early potatoes, peas, strawberries and gooseberries. Roses and sweet peas in flower.", jobs: "Plant out tomatoes and other tender plants. The 'Chelsea chop' of late-flowering perennials falls around now. Net soft fruit against birds; start the potato blight watch." },
+  { sow: "Succession sowings for autumn: lettuce, spinach, radish, spring onions, turnips and fennel. Winter salads under cover.", harvest: "Peak season begins: courgettes, beans, soft fruit. The longest days of the year fall in this month.", jobs: "Water deeply and mulch to hold moisture. Pinch out tomato side-shoots and feed tomatoes weekly. Check for aphids and blight." },
+  { sow: "Fast crops only: lettuce, radish, rocket, spring onions. Spring cabbage for next year.", harvest: "Harvest peak: beans, tomatoes, courgettes, cucumbers, early plums.", jobs: "Summer-prune wisteria. Prune summer-fruiting raspberries after harvest. Pick courgettes daily before they turn into marrows. Watch for blight in warm, humid weather." },
+  { sow: "Green manures on cleared beds. Winter lettuce under cover. Start planting daffodils.", harvest: "Apples, pears, plums, blackberries; squash and pumpkins maturing.", jobs: "Store or preserve the surplus. Clear spent crops. Divide bearded irises. Bring tender pots under cover on cold nights." },
+  { sow: "Plant garlic and overwintering onion sets. Overwintering broad beans and peas. Spring bulbs.", harvest: "Late apples and pears, squash and pumpkins, root vegetables.", jobs: "Collect fallen leaves for leaf mould. Divide perennials. Aerate and feed the lawn. Move tender plants under cover before the first hard frost." },
+  { sow: "Finish planting garlic. Tulip bulbs. Sweet peas in a cold frame for early flowers.", harvest: "Parsnips, kale, chard, leeks; Brussels sprouts forming.", jobs: "Lift dahlia tubers once frost blackens the foliage. Lag outdoor taps and drain hoses. Clear spent crops and compost them. The bare-root planting season begins." },
+  { sow: "Broad beans in pots under cover. Microgreens on the windowsill.", harvest: "Winter greens: kale, chard, leeks, sprouts, parsnips, celeriac.", jobs: "Winter-prune apples and pears (not plums or cherries). Plant bare-root stock. Check stored fruit and vegetables for rot. Clean and oil tools." },
+  { sow: "Rest. Indoor tomatoes and peppers only if you have heat and light.", harvest: "Forced rhubarb, winter salads under cover; mahonia and winter jasmine in flower.", jobs: "Prune apple and pear trees. Keep bird baths free of ice. Review the year and order next year's seed." },
+]
+{
+  let body = `<h1>The gardening year in Sol</h1>
+<p>Thirteen months of exactly four weeks fit the garden better than twelve uneven ones: the same weekday for the same job, every month. This guide is written for Liverpool and North West England.</p>
+<p class="muted">Day lengths are calculated for 53.4°N, sunrise to sunset. Timings shift with your local weather, so treat each month as a guide and check your own frost dates. For detailed advice, the Royal Horticultural Society is the place to go.</p>`
+  for (let n = 0; n < 13; n++) {
+    const first = new Date(Date.UTC(ORD_YEAR, 0, n * 28 + 1)), last = new Date(Date.UTC(ORD_YEAR, 0, n * 28 + 28))
+    const span = `${first.getUTCDate()} ${G_MONTHS[first.getUTCMonth()].slice(0, 3)} – ${last.getUTCDate()} ${G_MONTHS[last.getUTCMonth()].slice(0, 3)}`
+    const a = dayLength(n * 28 + 1), b = dayLength(n * 28 + 28)
+    const g = GARDEN[n]
+    body += `<div class="card${n === 6 ? " gold" : ""}" id="${monthSlug(n)}"><div class="muted">MONTH ${n + 1} · ${span} · DAYLIGHT ${hm(a)} → ${hm(b)}</div>
+<h2>${SOL_MONTHS[n]}</h2>
+<p><strong>Sow and plant.</strong> ${g.sow}</p><p><strong>In season.</strong> ${g.harvest}</p><p><strong>Jobs.</strong> ${g.jobs}</p></div>`
+  }
+  body += `<div class="card"><h2>Year Day</h2><p>The day outside every week and month: no sowing, no jobs. Walk the garden and note what worked.</p></div>
+<a class="btn" href="/?go=birthday">FIND YOUR TRUE BIRTHDAY</a>`
+  write("garden.html", page({ path: "/garden", title: "The gardening year in 13 months — Sol", description: "What to sow, harvest and do in each of Sol's 13 four-week months, for Liverpool and North West England, with calculated day lengths.", body }))
+  urls.push("/garden")
 }
 
 // ── Sitemap and robots
