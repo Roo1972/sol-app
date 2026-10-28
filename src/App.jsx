@@ -244,6 +244,8 @@ function ConverterPage() {
         </div>
       )}
 
+      <p style={{ textAlign: "center", margin: "8px 0 0" }}><a href="/dates" style={{ color: G, fontSize: 14 }}>Browse every date in Sol →</a></p>
+
       <PaydayCalculator />
     </div>
   )
@@ -483,6 +485,11 @@ function HistoryPage() {
         </div>
       ))}
       <div style={{ ...card, textAlign: "center" }}>
+        <a href="/lost-days" style={{ color: G, fontSize: 15 }}>The seven Lost Days: every time the calendar skipped →</a>
+        <div style={{ marginTop: 10 }}><a href="/months" style={{ color: G, fontSize: 15 }}>The 13 months of Sol, day by day →</a></div>
+      </div>
+
+      <div style={{ ...card, textAlign: "center" }}>
         <p style={{ fontSize: 14, color: G, fontStyle: "italic" }}>
           We're not using this calendar because it's the best one. We're using it because it's the one we inherited.
         </p>
@@ -583,7 +590,11 @@ function PrivacyPage() {
 // ═══ MAIN APP ═══
 
 export default function App() {
-  const [page, setPage] = useState(() => sharedBirthday() ? "birthday" : "home")
+  const [page, setPage] = useState(() => {
+    if (sharedBirthday()) return "birthday"
+    try { const go = new URLSearchParams(window.location.search).get("go"); if (["convert","birthday","history","waitlist","privacy"].includes(go)) return go } catch {}
+    return "home"
+  })
   const pages = { home: HomePage, convert: ConverterPage, birthday: BirthdayPage, history: HistoryPage, waitlist: WaitlistPage, privacy: PrivacyPage }
   const Page = pages[page]
   const navItems = [

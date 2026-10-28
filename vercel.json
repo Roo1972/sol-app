@@ -4,7 +4,7 @@
   "outputDirectory": "dist",
   "rewrites": [
     {
-      "source": "/((?!assets/).*)",
+      "source": "/((?!assets/|date/|month/|dates|months|lost-days|sitemap|robots).*)",
       "destination": "/index.html"
     }
   ],
@@ -44,5 +44,6 @@
         }
       ]
     }
-  ]
+  ],
+  "cleanUrls": true
 }
