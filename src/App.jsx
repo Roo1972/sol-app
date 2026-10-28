@@ -7,6 +7,25 @@ const SHORT_WD = ["Mon","Tue","Wed","Thu","Fri","Sat","Sun"]
 
 function ordinal(n) { const v = n % 100; return n + ((v > 10 && v < 14) ? 'th' : ({1:'st',2:'nd',3:'rd'}[n % 10] || 'th')) }
 function fmtDate(x) { return `${x.getFullYear()}${String(x.getMonth()+1).padStart(2,'0')}${String(x.getDate()).padStart(2,'0')}` }
+function countFriday13ths(from, to) {
+  let n = 0
+  const d = new Date(from.getFullYear(), from.getMonth(), 13)
+  if (d < from) d.setMonth(d.getMonth() + 1)
+  while (d <= to) { if (d.getDay() === 5) n++; d.setMonth(d.getMonth() + 1) }
+  return n
+}
+function daysUntil(target, now) { return Math.ceil((target - new Date(now.getFullYear(), now.getMonth(), now.getDate())) / 86400000) }
+const MONTH_NAMES = ["January","February","March","April","May","June","July","August","September","October","November","December"]
+function sharedBirthday() {
+  try {
+    const m = new URLSearchParams(window.location.search).get("bd")
+    if (!m || !/^\d{2}-\d{2}$/.test(m)) return null
+    const [mo, da] = m.split("-").map(Number)
+    const d = new Date(2027, mo - 1, da, 12)
+    if (d.getMonth() !== mo - 1) return null
+    return { mo, da, ifc: toIFC(d) }
+  } catch { return null }
+}
 function isLeapYear(y) { return y % 4 === 0 && (y % 100 !== 0 || y % 400 === 0) }
 
 function doy(date) {
@@ -41,7 +60,8 @@ function moonPhase(date) {
 }
 
 // ═══ STYLES ═══
-const G = "#D4A017", D = "#0A0A0A", BG = "#111", BD = "#222", T = "#C8C4B8", W = "#E8E4D8", M = "#666"
+const G = "#D4A017", NAVY = "#1A1A2E", D = "#1A1A2E", BG = "#22223A", BD = "#34344F", T = "#D6D3C9", W = "#F2EEE3", M = "#9A98AE"
+const SERIF = "Georgia, 'Times New Roman', serif"
 
 const container = { background: D, minHeight: "100vh", fontFamily: "'Segoe UI','Helvetica Neue',sans-serif", color: T }
 const wrap = { maxWidth: 540, margin: "0 auto", padding: "20px 16px" }
@@ -49,11 +69,11 @@ const card = { background: BG, border: `1px solid ${BD}`, borderRadius: 12, padd
 const goldCard = { ...card, border: `1px solid ${G}`, background: "rgba(212,160,23,0.05)" }
 const btn = { background: G, color: D, border: "none", borderRadius: 8, padding: "12px 24px", fontSize: 14, fontWeight: 700, cursor: "pointer", letterSpacing: 1, width: "100%" }
 const btnOutline = { ...btn, background: "transparent", color: G, border: `1px solid ${G}` }
-const input = { width: "100%", padding: "12px 16px", fontSize: 16, background: "#1A1A1A", border: `1px solid #333`, borderRadius: 8, color: W, boxSizing: "border-box" }
+const input = { width: "100%", padding: "12px 16px", fontSize: 16, background: "#15152A", border: `1px solid ${BD}`, borderRadius: 8, color: W, boxSizing: "border-box" }
 const navBtn = (active) => ({ background: active ? G : "transparent", color: active ? D : M, border: "none", padding: "8px 0", fontSize: 11, fontWeight: 700, cursor: "pointer", flex: 1, letterSpacing: 1 })
 const label = { fontSize: 11, color: M, letterSpacing: 2, fontWeight: 700, marginBottom: 8, display: "block" }
-const h1 = { fontSize: 24, fontWeight: 900, color: W, marginBottom: 4 }
-const h2 = { fontSize: 18, fontWeight: 700, color: W, marginBottom: 12 }
+const h1 = { fontSize: 26, fontWeight: 700, color: W, marginBottom: 4, fontFamily: SERIF }
+const h2 = { fontSize: 19, fontWeight: 700, color: W, marginBottom: 12, fontFamily: SERIF }
 const sub = { fontSize: 13, color: M }
 const gold = { color: G }
 const tag = { fontSize: 10, letterSpacing: 4, color: G, fontWeight: 700 }
@@ -75,7 +95,7 @@ function HomePage() {
       </div>
 
       <div style={goldCard}>
-        <div style={label}>INTERNATIONAL FIXED CALENDAR</div>
+        <div style={label}>SOL</div>
         {ifc.special ? (
           <div style={{ fontSize: 28, fontWeight: 900, color: G }}>{ifc.special}</div>
         ) : (
@@ -104,6 +124,12 @@ function HomePage() {
           <div style={label}>IFC MONTH</div>
           <MiniGrid day={ifc.day} />
         </div>
+      </div>
+
+      <div style={{ ...card, textAlign: "center" }}>
+        <div style={label}>COUNTDOWN</div>
+        <div style={{ fontSize: 34, fontWeight: 700, color: G, fontFamily: SERIF }}>{daysUntil(new Date(2029, 0, 1), now).toLocaleString("en-GB")} days</div>
+        <p style={{ ...sub, marginTop: 6, lineHeight: 1.6 }}>until 1 January 2029, the next time New Year's Day falls on a Monday — the day every Sol year begins.</p>
       </div>
 
       <div style={{ ...card, textAlign: "center" }}>
@@ -177,64 +203,93 @@ function ConverterPage() {
 }
 
 function BirthdayPage() {
+  const [shared] = useState(sharedBirthday)
   const [dateStr, setDateStr] = useState("")
   const [result, setResult] = useState(null)
+  const [copied, setCopied] = useState(false)
 
   const calculate = () => {
     if (!dateStr) return
     const d = new Date(dateStr + "T12:00:00")
     if (isNaN(d)) return
-    const ifc = toIFC(d)
-    setResult({ date: d, ifc })
+    const today = new Date()
+    if (d > today) return
+    setResult({ date: d, ifc: toIFC(d), f13: countFriday13ths(d, today) })
+    setCopied(false)
+  }
+
+  const shareUrl = () => {
+    const d = result.date
+    return `https://sol28.co.uk/?bd=${String(d.getMonth() + 1).padStart(2, "0")}-${String(d.getDate()).padStart(2, "0")}`
+  }
+
+  const share = async () => {
+    const { ifc } = result
+    const text = ifc.special
+      ? `I was born on ${ifc.special} — a day outside every week and month in the 13-month calendar. Find your True Birthday:`
+      : `My True Birthday is ${ifc.weekday} ${ifc.day} ${ifc.month}. Same day of the week, every year. Find yours:`
+    try {
+      if (navigator.share) { await navigator.share({ title: "My True Birthday", text, url: shareUrl() }); return }
+      await navigator.clipboard.writeText(`${text} ${shareUrl()}`)
+      setCopied(true)
+    } catch { /* user cancelled */ }
   }
 
   const downloadCard = () => {
-    if (!result || result.ifc.special) return
     const { ifc } = result
-    const canvas = document.createElement("canvas")
-    canvas.width = 1080; canvas.height = 1080
-    const ctx = canvas.getContext("2d")
-    ctx.fillStyle = "#0A0A0A"; ctx.fillRect(0, 0, 1080, 1080)
-    ctx.fillStyle = "#D4A017"; ctx.font = "bold 16px sans-serif"; ctx.letterSpacing = "8px"
-    ctx.textAlign = "center"; ctx.fillText("SOL", 540, 200)
-    ctx.fillStyle = "#E8E4D8"; ctx.font = "bold 64px sans-serif"; ctx.letterSpacing = "0px"
-    ctx.fillText("My True Birthday", 540, 340)
-    ctx.fillStyle = "#D4A017"; ctx.font = "bold 80px sans-serif"
-    ctx.fillText(`${ifc.weekday}`, 540, 480)
-    ctx.fillText(`${ifc.day} ${ifc.month}`, 540, 580)
-    ctx.fillStyle = "#666"; ctx.font = "24px sans-serif"
-    ctx.fillText("Every year. Same date. Same day. Forever.", 540, 700)
-    ctx.fillStyle = "#D4A017"; ctx.font = "bold 18px sans-serif"
-    ctx.fillText("sol28.co.uk", 540, 820)
-    const link = document.createElement("a")
-    link.download = `sol-true-birthday-${ifc.month.toLowerCase()}-${ifc.day}.png`
-    link.href = canvas.toDataURL("image/png")
-    link.click()
+    const c = document.createElement("canvas")
+    c.width = 1080; c.height = 1920
+    const x = c.getContext("2d")
+    x.fillStyle = NAVY; x.fillRect(0, 0, 1080, 1920)
+    const glow = x.createRadialGradient(540, 760, 40, 540, 760, 620)
+    glow.addColorStop(0, "rgba(212,160,23,0.28)"); glow.addColorStop(1, "rgba(212,160,23,0)")
+    x.fillStyle = glow; x.fillRect(0, 0, 1080, 1920)
+    x.strokeStyle = G; x.lineWidth = 4
+    x.beginPath(); x.arc(540, 760, 250, 0, Math.PI * 2); x.stroke()
+    x.textAlign = "center"
+    x.fillStyle = G; x.font = "bold 40px Georgia"; x.fillText("S O L", 540, 260)
+    x.fillStyle = W; x.font = "56px Georgia"; x.fillText("My True Birthday", 540, 400)
+    if (ifc.special) {
+      x.fillStyle = G; x.font = "bold 110px Georgia"; x.fillText(ifc.special, 540, 800)
+    } else {
+      x.fillStyle = W; x.font = "bold 92px Georgia"; x.fillText(ifc.weekday, 540, 740)
+      x.fillStyle = G; x.font = "bold 92px Georgia"; x.fillText(`${ifc.day} ${ifc.month}`, 540, 860)
+    }
+    x.fillStyle = T; x.font = "44px Georgia"
+    x.fillText(ifc.special ? "Outside every week and month." : "Same day. Every year. Forever.", 540, 1180)
+    x.fillStyle = M; x.font = "36px Georgia"
+    x.fillText(`Friday the 13ths I've lived through: ${result.f13}`, 540, 1300)
+    x.fillText("In Sol: none.", 540, 1356)
+    x.fillStyle = G; x.font = "bold 46px Georgia"; x.fillText("sol28.co.uk", 540, 1700)
+    x.fillStyle = M; x.font = "italic 34px Georgia"; x.fillText("Time, fixed.", 540, 1764)
+    const a = document.createElement("a")
+    a.download = "sol-true-birthday.png"
+    a.href = c.toDataURL("image/png"); a.click()
   }
 
   const downloadICS = () => {
-    if (!result || result.ifc.special) return
+    if (result.ifc.special) return
     const d = result.date
     const { ifc } = result
-    const mm = String(d.getMonth() + 1).padStart(2, "0")
-    const dd = String(d.getDate()).padStart(2, "0")
-    const yr = new Date().getFullYear() + 1
+    const today = new Date()
+    let next = new Date(today.getFullYear(), d.getMonth(), d.getDate())
+    if (next < today) next = new Date(today.getFullYear() + 1, d.getMonth(), d.getDate())
     const ics = [
       "BEGIN:VCALENDAR", "VERSION:2.0", "PRODID:-//Sol//True Birthday//EN",
       "BEGIN:VEVENT",
-      `DTSTART;VALUE=DATE:${yr}${mm}${dd}`,
-      `DTEND;VALUE=DATE:${fmtDate(new Date(yr, d.getMonth(), d.getDate() + 1))}`,
-      `SUMMARY:🎂 True Birthday — ${ifc.weekday} ${ifc.day} ${ifc.month}`,
-      `DESCRIPTION:In the IFC your birthday is always ${ifc.weekday} the ${ordinal(ifc.day)} of ${ifc.month}. Forever. sol28.co.uk`,
-      `UID:sol-bday-${mm}${dd}@sol28.co.uk`, "RRULE:FREQ=YEARLY",
-      "BEGIN:VALARM", "TRIGGER:-PT0M", "ACTION:DISPLAY",
-      `DESCRIPTION:Happy True Birthday!`, "END:VALARM",
+      `DTSTART;VALUE=DATE:${fmtDate(next)}`,
+      `DTEND;VALUE=DATE:${fmtDate(new Date(next.getFullYear(), next.getMonth(), next.getDate() + 1))}`,
+      `SUMMARY:True Birthday — ${ifc.weekday} ${ifc.day} ${ifc.month}`,
+      `DESCRIPTION:In Sol your birthday is always ${ifc.weekday} the ${ordinal(ifc.day)} of ${ifc.month}. sol28.co.uk`,
+      `UID:sol-bday-${fmtDate(d)}@sol28.co.uk`, "RRULE:FREQ=YEARLY",
       "END:VEVENT", "END:VCALENDAR"
     ].join("\r\n")
-    const blob = new Blob([ics], { type: "text/calendar" })
-    const a = document.createElement("a"); a.href = URL.createObjectURL(blob)
-    a.download = `sol-true-birthday.ics`; a.click()
+    const a = document.createElement("a")
+    a.href = URL.createObjectURL(new Blob([ics], { type: "text/calendar" }))
+    a.download = "sol-true-birthday.ics"; a.click()
   }
+
+  const sameWeekday = shared && result && !shared.ifc.special && !result.ifc.special && shared.ifc.weekday === result.ifc.weekday
 
   return (
     <div>
@@ -244,44 +299,67 @@ function BirthdayPage() {
         <p style={sub}>The day of the week you'd celebrate every year. Forever.</p>
       </div>
 
-      <div style={card}>
-        <label style={label}>YOUR BIRTHDAY</label>
-        <input type="date" value={dateStr} onChange={e => setDateStr(e.target.value)} style={input} />
-        <button onClick={calculate} style={{ ...btn, marginTop: 12 }}>FIND MY TRUE BIRTHDAY</button>
-      </div>
-
-      {result && result.ifc.special && (
-        <div style={goldCard}>
-          <div style={{ textAlign: "center" }}>
-            <div style={label}>YOUR TRUE BIRTHDAY</div>
-            <div style={{ fontSize: 32, fontWeight: 900, color: W }}>{result.ifc.special}</div>
-            <p style={{ ...sub, marginTop: 8, lineHeight: 1.6 }}>
-              {result.ifc.special === "Year Day"
-                ? "You were born on Year Day — the one day each year that belongs to no month and no week."
-                : "You were born on Leap Day — the extra day that sits outside every month and week, once every four years."}
-            </p>
+      {shared && (
+        <div style={{ ...card, textAlign: "center" }}>
+          <div style={label}>A FRIEND SENT YOU THEIRS</div>
+          <div style={{ fontSize: 20, color: W, fontFamily: SERIF }}>
+            {shared.ifc.special ? shared.ifc.special : `${shared.ifc.weekday} ${shared.ifc.day} ${shared.ifc.month}`}
           </div>
+          <p style={{ ...sub, marginTop: 6 }}>Enter your birthday to see if you share a True Birthday weekday.</p>
         </div>
       )}
 
-      {result && !result.ifc.special && (
+      <div style={card}>
+        <label style={label}>YOUR BIRTHDAY</label>
+        <input type="date" value={dateStr} max={fmtDate(new Date()).replace(/(\d{4})(\d{2})(\d{2})/, "$1-$2-$3")} onChange={e => setDateStr(e.target.value)} style={input} />
+        <button onClick={calculate} style={{ ...btn, marginTop: 12 }}>FIND MY TRUE BIRTHDAY</button>
+      </div>
+
+      {result && (
         <div style={goldCard}>
           <div style={{ textAlign: "center" }}>
             <div style={label}>YOUR TRUE BIRTHDAY</div>
-            <div style={{ fontSize: 32, fontWeight: 900, color: W }}>{result.ifc.weekday}</div>
-            <div style={{ fontSize: 24, fontWeight: 700, color: G, marginBottom: 8 }}>{result.ifc.day} {result.ifc.month}</div>
-            <p style={{ ...sub, marginBottom: 16 }}>Every year. Same date. Same day. Forever.</p>
-            <button onClick={downloadCard} style={{ ...btn, marginBottom: 8 }}>📸 DOWNLOAD BIRTHDAY CARD</button>
-            <button onClick={downloadICS} style={btnOutline}>📅 ADD YEARLY REMINDER TO CALENDAR</button>
+            {result.ifc.special ? (
+              <>
+                <div style={{ fontSize: 32, fontWeight: 700, color: W, fontFamily: SERIF }}>{result.ifc.special}</div>
+                <p style={{ ...sub, marginTop: 8, lineHeight: 1.6 }}>
+                  {result.ifc.special === "Year Day"
+                    ? "You were born on Year Day — the one day each year that belongs to no month and no week."
+                    : "You were born on Leap Day — the extra day that sits outside every month and week, once every four years."}
+                </p>
+              </>
+            ) : (
+              <>
+                <div style={{ fontSize: 32, fontWeight: 700, color: W, fontFamily: SERIF }}>{result.ifc.weekday}</div>
+                <div style={{ fontSize: 24, fontWeight: 700, color: G, marginBottom: 8, fontFamily: SERIF }}>{result.ifc.day} {result.ifc.month}</div>
+                <p style={sub}>Every year. Same date. Same day. Forever.</p>
+              </>
+            )}
+
+            <div style={{ borderTop: `1px solid ${BD}`, margin: "16px 0", paddingTop: 16 }}>
+              <div style={{ fontSize: 30, fontWeight: 700, color: G, fontFamily: SERIF }}>{result.f13}</div>
+              <p style={{ ...sub, lineHeight: 1.6 }}>Friday the 13ths you've lived through so far. In Sol, you'd have had none: the 13th is always a Saturday.</p>
+            </div>
+
+            {shared && !shared.ifc.special && !result.ifc.special && (
+              <p style={{ fontSize: 14, color: sameWeekday ? G : T, marginBottom: 16 }}>
+                {sameWeekday ? `You and your friend share a True Birthday weekday: ${result.ifc.weekday}.` : `Your friend's is a ${shared.ifc.weekday}; yours is a ${result.ifc.weekday}.`}
+              </p>
+            )}
+
+            <button onClick={share} style={{ ...btn, marginBottom: 8 }}>{copied ? "LINK COPIED" : "SHARE MY TRUE BIRTHDAY"}</button>
+            <button onClick={downloadCard} style={{ ...btnOutline, marginBottom: 8 }}>DOWNLOAD STORY CARD</button>
+            {!result.ifc.special && <button onClick={downloadICS} style={btnOutline}>ADD YEARLY REMINDER TO CALENDAR</button>}
           </div>
         </div>
       )}
 
       <div style={{ ...card, marginTop: 16 }}>
         <p style={{ fontSize: 12, color: M, lineHeight: 1.7 }}>
-          Born on the 29th, 30th, or 31st? Your birthday doesn't disappear — it converts to a permanent IFC date.
+          Born on the 29th, 30th or 31st? Your birthday doesn't disappear — it converts to a permanent Sol date.
           Roughly one person in twelve was born on a 29th, 30th or 31st. Every one of those dates converts cleanly.
         </p>
+        <p style={{ fontSize: 11, color: M, lineHeight: 1.6, marginTop: 8 }}>Your birthday is worked out on your device and never sent anywhere. Shared links include only the day and month.</p>
       </div>
     </div>
   )
@@ -389,11 +467,29 @@ function WaitlistPage() {
   )
 }
 
+function PrivacyPage() {
+  const sec = (t, body) => (<div style={card}><h2 style={h2}>{t}</h2><p style={{ fontSize: 14, color: T, lineHeight: 1.7 }}>{body}</p></div>)
+  return (
+    <div>
+      <div style={{ textAlign: "center", marginBottom: 24 }}>
+        <div style={tag}>SOL</div>
+        <h1 style={h1}>Privacy</h1>
+        <p style={sub}>Last updated 28 October 2026</p>
+      </div>
+      {sec("Who we are", "Sol (sol28.co.uk) is run by Stephen Rooney in Liverpool, UK. For anything about your data, email hello@sol28.co.uk.")}
+      {sec("Your dates stay on your device", "Every date you enter — including your birthday — is worked out in your own browser and never sent to us. Shared birthday links contain only a day and month. This site uses no cookies, no analytics and no advertising trackers.")}
+      {sec("The waitlist", "If you join the waitlist we collect your email address and nothing else, and use it only to send you news about Sol, its books and products. We ask for your consent first, and you confirm it from a link we email you. Every email has an unsubscribe link, and you can ask us to delete your address at any time.")}
+      {sec("Who handles it", "Waitlist emails are stored and sent by Kit, our email provider, which is based in the United States. The site is served by Vercel, which may keep short-lived technical logs, such as IP addresses, to keep the service running and secure.")}
+      {sec("Your rights", "You can ask to see, correct or delete the personal data we hold about you. If you're unhappy with how we've handled it, you can complain to the Information Commissioner's Office at ico.org.uk.")}
+    </div>
+  )
+}
+
 // ═══ MAIN APP ═══
 
 export default function App() {
-  const [page, setPage] = useState("home")
-  const pages = { home: HomePage, convert: ConverterPage, birthday: BirthdayPage, history: HistoryPage, waitlist: WaitlistPage }
+  const [page, setPage] = useState(() => sharedBirthday() ? "birthday" : "home")
+  const pages = { home: HomePage, convert: ConverterPage, birthday: BirthdayPage, history: HistoryPage, waitlist: WaitlistPage, privacy: PrivacyPage }
   const Page = pages[page]
   const navItems = [
     { id: "home", label: "TODAY" },
@@ -407,9 +503,13 @@ export default function App() {
     <div style={container}>
       <div style={wrap}>
         <Page />
+        <div style={{ textAlign: "center", padding: "24px 0 8px" }}>
+          <button onClick={() => { setPage("privacy"); window.scrollTo(0, 0) }} style={{ background: "none", border: "none", color: M, fontSize: 12, textDecoration: "underline", cursor: "pointer" }}>Privacy</button>
+          <span style={{ color: M, fontSize: 12 }}> · Sol — Time, fixed.</span>
+        </div>
       </div>
       <nav style={{
-        position: "fixed", bottom: 0, left: 0, right: 0, background: "#111",
+        position: "fixed", bottom: 0, left: 0, right: 0, background: "#15152A",
         borderTop: `1px solid ${BD}`, display: "flex", padding: "8px 0",
         justifyContent: "space-around", zIndex: 100
       }}>
