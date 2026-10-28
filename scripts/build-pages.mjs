@@ -176,13 +176,13 @@ ${n === 12 ? `<p class="muted">Year Day follows 28 December and belongs to no we
 // ── Lost Days
 {
   const events = [
-    ["46 BC", "The 445-day year", "To pull the Roman calendar back into line with the seasons before his reform began, Julius Caesar stretched one year to 445 days. Romans called it the Year of Confusion.", "https://en.wikipedia.org/wiki/46_BC"],
-    ["1582", "Ten days deleted", "Pope Gregory XIII's reform made Thursday 4 October followed by Friday 15 October in Spain, Portugal, the Italian states and Poland–Lithuania. France followed that December.", "https://en.wikipedia.org/wiki/Adoption_of_the_Gregorian_calendar"],
-    ["1712", "Sweden's 30 February", "Sweden had tried to drift into the new calendar gradually, then abandoned the plan. Returning to the old calendar needed one extra day, so 1712 had a 30 February.", "https://en.wikipedia.org/wiki/List_of_adoption_dates_of_the_Gregorian_calendar_by_country"],
+    ["46 BC", "The 445-day year", "To pull the Roman calendar back into line with the seasons before his reform began, Julius Caesar added two extra months to one year. The Roman writer Censorinus put its length at 445 days; Macrobius gives 443. Either way, the longest year on record.", "https://ircps.org/wp-content/uploads/2021/04/2007-10-04_Hannah.pdf"],
+    ["1582", "Ten days deleted", "Pope Gregory XIII's reform made Thursday 4 October followed by Friday 15 October in Spain, Portugal, the Italian states and Poland–Lithuania. France followed that December.", "https://www.tondering.dk/claus/cal/gregorian.php"],
+    ["1712", "Sweden's 30 February", "Sweden had tried to drift into the new calendar gradually, then abandoned the plan. Returning to the old calendar needed one extra day, so 1712 had a 30 February.", "https://tondering.dk/article/en/calendar/60-30feb.php"],
     ["1752", "Britain loses 11 days", "Wednesday 2 September was followed by Thursday 14 September. The tax year was stretched by 11 days to protect revenue, which is why it now starts on 6 April.", "https://theconversation.com/why-the-uk-tax-year-starts-on-april-6-57247"],
-    ["1872", "Japan jumps to January", "Japan left its traditional calendar on the 2nd day of the 12th month of 1872; the next day became 1 January 1873.", "https://en.wikipedia.org/wiki/List_of_adoption_dates_of_the_Gregorian_calendar_by_country"],
-    ["1918", "Russia skips 13 days", "31 January 1918 was followed by 14 February.", "https://en.wikipedia.org/wiki/List_of_adoption_dates_of_the_Gregorian_calendar_by_country"],
-    ["1923", "Greece, the last in Europe", "15 February 1923 was followed by 1 March, completing Europe's switch more than 340 years after it began.", "https://en.wikipedia.org/wiki/List_of_adoption_dates_of_the_Gregorian_calendar_by_country"],
+    ["1872", "Japan jumps to January", "Japan left its traditional calendar on the 2nd day of the 12th month of 1872; the next day became 1 January 1873.", "https://history.state.gov/historicaldocuments/frus1873p1v1/d251"],
+    ["1918", "Russia skips 13 days", "31 January 1918 was followed by 14 February.", "https://exhibitions.lib.cam.ac.uk/revolutionthefirstbolshevikyear/?p=101"],
+    ["1923", "Greece, the last in Europe", "15 February 1923 was followed by 1 March, completing Europe's switch more than 340 years after it began.", "https://www.tondering.dk/claus/cal/gregorian.php"],
   ]
   let body = `<h1>Lost Days</h1><p>Seven times the calendar simply skipped — or added — days. Each one was a fix for a system that drifts. Sol is built so it never needs another.</p><div class="tl">`
   for (const [yr, t, txt, src] of events) body += `<div class="card"><div class="muted">${yr}</div><h2>${t}</h2><p>${txt}</p><p class="muted"><a href="${src}" rel="noopener">Source</a></p></div>`
