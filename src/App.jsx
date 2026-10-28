@@ -304,10 +304,72 @@ function PaydayCalculator() {
   )
 }
 
+// ═══ THE REVEAL ═══ The conversion moment: staged, skippable, and instant for reduced-motion users.
+const REVEAL_CSS = `
+@keyframes solFadeUp{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:none}}
+@keyframes solRing{0%{transform:scale(.6);opacity:0;box-shadow:0 0 0 0 rgba(212,160,23,.0)}60%{transform:scale(1.04);opacity:1;box-shadow:0 0 60px 6px rgba(212,160,23,.35)}100%{transform:scale(1);box-shadow:0 0 36px 2px rgba(212,160,23,.22)}}
+@keyframes solTick{0%{opacity:0;transform:translateY(8px)}100%{opacity:1;transform:none}}
+.sol-in{animation:solFadeUp .6s ease both}
+.sol-ring{animation:solRing 1s cubic-bezier(.2,.8,.2,1) both}
+.sol-tick{animation:solTick .16s ease both}
+@media (prefers-reduced-motion:reduce){.sol-in,.sol-ring,.sol-tick{animation:none}}`
+
+function nextOccurrence(ifc, from) {
+  // The next ordinary-calendar date that carries this Sol date (Year Day / Leap Day included)
+  for (let i = 0; i < 1500; i++) {
+    const d = new Date(from.getFullYear(), from.getMonth(), from.getDate() + i, 12)
+    const r = toIFC(d)
+    if (ifc.special ? r.special === ifc.special : (!r.special && r.month === ifc.month && r.day === ifc.day)) return { date: d, days: i }
+  }
+  return null
+}
+
+function Reveal({ result, onDone }) {
+  const reduce = typeof window !== "undefined" && window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches
+  const [stage, setStage] = useState(reduce ? 4 : 0)
+  const [tick, setTick] = useState(0)
+  const { date, ifc } = result
+  const target = ifc.special ? 13 : ifc.monthNum
+  useEffect(() => {
+    if (stage === 4) { onDone(); return }
+    if (stage === 2) {
+      if (tick < target) { const t = setTimeout(() => setTick(tick + 1), 1100 / target); return () => clearTimeout(t) }
+      const t = setTimeout(() => setStage(3), 350); return () => clearTimeout(t)
+    }
+    const t = setTimeout(() => setStage(stage + 1), [1300, 1500, 0, 1100][stage])
+    return () => clearTimeout(t)
+  }, [stage, tick])
+  const now = new Date()
+  const wd = d => d.toLocaleDateString("en-GB", { weekday: "long" })
+  const thisYear = new Date(now.getFullYear(), date.getMonth(), date.getDate(), 12)
+  const nextYear = new Date(now.getFullYear() + 1, date.getMonth(), date.getDate(), 12)
+  const feb29 = date.getMonth() === 1 && date.getDate() === 29
+  if (stage === 4) return null
+  return (
+    <div style={{ ...goldCard, textAlign: "center", minHeight: 260, cursor: "pointer" }} onClick={() => setStage(4)} title="Tap to skip">
+      <div className="sol-in" style={{ fontSize: 15, color: T, marginBottom: 14 }}>You were born on a <strong style={{ color: W }}>{wd(date)}</strong>.</div>
+      {stage >= 1 && !feb29 && (
+        <div className="sol-in" style={{ fontSize: 15, color: T, marginBottom: 18, lineHeight: 1.6 }}>
+          Since then your birthday has wandered round the week:<br />this year a <strong style={{ color: W }}>{wd(thisYear)}</strong>, next year a <strong style={{ color: W }}>{wd(nextYear)}</strong>.
+        </div>
+      )}
+      {stage >= 1 && feb29 && <div className="sol-in" style={{ fontSize: 15, color: T, marginBottom: 18 }}>A 29 February birthday: three years in four, it doesn't exist at all.</div>}
+      {stage >= 2 && (
+        <div style={{ fontFamily: SERIF, fontSize: 26, color: G, height: 36 }}>
+          <span key={tick} className="sol-tick">{ifc.special && tick >= 13 && stage >= 3 ? ifc.special : IFC_MONTHS[Math.max(0, Math.min(12, tick - 1))]}</span>
+        </div>
+      )}
+      {stage >= 3 && <div className="sol-ring" style={{ width: 96, height: 96, borderRadius: "50%", border: `2px solid ${G}`, margin: "14px auto 0", display: "flex", alignItems: "center", justifyContent: "center", fontFamily: SERIF, fontSize: ifc.special ? 18 : 40, fontWeight: 700, color: G }}>{ifc.special ? ifc.special : ifc.day}</div>}
+      <div style={{ fontSize: 11, color: M, marginTop: 16 }}>Tap to skip</div>
+    </div>
+  )
+}
+
 function BirthdayPage() {
   const [shared] = useState(sharedBirthday)
   const [dateStr, setDateStr] = useState("")
   const [result, setResult] = useState(null)
+  const [revealed, setRevealed] = useState(false)
   const [copied, setCopied] = useState(false)
 
   const calculate = () => {
@@ -317,6 +379,7 @@ function BirthdayPage() {
     const today = new Date()
     if (d > today) return
     setResult({ date: d, ifc: toIFC(d), f13: countFriday13ths(d, today) })
+    setRevealed(false)
     setCopied(false)
   }
 
@@ -418,8 +481,10 @@ function BirthdayPage() {
         <button onClick={calculate} style={{ ...btn, marginTop: 12 }}>FIND MY TRUE BIRTHDAY</button>
       </div>
 
-      {result && (
-        <div style={goldCard}>
+      <style>{REVEAL_CSS}</style>
+      {result && !revealed && <Reveal key={result.date.getTime()} result={result} onDone={() => setRevealed(true)} />}
+      {result && revealed && (
+        <div style={goldCard} className="sol-in">
           <div style={{ textAlign: "center" }}>
             <div style={label}>YOUR TRUE BIRTHDAY</div>
             {result.ifc.special ? (
@@ -433,11 +498,27 @@ function BirthdayPage() {
               </>
             ) : (
               <>
+                <div className="sol-ring" style={{ width: 120, height: 120, borderRadius: "50%", border: `2px solid ${G}`, margin: "8px auto 14px", display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center" }}>
+                  <div style={{ fontSize: 46, fontWeight: 700, color: G, fontFamily: SERIF, lineHeight: 1 }}>{result.ifc.day}</div>
+                  <div style={{ fontSize: 15, color: W, fontFamily: SERIF }}>{result.ifc.month}</div>
+                </div>
                 <div style={{ fontSize: 32, fontWeight: 700, color: W, fontFamily: SERIF }}>{result.ifc.weekday}</div>
                 <div style={{ fontSize: 24, fontWeight: 700, color: G, marginBottom: 8, fontFamily: SERIF }}>{result.ifc.day} {result.ifc.month}</div>
-                <p style={sub}>Every year. Same date. Same day. Forever.</p>
+                <p style={{ ...sub, fontSize: 16, color: T }}>Every year, for the rest of your life.</p>
               </>
             )}
+            {(() => {
+              const now = new Date()
+              const b = result.date
+              const age = now.getFullYear() - b.getFullYear() - ((now.getMonth() < b.getMonth() || (now.getMonth() === b.getMonth() && now.getDate() < b.getDate())) ? 1 : 0)
+              const next = nextOccurrence(result.ifc, now)
+              return (
+                <div style={{ marginTop: 14, fontSize: 14, color: T, lineHeight: 1.7 }}>
+                  {age > 0 && !result.ifc.special && <div>You've had <strong style={{ color: W }}>{age}</strong> birthday{age === 1 ? "" : "s"}. In Sol, every one would have been a <strong style={{ color: G }}>{result.ifc.weekday}</strong>.</div>}
+                  {next && <div style={{ color: M, fontSize: 13, marginTop: 4 }}>{next.days === 0 ? "That's today. Happy True Birthday." : `Your next one: ${next.date.toLocaleDateString("en-GB", { day: "numeric", month: "long", year: "numeric" })} on the ordinary calendar — ${next.days} day${next.days === 1 ? "" : "s"} away.`}</div>}
+                </div>
+              )
+            })()}
 
             <div style={{ borderTop: `1px solid ${BD}`, margin: "16px 0", paddingTop: 16 }}>
               <div style={{ fontSize: 30, fontWeight: 700, color: G, fontFamily: SERIF }}>{result.f13}</div>
@@ -462,7 +543,7 @@ function BirthdayPage() {
           Born on the 29th, 30th or 31st? Your birthday doesn't disappear — it converts to a permanent Sol date.
           Roughly one person in twelve was born on a 29th, 30th or 31st. Every one of those dates converts cleanly.
         </p>
-        <p style={{ fontSize: 11, color: M, lineHeight: 1.6, marginTop: 8 }}>Your birthday is worked out on your device and never sent anywhere. Shared links include only the day and month.</p>
+        <p style={{ fontSize: 11, color: M, lineHeight: 1.6, marginTop: 8 }}>Your birthday is worked out on your device and never sent anywhere. Shared links include only your Sol date, never your year of birth.</p>
       </div>
     </div>
   )
