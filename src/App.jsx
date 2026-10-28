@@ -59,6 +59,44 @@ function moonPhase(date) {
   return { name: names[i], icon: icons[i], age: Math.round(phase) }
 }
 
+// ═══ FACT OF THE DAY ═══
+// Only claims marked VERIFIED (or registry-approved corrected wording) in the Sol Claim Registry,
+// plus the project's canonical facts. Do not add a line here without a registry row.
+const FACTS = [
+  ["Fact", "September is named from the Latin for seven, but it's the ninth month. October, November and December are each two places out too."],
+  ["Fact", "July and August were renamed, not added: Quintilis became Julius in 44 BC, and Sextilis became Augustus in 8 BC."],
+  ["Myth", "The story that Augustus took a day from February for his own month is disputed. February's 28 days probably date to the reform of Numa Pompilius, centuries earlier."],
+  ["Fact", "In 1582 Pope Gregory XIII's reform made Thursday 4 October followed by Friday 15 October. Ten dates never happened."],
+  ["Fact", "Britain waited until 1752: Wednesday 2 September was followed by Thursday 14 September."],
+  ["Fact", "The UK tax year starts on 6 April because of the 1752 calendar change — first moved to 5 April, then to 6 April in 1800."],
+  ["Fact", "Sweden had a 30 February, in 1712, while undoing a botched switch between calendars."],
+  ["Fact", "Russia switched calendars in 1918: 31 January was followed by 14 February."],
+  ["Fact", "Japan adopted the Gregorian calendar at the start of 1873, jumping from early December straight to 1 January."],
+  ["Fact", "Julius Caesar's calendar reform needed a 445-day year in 46 BC to put the seasons back in place."],
+  ["Fact", "Moses Cotsworth proposed the International Fixed Calendar in 1902: 13 months of exactly 28 days."],
+  ["Fact", "The International Fixed Calendar League was founded in 1923 to campaign for 13 months."],
+  ["Fact", "Kodak ran 13 equal 28-day accounting periods, 1928–1989; employees lived by the Gregorian calendar."],
+  ["Fact", "Religious leaders objected to the 13-month calendar because Year Day sits outside the week and would break the weekly Sabbath cycle."],
+  ["Fact", "In a 13-month calendar of 28-day months, every date falls on the same weekday every year."],
+  ["Fact", "Year Day and Leap Day belong to no week at all — they have no weekday."],
+  ["Fact", "In Sol the 13th of every month is a Saturday, so Friday the 13th can never happen."],
+  ["Fact", "Ethiopia uses a 13-month calendar today: twelve months of 30 days and a short thirteenth."],
+  ["Fact", "The Igbo of Nigeria independently developed a calendar built on 13 months of 28 days."],
+  ["Fact", "Moon, month, measure, metre and menses all trace back to one ancient root, *me-, to measure."],
+  ["Myth", "'History' doesn't come from 'his story'. It comes from the Greek historia, meaning inquiry."],
+  ["Myth", "'Hours' has nothing to do with the god Horus. It comes from the Greek hōra."],
+  ["Fact", "Big retailers such as Walmart, Tesco and M&S plan their year in 4-4-5 periods: quarters of 13 weeks."],
+  ["Fact", "The Ishango bone from the Congo, around 20,000 years old, may be one of the oldest calendar objects ever found."],
+  ["Myth", "Railway gauge does not come from Roman chariot ruts. Snopes rates the story false; the similar width is coincidence."],
+  ["Myth", "There's no evidence QWERTY was designed to slow typists down. Its patent never mentions jamming."],
+  ["Myth", "'Salary' is related to the Latin for salt, but no ancient source says Roman soldiers were paid in salt."],
+]
+function factOfDay(date) {
+  const start = Date.UTC(date.getFullYear(), 0, 0)
+  const n = Math.floor((Date.UTC(date.getFullYear(), date.getMonth(), date.getDate()) - start) / 86400000) + date.getFullYear() * 7
+  return FACTS[n % FACTS.length]
+}
+
 // ═══ STYLES ═══
 const G = "#D4A017", NAVY = "#1A1A2E", D = "#1A1A2E", BG = "#22223A", BD = "#34344F", T = "#D6D3C9", W = "#F2EEE3", M = "#9A98AE"
 const SERIF = "Georgia, 'Times New Roman', serif"
@@ -126,6 +164,13 @@ function HomePage() {
         </div>
       </div>
 
+      {(() => { const [kind, text] = factOfDay(now); return (
+        <div style={card}>
+          <div style={label}>{kind === "Myth" ? "MYTH OF THE DAY" : "FACT OF THE DAY"}</div>
+          <p style={{ fontSize: 15, color: W, lineHeight: 1.6, fontFamily: SERIF }}>{text}</p>
+          <p style={{ fontSize: 11, color: M, marginTop: 8 }}>Checked against the Sol Claim Registry. We never repeat a myth as fact.</p>
+        </div>) })()}
+
       <div style={{ ...card, textAlign: "center" }}>
         <div style={label}>COUNTDOWN</div>
         <div style={{ fontSize: 34, fontWeight: 700, color: G, fontFamily: SERIF }}>{daysUntil(new Date(2029, 0, 1), now).toLocaleString("en-GB")} days</div>
@@ -173,7 +218,7 @@ function ConverterPage() {
       <div style={{ textAlign: "center", marginBottom: 24 }}>
         <div style={tag}>SOL</div>
         <h1 style={h1}>Date Converter</h1>
-        <p style={sub}>Any Gregorian date → IFC equivalent</p>
+        <p style={sub}>Any date → its Sol equivalent</p>
       </div>
 
       <div style={card}>
@@ -184,7 +229,7 @@ function ConverterPage() {
 
       {result && (
         <div style={goldCard}>
-          <div style={label}>IFC DATE</div>
+          <div style={label}>SOL DATE</div>
           {result.ifc.special ? (
             <div style={{ fontSize: 24, fontWeight: 900, color: G }}>{result.ifc.special}</div>
           ) : (
@@ -196,6 +241,56 @@ function ConverterPage() {
           <div style={{ marginTop: 12, paddingTop: 12, borderTop: `1px solid ${BD}` }}>
             <span style={{ fontSize: 13, color: M }}>{result.moon.icon} {result.moon.name} · Moon age: {result.moon.age} days</span>
           </div>
+        </div>
+      )}
+
+      <PaydayCalculator />
+    </div>
+  )
+}
+
+function PaydayCalculator() {
+  const [dateStr, setDateStr] = useState("")
+  const [res, setRes] = useState(null)
+
+  const run = () => {
+    if (!dateStr) return
+    const anchor = new Date(dateStr + "T12:00:00")
+    if (isNaN(anchor)) return
+    const today = new Date(); today.setHours(12, 0, 0, 0)
+    const taxStart = new Date(today.getMonth() > 3 || (today.getMonth() === 3 && today.getDate() >= 6) ? today.getFullYear() : today.getFullYear() - 1, 3, 6, 12)
+    const taxEnd = new Date(taxStart.getFullYear() + 1, 3, 6, 12)
+    const step = 28 * 86400000
+    const k = Math.ceil((taxStart - anchor) / step)
+    let first = new Date(anchor.getTime() + k * step)
+    const days = []
+    for (let d = first; d < taxEnd; d = new Date(d.getTime() + step)) days.push(d)
+    const byMonth = {}
+    days.forEach(d => { const key = `${MONTH_NAMES[d.getMonth()]} ${d.getFullYear()}`; byMonth[key] = (byMonth[key] || 0) + 1 })
+    const doubles = Object.keys(byMonth).filter(m => byMonth[m] > 1)
+    setRes({ count: days.length, doubles, start: taxStart, end: new Date(taxEnd.getTime() - 86400000) })
+  }
+
+  const fmt = d => d.toLocaleDateString("en-GB", { day: "numeric", month: "long", year: "numeric" })
+
+  return (
+    <div style={{ ...card, marginTop: 24 }}>
+      <h2 style={h2}>Paid every four weeks?</h2>
+      <p style={{ ...sub, lineHeight: 1.6, marginBottom: 12 }}>Then you're paid 13 times a year, not 12 — and one month brings two paydays. Enter any payday to see which.</p>
+      <label style={label}>ANY RECENT PAYDAY</label>
+      <input type="date" value={dateStr} onChange={e => setDateStr(e.target.value)} style={input} />
+      <button onClick={run} style={{ ...btn, marginTop: 12 }}>FIND MY EXTRA PAYDAY</button>
+      {res && (
+        <div style={{ marginTop: 16 }}>
+          <div style={{ fontSize: 30, fontWeight: 700, color: G, fontFamily: SERIF }}>{res.count} paydays</div>
+          <p style={{ ...sub, lineHeight: 1.6 }}>in this tax year ({fmt(res.start)} to {fmt(res.end)}).</p>
+          {res.doubles.length > 0 && (
+            <p style={{ fontSize: 15, color: W, marginTop: 8, lineHeight: 1.6 }}>
+              Two paydays land in <span style={gold}>{res.doubles.join(" and ")}</span>. Budget for that month on purpose rather than letting it disappear.
+            </p>
+          )}
+          {res.count === 14 && <p style={{ fontSize: 13, color: T, marginTop: 8 }}>This is one of the occasional tax years with a 14th payday.</p>}
+          <p style={{ fontSize: 12, color: M, marginTop: 12, lineHeight: 1.6 }}>In Sol, every month is exactly four weeks, so a four-weekly payday lands on the same date every month. This is a guide, not financial advice — check your payslips.</p>
         </div>
       )}
     </div>
