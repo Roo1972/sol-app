@@ -23,6 +23,13 @@
       ]
     },
     {
+      "source": "/sol.ics",
+      "headers": [
+        { "key": "Content-Type", "value": "text/calendar; charset=utf-8" },
+        { "key": "Cache-Control", "value": "public, max-age=3600" }
+      ]
+    },
+    {
       "source": "/manifest.json",
       "headers": [
         {

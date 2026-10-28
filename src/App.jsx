@@ -124,6 +124,12 @@ function HomePage() {
         <div style={{ ...sub, marginTop: 4 }}>Twelve months of 30 days, and Pagume. See how it compares →</div>
       </a>
 
+      <a href="/calendar" style={{ ...goldCard, display: "block", textDecoration: "none", marginBottom: 12, textAlign: "center" }}>
+        <div style={label}>NEW</div>
+        <div style={{ fontSize: 17, color: W, fontFamily: SERIF }}>Put Sol in your calendar</div>
+        <div style={{ ...sub, marginTop: 4 }}>Today's Sol date in Google, Apple or Outlook, every day →</div>
+      </a>
+
       <div style={{ display: "flex", gap: 12, marginBottom: 12 }}>
         <div style={{ ...card, flex: 1 }}>
           <div style={label}>MOON</div>
@@ -534,6 +540,7 @@ function BirthdayPage() {
             <button onClick={share} style={{ ...btn, marginBottom: 8 }}>{copied ? "LINK COPIED" : "SHARE MY TRUE BIRTHDAY"}</button>
             <button onClick={downloadCard} style={{ ...btnOutline, marginBottom: 8 }}>DOWNLOAD STORY CARD</button>
             {!result.ifc.special && <button onClick={downloadICS} style={btnOutline}>ADD YEARLY REMINDER TO CALENDAR</button>}
+            <a href="/calendar" style={{ display: "block", marginTop: 12, fontSize: 13, color: G }}>Or see every Sol date in your calendar →</a>
           </div>
         </div>
       )}

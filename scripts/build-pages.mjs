@@ -8,7 +8,7 @@
 
 import { mkdirSync, writeFileSync } from "node:fs"
 import { join } from "node:path"
-import { toEthiopian, ETH_MONTHS } from "../src/engine.js"
+import { toEthiopian, ETH_MONTHS, toIFC } from "../src/engine.js"
 
 const OUT = "dist"
 const SITE = "https://sol28.co.uk"
@@ -87,7 +87,7 @@ function page({ path, title, description, body, image = "default", noindex = fal
 </head><body><main>
 <a class="tag" href="/">SOL</a>
 ${body}
-<nav class="foot"><a href="/?go=birthday">Find your True Birthday</a><a href="/dates">Every date</a><a href="/months">The 13 months</a><a href="/lost-days">Lost Days</a><a href="/ethiopia">Ethiopia</a><a href="/garden">Gardening</a><a href="/birds">Birdwatching</a><a href="/routine">Routine chart</a><a href="/?go=privacy">Privacy</a></nav>
+<nav class="foot"><a href="/?go=birthday">Find your True Birthday</a><a href="/dates">Every date</a><a href="/months">The 13 months</a><a href="/lost-days">Lost Days</a><a href="/ethiopia">Ethiopia</a><a href="/calendar">Sol in your calendar</a><a href="/garden">Gardening</a><a href="/birds">Birdwatching</a><a href="/routine">Routine chart</a><a href="/?go=privacy">Privacy</a></nav>
 <p class="muted">Sol — Time, fixed.</p>
 </main></body></html>`
 }
@@ -245,6 +245,43 @@ var i=document.getElementById("eth-in"),o=document.getElementById("eth-out");i.v
 function show(){if(!i.value)return;var p=i.value.split("-"),r=eth(new Date(+p[0],p[1]-1,+p[2],12));o.innerHTML=r.d+" <span>"+r.m+" "+r.y+"</span>"}i.addEventListener("input",show);show()})()</script>`
   write("ethiopia.html", page({ path: "/ethiopia", title: `In Ethiopia it's ${now.year}: the 13-month calendar already in use — Sol`, description: "Ethiopia lives by a 13-month calendar: twelve months of 30 days and a thirteenth of five or six. See today's Ethiopian date and how it compares with Sol.", body }))
   urls.push("/ethiopia")
+}
+
+// ── Calendar feed: /sol.ics — one all-day entry per day with its Sol date, subscribed to from phones and laptops
+{
+  const pad = n => String(n).padStart(2, "0")
+  const ymd = d => `${d.getFullYear()}${pad(d.getMonth() + 1)}${pad(d.getDate())}`
+  const stamp = new Date().toISOString().replace(/[-:]/g, "").slice(0, 15) + "Z"
+  const start = new Date(); start.setDate(start.getDate() - 31)
+  const lines = ["BEGIN:VCALENDAR", "VERSION:2.0", "PRODID:-//Sol//sol28.co.uk//EN", "CALSCALE:GREGORIAN", "METHOD:PUBLISH",
+    "X-WR-CALNAME:Sol dates", "X-WR-CALDESC:Today's date in Sol\\, the 13-month calendar. sol28.co.uk", "X-WR-TIMEZONE:Europe/London",
+    "REFRESH-INTERVAL;VALUE=DURATION:P1D", "X-PUBLISHED-TTL:P1D"]
+  for (let i = 0; i < 365 * 3 + 31; i++) {
+    const d = new Date(start.getFullYear(), start.getMonth(), start.getDate() + i, 12)
+    const n = new Date(d.getFullYear(), d.getMonth(), d.getDate() + 1, 12)
+    const r = toIFC(d)
+    const summary = r.special ? `Sol: ${r.special}` : `Sol ${r.day} ${r.month}${r.day === 1 ? " — new month" : ""}${r.day === 13 ? " (never a Friday)" : ""}`
+    lines.push("BEGIN:VEVENT", `UID:sol-${ymd(d)}@sol28.co.uk`, `DTSTAMP:${stamp}`, `DTSTART;VALUE=DATE:${ymd(d)}`, `DTEND;VALUE=DATE:${ymd(n)}`,
+      `SUMMARY:${summary}`, "TRANSP:TRANSPARENT", "URL:https://sol28.co.uk/", "END:VEVENT")
+  }
+  lines.push("END:VCALENDAR")
+  writeFileSync(join(OUT, "sol.ics"), lines.join("\r\n") + "\r\n")
+
+  const feed = "sol28.co.uk/sol.ics"
+  const body = `
+<h1>Put Sol in your calendar</h1>
+<p>Add the Sol calendar once and today's Sol date appears in your own calendar every day — on your phone, your laptop, everywhere. It updates itself.</p>
+<div class="card gold">
+<a class="btn" href="https://calendar.google.com/calendar/r?cid=${encodeURIComponent("webcal://" + feed)}" target="_blank" rel="noopener">ADD TO GOOGLE CALENDAR</a>
+<a class="btn" href="webcal://${feed}" style="margin-top:10px">ADD TO APPLE CALENDAR (IPHONE, MAC)</a>
+<a class="btn" href="https://outlook.live.com/calendar/0/addfromweb?url=${encodeURIComponent("https://" + feed)}&name=Sol%20dates" target="_blank" rel="noopener" style="margin-top:10px">ADD TO OUTLOOK</a>
+</div>
+<div class="card"><h2>What you'll see</h2><p>One small all-day note each day, such as <strong>Sol 21 October</strong>. On the 1st of each Sol month it says so; on the 13th it reminds you it's never a Friday. Year Day and Leap Day are marked when they come.</p><p class="muted">The entries are marked as free time, so they never block your diary.</p></div>
+<div class="card"><h2>Another calendar app?</h2><p>Most calendar apps can subscribe to a web calendar. Use this address:</p><p><code style="word-break:break-all;color:var(--gold)">https://${feed}</code></p></div>
+<div class="card"><h2>Changed your mind?</h2><p>Remove "Sol dates" from your calendar app's list of calendars, like any other subscription. Nothing is stored about you — the feed is the same file for everyone.</p></div>
+<a class="btn" href="/?go=birthday">FIND YOUR TRUE BIRTHDAY</a>`
+  write("calendar.html", page({ path: "/calendar", title: "Put Sol in your calendar — today's Sol date, every day", description: "Subscribe once and today's date in Sol, the 13-month calendar, appears in Google, Apple or Outlook calendar every day.", body }))
+  urls.push("/calendar")
 }
 
 // ── Gardening by Sol month (Liverpool / NW England)
