@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react'
-import { IFC_MONTHS, WEEKDAYS, SHORT_WD, MONTH_NAMES, ordinal, fmtDate, countFriday13ths, daysUntil, isLeapYear, doy, toIFC, moonPhase } from './engine.js'
+import { toEthiopian, IFC_MONTHS, WEEKDAYS, SHORT_WD, MONTH_NAMES, ordinal, fmtDate, countFriday13ths, daysUntil, isLeapYear, doy, toIFC, moonPhase } from './engine.js'
 
 // ═══ IFC ENGINE (src/engine.js) ═══
 function sharedBirthday() {
@@ -117,6 +117,12 @@ function HomePage() {
         <div style={{ fontSize: 16, color: T }}>{greg}</div>
         <div style={{ ...sub, marginTop: 4 }}>Day {ifc.doy} of {isLeapYear(now.getFullYear()) ? 366 : 365}</div>
       </div>
+
+      <a href="/ethiopia" style={{ ...card, display: "block", textDecoration: "none", marginBottom: 12 }}>
+        <div style={label}>ETHIOPIA · ALSO 13 MONTHS</div>
+        <div style={{ fontSize: 16, color: T }}>{(e => `${e.day} ${e.monthName} ${e.year}`)(toEthiopian(now))}</div>
+        <div style={{ ...sub, marginTop: 4 }}>Twelve months of 30 days, and Pagume. See how it compares →</div>
+      </a>
 
       <div style={{ display: "flex", gap: 12, marginBottom: 12 }}>
         <div style={{ ...card, flex: 1 }}>
@@ -487,6 +493,7 @@ function HistoryPage() {
       ))}
       <div style={{ ...card, textAlign: "center" }}>
         <a href="/lost-days" style={{ color: G, fontSize: 15 }}>The Lost Days: every time the calendar skipped, and the year that never was →</a>
+        <div style={{ marginTop: 10 }}><a href="/ethiopia" style={{ color: G, fontSize: 15 }}>In Ethiopia it's {toEthiopian(new Date()).year}: the 13-month calendar already in use →</a></div>
         <div style={{ marginTop: 10 }}><a href="/months" style={{ color: G, fontSize: 15 }}>The 13 months of Sol, day by day →</a></div>
         <div style={{ marginTop: 10 }}><a href="/garden" style={{ color: G, fontSize: 15 }}>The gardening year in 13 months →</a></div>
         <div style={{ marginTop: 10 }}><a href="/birds" style={{ color: G, fontSize: 15 }}>The birding year in 13 months →</a></div>
@@ -594,7 +601,7 @@ function PrivacyPage() {
         <p style={sub}>Last updated 28 October 2026</p>
       </div>
       {sec("Who we are", "Sol (sol28.co.uk) is run by Stephen Rooney in Liverpool, UK. For anything about your data, email hello@sol28.co.uk.")}
-      {sec("Your dates stay on your device", "Every date you enter — including your birthday — is worked out in your own browser and never sent to us. Shared birthday links contain only your Sol date — never your year of birth. This site uses no cookies, no analytics and no advertising trackers.")}
+      {sec("Your dates stay on your device", "Every date you enter — including your birthday — is worked out in your own browser and never sent to us. Shared birthday links contain only your Sol date — never your year of birth. This site uses no cookies and no advertising trackers. We count visits with Vercel Web Analytics, which uses no cookies and stores no personal information, so we can see which pages people read — never who you are.")}
       {sec("The waitlist", "If you join the waitlist we collect your email address and nothing else, and use it only to send you news about Sol, its books and products. We ask for your consent first, and you confirm it from a link we email you. Every email has an unsubscribe link, and you can ask us to delete your address at any time.")}
       {sec("Who handles it", "Waitlist emails are stored and sent by Kit, our email provider, which is based in the United States. The site is served by Vercel, which may keep short-lived technical logs, such as IP addresses, to keep the service running and secure.")}
       {sec("Your rights", "You can ask to see, correct or delete the personal data we hold about you. If you're unhappy with how we've handled it, you can complain to the Information Commissioner's Office at ico.org.uk.")}

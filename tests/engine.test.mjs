@@ -81,3 +81,18 @@ test("moon phase matches eclipses (eclipses only happen at new and full moon)", 
   assert.equal(moonPhase(new Date(Date.UTC(2024, 3, 8, 18, 21))).name, "New Moon")   // total solar eclipse, USA
   assert.equal(moonPhase(new Date(Date.UTC(2025, 2, 14, 6, 59))).name, "Full Moon")  // total lunar eclipse
 })
+
+test("Ethiopian calendar matches published new years (FCDO 2015, WHO Africa 2019)", async () => {
+  const { toEthiopian } = await import("../src/engine.js")
+  const e = d => { const r = toEthiopian(d); return `${r.day} ${r.monthName} ${r.year}` }
+  assert.equal(e(at(2015, 9, 12)), "1 Meskerem 2008")   // FCDO: 2008 began 12 Sept 2015
+  assert.equal(e(at(2019, 9, 11)), "6 Pagume 2011")     // WHO: Pagume 6 is the last day of 2011
+  assert.equal(e(at(2019, 9, 12)), "1 Meskerem 2012")   // WHO: 2012 began 12 September 2019
+  assert.equal(e(at(2026, 9, 11)), "1 Meskerem 2019")   // the current Ethiopian year
+  assert.equal(e(at(2026, 9, 10)), "5 Pagume 2018")
+  assert.equal(toEthiopian(at(2026, 10, 28)).year, 2019)
+  for (let i = 0; i < 3000; i++) {                       // every day for eight years: months run 1–30, Pagume 1–5/6
+    const r = toEthiopian(new Date(2024, 0, 1 + i, 12))
+    assert.ok(r.day >= 1 && r.day <= (r.month === 13 ? r.pagumeDays : 30), JSON.stringify(r))
+  }
+})

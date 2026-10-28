@@ -4,7 +4,7 @@
   "outputDirectory": "dist",
   "rewrites": [
     {
-      "source": "/((?!assets/|date/|month/|b/|og/|dates|months|lost-days|sitemap|robots).*)",
+      "source": "/((?!_vercel/|assets/|date/|month/|b/|og/|dates|months|lost-days|sitemap|robots).*)",
       "destination": "/index.html"
     }
   ],

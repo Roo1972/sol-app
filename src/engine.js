@@ -48,3 +48,19 @@ function moonPhase(date) {
 }
 
 export { IFC_MONTHS, WEEKDAYS, SHORT_WD, MONTH_NAMES, ordinal, fmtDate, countFriday13ths, daysUntil, isLeapYear, doy, toIFC, moonPhase }
+
+// ═══ ETHIOPIAN CALENDAR ═══
+// 12 months of 30 days, then Pagume: 5 days, or 6 in an Ethiopian leap year (the year before a Gregorian leap year).
+// Arithmetic from the standard Ethiopic epoch (Julian Day Number 1724221), as in Reingold & Dershowitz, Calendrical Calculations.
+const ETH_MONTHS = ["Meskerem","Tikimt","Hidar","Tahsas","Tir","Yekatit","Megabit","Miyazya","Ginbot","Sene","Hamle","Nehase","Pagume"]
+const ETH_EPOCH = 1724221
+const jdnFromDate = date => Math.floor(Date.UTC(date.getFullYear(), date.getMonth(), date.getDate()) / 86400000) + 2440588
+const ethToJdn = (y, m, d) => ETH_EPOCH - 1 + 365 * (y - 1) + Math.floor(y / 4) + 30 * (m - 1) + d
+function toEthiopian(date) {
+  const jdn = jdnFromDate(date)
+  const year = Math.floor((4 * (jdn - ETH_EPOCH) + 1463) / 1461)
+  const month = Math.floor((jdn - ethToJdn(year, 1, 1)) / 30) + 1
+  const day = jdn - ethToJdn(year, month, 1) + 1
+  return { year, month, day, monthName: ETH_MONTHS[month - 1], pagumeDays: (year + 1) % 4 === 0 ? 6 : 5 }
+}
+export { ETH_MONTHS, toEthiopian }

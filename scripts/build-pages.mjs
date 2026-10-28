@@ -8,6 +8,7 @@
 
 import { mkdirSync, writeFileSync } from "node:fs"
 import { join } from "node:path"
+import { toEthiopian, ETH_MONTHS } from "../src/engine.js"
 
 const OUT = "dist"
 const SITE = "https://sol28.co.uk"
@@ -82,10 +83,11 @@ function page({ path, title, description, body, image = "default", noindex = fal
 <meta name="twitter:card" content="summary_large_image">${noindex ? '<meta name="robots" content="noindex">' : ""}${head}
 <meta name="theme-color" content="#1A1A2E"><link rel="icon" href="/icon-192.png"><link rel="manifest" href="/manifest.json">
 <style>${css}</style>
+<script>window.va=window.va||function(){(window.vaq=window.vaq||[]).push(arguments)}</script><script defer src="/_vercel/insights/script.js"></script>
 </head><body><main>
 <a class="tag" href="/">SOL</a>
 ${body}
-<nav class="foot"><a href="/?go=birthday">Find your True Birthday</a><a href="/dates">Every date</a><a href="/months">The 13 months</a><a href="/lost-days">Lost Days</a><a href="/garden">Gardening</a><a href="/birds">Birdwatching</a><a href="/routine">Routine chart</a><a href="/?go=privacy">Privacy</a></nav>
+<nav class="foot"><a href="/?go=birthday">Find your True Birthday</a><a href="/dates">Every date</a><a href="/months">The 13 months</a><a href="/lost-days">Lost Days</a><a href="/ethiopia">Ethiopia</a><a href="/garden">Gardening</a><a href="/birds">Birdwatching</a><a href="/routine">Routine chart</a><a href="/?go=privacy">Privacy</a></nav>
 <p class="muted">Sol — Time, fixed.</p>
 </main></body></html>`
 }
@@ -207,6 +209,42 @@ ${n === 12 ? `<p class="muted">Year Day follows 28 December and belongs to no we
   for (const [yr, t, txt, src] of events) body += `<div class="card"><div class="muted">${yr}</div><h2>${t}</h2><p>${txt}</p><p class="muted"><a href="${src}" target="_blank" rel="noopener">Source</a></p></div>`
   body += `</div><h2 style="margin-top:2.5rem">And the year that never was</h2><div class="tl"><div class="card"><div class="muted">1 BC → AD 1</div><h2>There is no year 0</h2><p>No days vanished here — a number did. When the 6th-century scholar Dionysius Exiguus began counting years from the birth of Christ, he started at AD 1, and 1 BC sits directly before it. With no year 0, the first century ran from AD 1 to AD 100, which is why the third millennium began on 1 January 2001, not 2000. Astronomers quietly put the missing zero back: in their numbering, year 0 is 1 BC.</p><p class="muted"><a href="https://www.scientificamerican.com/article/when-is-the-beginning-of" target="_blank" rel="noopener">Source</a> · <a href="https://eclipse.gsfc.nasa.gov/SEhelp/dates.html" target="_blank" rel="noopener">Source</a></p></div></div><a class="btn" href="/?go=birthday">FIND YOUR TRUE BIRTHDAY</a>`
   write("lost-days.html", page({ path: "/lost-days", title: "Lost Days: seven times the calendar skipped — Sol", description: "From Caesar's 445-day year to Greece's 1923 switch: the seven times whole days vanished from the calendar — and the year 0 that never existed.", body }))
+}
+
+// ── Ethiopia: the country already living on 13 months. Sources: FCDO blog (2015), WHO Africa (2019).
+{
+  const now = toEthiopian(new Date())
+  const rows = ETH_MONTHS.map((m, i) => `<tr><td>${i + 1}</td><td>${m}</td><td>${i < 12 ? "30 days" : "5 days (6 in a leap year)"}</td></tr>`).join("")
+  const body = `
+<h1>In Ethiopia, it's ${now.year}.</h1>
+<p>Sol isn't the only 13-month calendar. Ethiopia lives by one today — and it's seven or eight years behind the rest of the world.</p>
+<div class="card gold"><div class="muted">TODAY IN ETHIOPIA</div><div class="big" id="eth-today">${now.day} <span>${now.monthName} ${now.year}</span></div><p class="muted" id="eth-note">Worked out for today's date in the ordinary calendar.</p></div>
+<div class="card"><h2>Twelve months of 30 days — and one of five</h2>
+<p>The Ethiopian year has 13 months. The first twelve each have exactly 30 days. The thirteenth, Pagume, has just five — or six in a leap year — to make up the year.</p>
+<table><thead><tr><th>#</th><th>MONTH</th><th>LENGTH</th></tr></thead><tbody>${rows}</tbody></table></div>
+<div class="card"><h2>Why it's ${now.year} there</h2>
+<p>Ethiopia counts its years from a different starting point, and its year begins in September, not January. New Year — Enkutatash — falls on 11 September, or on 12 September in the year before a leap year in the ordinary calendar. From New Year until 31 December, Ethiopia is seven years behind; from 1 January until New Year, it's eight.</p></div>
+<div class="card"><h2>Sol and Ethiopia, side by side</h2>
+<table><thead><tr><th></th><th>SOL</th><th>ETHIOPIA</th></tr></thead><tbody>
+<tr><td>Months</td><td>13</td><td>13</td></tr>
+<tr><td>Month length</td><td>28 days, every month</td><td>30 days, plus Pagume of 5 or 6</td></tr>
+<tr><td>Weeks per month</td><td>Exactly 4</td><td>4 and a bit</td></tr>
+<tr><td>Spare days</td><td>Year Day (and Leap Day) sit outside the week</td><td>Gathered into Pagume</td></tr>
+<tr><td>Same weekday every year?</td><td>Yes</td><td>No</td></tr>
+<tr><td>New Year</td><td>1 January — always a Monday</td><td>11 or 12 September</td></tr>
+</tbody></table>
+<p>Both split the year into 13. Ethiopia gives each month 30 days and keeps the leftovers in a short final month. Sol gives each month 28 days — four exact weeks — and takes the leftover day out of the week altogether. That's why in Sol every date keeps its weekday for ever.</p></div>
+<div class="card"><h2>Convert a date</h2><label class="muted" for="eth-in">ORDINARY DATE</label><br><input id="eth-in" type="date" style="font-size:16px;padding:8px;margin:6px 0 10px;border-radius:6px;border:1px solid var(--line);background:var(--navy);color:var(--white)">
+<div class="big" id="eth-out"></div></div>
+<a class="btn" href="/?go=birthday">NOW FIND YOUR SOL BIRTHDAY</a>
+<p class="muted">Sources: <a href="https://blogs.fcdo.gov.uk/gregdorey/2015/09/11/enkuan-aderesachihu-happy-new-year" target="_blank" rel="noopener">UK Foreign Office, British Embassy Addis Ababa (2015)</a> · <a href="https://www.afro.who.int/pt/node/11715" target="_blank" rel="noopener">World Health Organization, Africa (2019)</a>. Dates are calculated with the standard Ethiopian calendar arithmetic and checked against both.</p>
+<script>(function(){var M=${JSON.stringify(ETH_MONTHS)},E=1724221;function j(y,m,d){return E-1+365*(y-1)+Math.floor(y/4)+30*(m-1)+d}
+function eth(dt){var n=Math.floor(Date.UTC(dt.getFullYear(),dt.getMonth(),dt.getDate())/864e5)+2440588,y=Math.floor((4*(n-E)+1463)/1461),m=Math.floor((n-j(y,1,1))/30)+1;return{d:n-j(y,m,1)+1,m:M[m-1],y:y}}
+var t=eth(new Date());document.getElementById("eth-today").innerHTML=t.d+" <span>"+t.m+" "+t.y+"</span>";
+var i=document.getElementById("eth-in"),o=document.getElementById("eth-out");i.value=new Date().toISOString().slice(0,10);
+function show(){if(!i.value)return;var p=i.value.split("-"),r=eth(new Date(+p[0],p[1]-1,+p[2],12));o.innerHTML=r.d+" <span>"+r.m+" "+r.y+"</span>"}i.addEventListener("input",show);show()})()</script>`
+  write("ethiopia.html", page({ path: "/ethiopia", title: `In Ethiopia it's ${now.year}: the 13-month calendar already in use — Sol`, description: "Ethiopia lives by a 13-month calendar: twelve months of 30 days and a thirteenth of five or six. See today's Ethiopian date and how it compares with Sol.", body }))
+  urls.push("/ethiopia")
 }
 
 // ── Gardening by Sol month (Liverpool / NW England)
