@@ -488,6 +488,7 @@ function HistoryPage() {
         <a href="/lost-days" style={{ color: G, fontSize: 15 }}>The seven Lost Days: every time the calendar skipped →</a>
         <div style={{ marginTop: 10 }}><a href="/months" style={{ color: G, fontSize: 15 }}>The 13 months of Sol, day by day →</a></div>
         <div style={{ marginTop: 10 }}><a href="/garden" style={{ color: G, fontSize: 15 }}>The gardening year in 13 months →</a></div>
+        <div style={{ marginTop: 10 }}><a href="/routine" style={{ color: G, fontSize: 15 }}>A printable month that never changes →</a></div>
       </div>
 
       <div style={{ ...card, textAlign: "center" }}>

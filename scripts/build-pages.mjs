@@ -81,7 +81,7 @@ function page({ path, title, description, body }) {
 </head><body><main>
 <a class="tag" href="/">SOL</a>
 ${body}
-<nav class="foot"><a href="/?go=birthday">Find your True Birthday</a><a href="/dates">Every date</a><a href="/months">The 13 months</a><a href="/lost-days">Lost Days</a><a href="/garden">Gardening</a><a href="/?go=privacy">Privacy</a></nav>
+<nav class="foot"><a href="/?go=birthday">Find your True Birthday</a><a href="/dates">Every date</a><a href="/months">The 13 months</a><a href="/lost-days">Lost Days</a><a href="/garden">Gardening</a><a href="/routine">Routine chart</a><a href="/?go=privacy">Privacy</a></nav>
 <p class="muted">Sol — Time, fixed.</p>
 </main></body></html>`
 }
@@ -232,6 +232,41 @@ const GARDEN = [
 <a class="btn" href="/?go=birthday">FIND YOUR TRUE BIRTHDAY</a>`
   write("garden.html", page({ path: "/garden", title: "The gardening year in 13 months — Sol", description: "What to sow, harvest and do in each of Sol's 13 four-week months, for Liverpool and North West England, with calculated day lengths.", body }))
   urls.push("/garden")
+}
+
+// ── Routine page (Autism vertical): one printable month that is the same every month
+{
+  const printCss = `<style>@media print{body{background:#fff!important;color:#000!important}.noprint,nav.foot,.tag{display:none!important}.card{background:#fff!important;border:1px solid #000!important;break-inside:avoid}h1,h2,.muted,td,th,p{color:#000!important}a{color:#000!important}main{max-width:none;padding:0}}
+.cal{width:100%;border-collapse:collapse;table-layout:fixed}.cal th{text-align:center;color:var(--gold)}.cal td{height:64px;vertical-align:top;border:1px solid var(--line);font-family:Georgia,serif;font-size:15px;padding:4px 6px}
+.cal td.sat13{border:2px solid var(--gold)}.lines td{height:40px;border-bottom:1px solid var(--line)}
+button.pr{background:var(--gold);color:var(--navy);border:0;border-radius:8px;padding:13px;font-weight:700;letter-spacing:1px;width:100%;cursor:pointer;font-size:14px}</style>`
+  let cal = `<table class="cal"><thead><tr>${WEEKDAYS.map(w => `<th>${w.slice(0, 3)}</th>`).join("")}</tr></thead><tbody>`
+  for (let w = 0; w < 4; w++) cal += `<tr>${[1, 2, 3, 4, 5, 6, 7].map(i => { const d = w * 7 + i; return `<td${d === 13 ? ' class="sat13"' : ""}>${d}</td>` }).join("")}</tr>`
+  cal += `</tbody></table>`
+  const lines = `<table class="lines">${WEEKDAYS.map(w => `<tr><th style="width:110px">${w}</th><td></td></tr>`).join("")}</table>`
+  const body = `${printCss}
+<h1>A calendar that doesn't change</h1>
+<p>In Sol every month is identical: 28 days, starting on a Monday and ending on a Sunday. The 13th is always a Saturday. Learn one month and you know all thirteen.</p>
+<div class="card noprint"><h2>Why this might matter</h2>
+<p>The National Autistic Society says many autistic people prefer knowing in advance what will happen, and that routines can help with planning, managing energy and reducing anxiety (<a href="https://www.autism.org.uk/advice-and-guidance/about-autism/preference-for-order-predictability-or-routine" rel="noopener">NAS guidance</a>).</p>
+<p>The ordinary calendar keeps shifting: months run from 28 to 31 days, and the 1st lands on a different weekday each month. A Sol month never moves, so one chart can stay on the wall all year.</p>
+<p class="muted">Sol isn't a support service and we make no claim that it suits everyone. If you're autistic, or support someone who is, we'd like to hear whether this is useful: hello@sol28.co.uk.</p></div>
+<div class="card"><h2>Every Sol month</h2><p class="muted">The same grid for all 13 months. The 13th is outlined: always a Saturday.</p>${cal}</div>
+<div class="card"><h2>My week</h2><p class="muted">Write a routine once; it lands on the same dates in every month.</p>${lines}</div>
+<div class="card"><h2>The two days outside the week</h2>
+<p><strong>Year Day</strong> comes after the 28th of December, on what the ordinary calendar calls 31 December. It belongs to no week and no month.</p>
+<p><strong>Leap Day</strong> comes after the 28th of June in leap years — the next is 17 June 2028 in the ordinary calendar.</p>
+<p class="muted">Both are known years in advance, so they can be marked on the chart long before they arrive.</p></div>
+<p class="noprint" id="nowline"></p>
+<button class="pr noprint" onclick="window.print()">PRINT THIS CHART</button>
+<script>
+(function(){try{var M=${JSON.stringify(SOL_MONTHS)},W=${JSON.stringify(WEEKDAYS)};var t=new Date(),y=t.getFullYear(),L=(y%4===0&&(y%100!==0||y%400===0));
+var n=Math.round((Date.UTC(y,t.getMonth(),t.getDate())-Date.UTC(y,0,1))/864e5)+1;var s;
+if(n===(L?366:365))s="Today is Year Day.";else if(L&&n===169)s="Today is Leap Day.";else{var a=L&&n>169?n-1:n,m=Math.ceil(a/28),d=(a-1)%28+1;s="Today is "+W[(d-1)%7]+" "+d+" "+M[m-1]+" — day "+d+" on the chart above.";}
+document.getElementById("nowline").textContent=s;}catch(e){}})();
+</script>`
+  write("routine.html", page({ path: "/routine", title: "A calendar that doesn't change — printable Sol month", description: "Every Sol month is identical: 28 days, Monday to Sunday. Print one chart and use it all year.", body }))
+  urls.push("/routine")
 }
 
 // ── Sitemap and robots
