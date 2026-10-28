@@ -583,7 +583,7 @@ function PrivacyPage() {
         <p style={sub}>Last updated 28 October 2026</p>
       </div>
       {sec("Who we are", "Sol (sol28.co.uk) is run by Stephen Rooney in Liverpool, UK. For anything about your data, email hello@sol28.co.uk.")}
-      {sec("Your dates stay on your device", "Every date you enter — including your birthday — is worked out in your own browser and never sent to us. Shared birthday links contain only a day and month. This site uses no cookies, no analytics and no advertising trackers.")}
+      {sec("Your dates stay on your device", "Every date you enter — including your birthday — is worked out in your own browser and never sent to us. Shared birthday links contain only your Sol date — never your year of birth. This site uses no cookies, no analytics and no advertising trackers.")}
       {sec("The waitlist", "If you join the waitlist we collect your email address and nothing else, and use it only to send you news about Sol, its books and products. We ask for your consent first, and you confirm it from a link we email you. Every email has an unsubscribe link, and you can ask us to delete your address at any time.")}
       {sec("Who handles it", "Waitlist emails are stored and sent by Kit, our email provider, which is based in the United States. The site is served by Vercel, which may keep short-lived technical logs, such as IP addresses, to keep the service running and secure.")}
       {sec("Your rights", "You can ask to see, correct or delete the personal data we hold about you. If you're unhappy with how we've handled it, you can complain to the Information Commissioner's Office at ico.org.uk.")}
