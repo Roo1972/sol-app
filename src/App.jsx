@@ -6,6 +6,7 @@ const WEEKDAYS = ["Monday","Tuesday","Wednesday","Thursday","Friday","Saturday",
 const SHORT_WD = ["Mon","Tue","Wed","Thu","Fri","Sat","Sun"]
 
 function ordinal(n) { const v = n % 100; return n + ((v > 10 && v < 14) ? 'th' : ({1:'st',2:'nd',3:'rd'}[n % 10] || 'th')) }
+function fmtDate(x) { return `${x.getFullYear()}${String(x.getMonth()+1).padStart(2,'0')}${String(x.getDate()).padStart(2,'0')}` }
 function isLeapYear(y) { return y % 4 === 0 && (y % 100 !== 0 || y % 400 === 0) }
 
 function doy(date) {
@@ -107,7 +108,7 @@ function HomePage() {
 
       <div style={{ ...card, textAlign: "center" }}>
         <p style={{ fontSize: 13, color: M, lineHeight: 1.6, fontStyle: "italic" }}>
-          In the IFC, the 1st is always Monday. The 13th is always Saturday. Your birthday is the same day of the week every year. Forever.
+          In Sol, the 1st is always a Monday and the 13th is always a Saturday. Friday the 13th can never happen. Your birthday falls on the same day of the week every year. Forever.
         </p>
       </div>
     </div>
@@ -222,7 +223,7 @@ function BirthdayPage() {
       "BEGIN:VCALENDAR", "VERSION:2.0", "PRODID:-//Sol//True Birthday//EN",
       "BEGIN:VEVENT",
       `DTSTART;VALUE=DATE:${yr}${mm}${dd}`,
-      `DTEND;VALUE=DATE:${yr}${mm}${String(d.getDate()+1).padStart(2,"0")}`,
+      `DTEND;VALUE=DATE:${fmtDate(new Date(yr, d.getMonth(), d.getDate() + 1))}`,
       `SUMMARY:🎂 True Birthday — ${ifc.weekday} ${ifc.day} ${ifc.month}`,
       `DESCRIPTION:In the IFC your birthday is always ${ifc.weekday} the ${ordinal(ifc.day)} of ${ifc.month}. Forever. sol28.co.uk`,
       `UID:sol-bday-${mm}${dd}@sol28.co.uk`, "RRULE:FREQ=YEARLY",
@@ -249,6 +250,20 @@ function BirthdayPage() {
         <button onClick={calculate} style={{ ...btn, marginTop: 12 }}>FIND MY TRUE BIRTHDAY</button>
       </div>
 
+      {result && result.ifc.special && (
+        <div style={goldCard}>
+          <div style={{ textAlign: "center" }}>
+            <div style={label}>YOUR TRUE BIRTHDAY</div>
+            <div style={{ fontSize: 32, fontWeight: 900, color: W }}>{result.ifc.special}</div>
+            <p style={{ ...sub, marginTop: 8, lineHeight: 1.6 }}>
+              {result.ifc.special === "Year Day"
+                ? "You were born on Year Day — the one day each year that belongs to no month and no week."
+                : "You were born on Leap Day — the extra day that sits outside every month and week, once every four years."}
+            </p>
+          </div>
+        </div>
+      )}
+
       {result && !result.ifc.special && (
         <div style={goldCard}>
           <div style={{ textAlign: "center" }}>
@@ -265,7 +280,7 @@ function BirthdayPage() {
       <div style={{ ...card, marginTop: 16 }}>
         <p style={{ fontSize: 12, color: M, lineHeight: 1.7 }}>
           Born on the 29th, 30th, or 31st? Your birthday doesn't disappear — it converts to a permanent IFC date.
-          28.6% of the world was born on dates that "don't exist" in the IFC. Every one converts cleanly.
+          Roughly one person in twelve was born on a 29th, 30th or 31st. Every one of those dates converts cleanly.
         </p>
       </div>
     </div>
@@ -274,11 +289,11 @@ function BirthdayPage() {
 
 function HistoryPage() {
   const sections = [
-    { title: "The Month Names Don't Add Up", text: "September means 7 but it's the 9th. October means 8 but it's the 10th. November means 9 but it's the 11th. December means 10 but it's the 12th. Every numbered month is wrong by exactly two positions. Why? The original Roman calendar started in March and had ten months. When January and February were added at the front, the numbered months got pushed forward. Then Julius Caesar and Augustus each claimed a month — July and August. Nobody renumbered anything." },
-    { title: "The Pope Who Deleted Ten Days", text: "By the 1500s, the calendar had drifted 10 days from the actual seasons. In 1582, Pope Gregory XIII issued a decree: Thursday October 4th was followed by Friday October 15th. Ten days simply ceased to exist. Catholic countries adopted it immediately. Protestant nations refused for decades or centuries — not because the maths was wrong, but because they wouldn't follow a Pope." },
-    { title: "Britain's 1752 Switch", text: "Britain held out until 1752 — 170 years after the reform. By then, 11 days needed to be removed. Wednesday September 2nd was followed by Thursday September 14th. The Treasury shifted the tax year start from March 25th to April 6th to protect revenue. That date remains the UK tax year start to this day." },
-    { title: "The International Fixed Calendar", text: "In 1902, Moses Cotsworth proposed 13 months of exactly 28 days. Every month identical. Your birthday on the same weekday every year. One 'Year Day' sits outside the weekly cycle. Kodak ran 13 equal 28-day accounting periods, 1928–1989; employees lived by the Gregorian calendar." },
-    { title: "Sol — The 13th Month", text: "Sol sits between June and July, over the summer solstice. Latin for 'sun.' The Norse sun goddess. The brightest point of the year. In 2026, it's been 124 years since Cotsworth's proposal. Sol is built on it." },
+    { title: "The Month Names Don't Add Up", text: "September comes from the Latin for seven, but it's our ninth month. October means eight, November nine, December ten — each one two places out. By Roman tradition, the earliest calendar had ten months and began in March, so the numbers once fitted. January and February came later, and by 153 BC the Roman year began in January. July and August were renamed rather than added: Quintilis became Julius after Julius Caesar, and Sextilis became Augustus. Nobody renumbered the rest." },
+    { title: "The Pope Who Deleted Ten Days", text: "By the 1500s the calendar had drifted ten days against the seasons. In 1582 Pope Gregory XIII ordered a correction: Thursday 4 October was followed by Friday 15 October. Spain, Portugal, the Italian states and Poland–Lithuania switched that October, and France followed in December. Many Protestant states held out for generations, wary of a reform that came from Rome — the Protestant German states waited until 1700." },
+    { title: "Britain's 1752 Switch", text: "Britain held out until 1752, 170 years after the reform. By then 11 days had to go: Wednesday 2 September was followed by Thursday 14 September. So that no tax was lost, the tax year was stretched by 11 days and the next one began on 5 April instead of 25 March. In 1800 it moved one more day, to 6 April — where the UK personal tax year still starts." },
+    { title: "The International Fixed Calendar", text: "In 1902 Moses Cotsworth proposed 13 months of exactly 28 days. Every month identical. Your birthday on the same weekday every year. One 'Year Day' sits outside the weekly cycle. Kodak ran 13 equal 28-day accounting periods, 1928–1989; employees lived by the Gregorian calendar." },
+    { title: "Sol — The 13th Month", text: "Sol sits between June and July, around the summer solstice and the longest days of the northern year. Its name is Latin for 'sun', and Sól was the sun personified in Norse myth. In 2026 it's been 124 years since Cotsworth's proposal. Sol is built on it." },
   ]
 
   return (
@@ -304,14 +319,24 @@ function HistoryPage() {
   )
 }
 
+// Kit (kit.com) form ID. Leave empty until the Kit form exists; the page then shows an honest "opening soon" state.
+const KIT_FORM_ID = ""
+
 function WaitlistPage() {
   const [email, setEmail] = useState("")
-  const [submitted, setSubmitted] = useState(false)
+  const [status, setStatus] = useState("idle") // idle | sending | done | error
 
-  const handleSubmit = () => {
-    if (!email || !email.includes("@")) return
-    // In production, this would POST to a Buttondown/Mailchimp API endpoint
-    setSubmitted(true)
+  const handleSubmit = async () => {
+    if (!email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) { setStatus("invalid"); return }
+    setStatus("sending")
+    try {
+      const body = new FormData()
+      body.append("email_address", email)
+      await fetch(`https://app.kit.com/forms/${KIT_FORM_ID}/subscriptions`, { method: "POST", body, mode: "no-cors" })
+      setStatus("done")
+    } catch {
+      setStatus("error")
+    }
   }
 
   return (
@@ -319,22 +344,33 @@ function WaitlistPage() {
       <div style={{ textAlign: "center", marginBottom: 24 }}>
         <div style={tag}>SOL</div>
         <h1 style={h1}>Join the Waitlist</h1>
-        <p style={sub}>Be first to know when the Sol planner launches</p>
+        <p style={sub}>Be first to know when the book and the first Sol products launch</p>
       </div>
 
-      {!submitted ? (
+      {!KIT_FORM_ID ? (
+        <div style={goldCard}>
+          <div style={{ textAlign: "center" }}>
+            <h2 style={h2}>The waitlist opens shortly</h2>
+            <p style={{ ...sub, lineHeight: 1.6 }}>Sign-ups aren't open yet. In the meantime, find your True Birthday and share it.</p>
+          </div>
+        </div>
+      ) : status !== "done" ? (
         <div style={goldCard}>
           <label style={label}>YOUR EMAIL</label>
-          <input type="email" value={email} placeholder="you@example.com" onChange={e => setEmail(e.target.value)} style={input} />
-          <button onClick={handleSubmit} style={{ ...btn, marginTop: 12 }}>JOIN THE WAITLIST</button>
-          <p style={{ fontSize: 11, color: M, marginTop: 8, textAlign: "center" }}>No spam. Just Sol updates. Unsubscribe anytime.</p>
+          <input type="email" value={email} placeholder="you@example.com" onChange={e => { setEmail(e.target.value); setStatus("idle") }} style={input} />
+          <button onClick={handleSubmit} disabled={status === "sending"} style={{ ...btn, marginTop: 12 }}>
+            {status === "sending" ? "JOINING…" : "JOIN THE WAITLIST"}
+          </button>
+          {status === "invalid" && <p style={{ fontSize: 12, color: G, marginTop: 8, textAlign: "center" }}>Please enter a valid email address.</p>}
+          {status === "error" && <p style={{ fontSize: 12, color: G, marginTop: 8, textAlign: "center" }}>Something went wrong. Please try again.</p>}
+          <p style={{ fontSize: 11, color: M, marginTop: 8, textAlign: "center" }}>We'll only use your email for Sol news. You'll get a confirmation email first, and you can unsubscribe anytime.</p>
         </div>
       ) : (
         <div style={goldCard}>
           <div style={{ textAlign: "center" }}>
             <div style={{ fontSize: 40, marginBottom: 12 }}>☀️</div>
-            <h2 style={h2}>You're on the list</h2>
-            <p style={{ ...sub, lineHeight: 1.6 }}>We'll let you know when the Sol planner is ready. In the meantime, find your True Birthday.</p>
+            <h2 style={h2}>Check your inbox</h2>
+            <p style={{ ...sub, lineHeight: 1.6 }}>We've sent a confirmation email. Click the link in it and you're on the list.</p>
           </div>
         </div>
       )}
@@ -342,11 +378,12 @@ function WaitlistPage() {
       <div style={{ ...card, marginTop: 16 }}>
         <h2 style={h2}>What's Coming</h2>
         <div style={{ fontSize: 14, color: T, lineHeight: 1.8 }}>
-          <div style={{ marginBottom: 8 }}><span style={gold}>☀ Sol Planner 2027</span> — 13-month A5 hardcover. Standard (£22) and Collector's (£35) editions.</div>
-          <div style={{ marginBottom: 8 }}><span style={gold}>☀ Sol Daily Diary</span> — A fact a day. Moon phase. Day length. 28 pages per month.</div>
-          <div style={{ marginBottom: 8 }}><span style={gold}>☀ Sol Desk Calendar</span> — 365 facts and debunked myths. Tear-off page per day.</div>
-          <div><span style={gold}>☀ "Still Ruled by Rome"</span> — The book. On Amazon KDP.</div>
+          <div style={{ marginBottom: 8 }}><span style={gold}>☀ Still Ruled by Rome</span> — the book. The hidden history of how we measure time, and why we still live by a Roman calendar.</div>
+          <div style={{ marginBottom: 8 }}><span style={gold}>☀ Systems We Never Questioned</span> — the companion book on the everyday systems nobody chose.</div>
+          <div style={{ marginBottom: 8 }}><span style={gold}>☀ Sol planners and journals</span> — 13 months of 28 days, built for the way Sol works.</div>
+          <div><span style={gold}>☀ 28-day challenges</span> — printable workbooks that fit one Sol month exactly.</div>
         </div>
+        <p style={{ fontSize: 12, color: M, marginTop: 12 }}>Waitlist members hear first, with launch dates and early access.</p>
       </div>
     </div>
   )
