@@ -254,6 +254,7 @@ function ConverterPage() {
 
 function PaydayCalculator() {
   const [dateStr, setDateStr] = useState("")
+  const [ucDay, setUcDay] = useState("")
   const [res, setRes] = useState(null)
 
   const run = () => {
@@ -261,27 +262,49 @@ function PaydayCalculator() {
     const anchor = new Date(dateStr + "T12:00:00")
     if (isNaN(anchor)) return
     const today = new Date(); today.setHours(12, 0, 0, 0)
+    const step = 28 * 86400000
+    const paydaysBetween = (from, to) => {
+      const k = Math.ceil((from - anchor) / step)
+      const out = []
+      for (let d = new Date(anchor.getTime() + k * step); d < to; d = new Date(d.getTime() + step)) out.push(d)
+      return out
+    }
+    // Tax year
     const taxStart = new Date(today.getMonth() > 3 || (today.getMonth() === 3 && today.getDate() >= 6) ? today.getFullYear() : today.getFullYear() - 1, 3, 6, 12)
     const taxEnd = new Date(taxStart.getFullYear() + 1, 3, 6, 12)
-    const step = 28 * 86400000
-    const k = Math.ceil((taxStart - anchor) / step)
-    let first = new Date(anchor.getTime() + k * step)
-    const days = []
-    for (let d = first; d < taxEnd; d = new Date(d.getTime() + step)) days.push(d)
+    const days = paydaysBetween(taxStart, taxEnd)
+    // Calendar months with two paydays, over the next 12 months
+    const ahead = new Date(today.getFullYear() + 1, today.getMonth(), today.getDate(), 12)
     const byMonth = {}
-    days.forEach(d => { const key = `${MONTH_NAMES[d.getMonth()]} ${d.getFullYear()}`; byMonth[key] = (byMonth[key] || 0) + 1 })
+    paydaysBetween(new Date(today.getFullYear(), today.getMonth(), 1, 12), ahead).forEach(d => { const key = `${MONTH_NAMES[d.getMonth()]} ${d.getFullYear()}`; byMonth[key] = (byMonth[key] || 0) + 1 })
     const doubles = Object.keys(byMonth).filter(m => byMonth[m] > 1)
-    setRes({ count: days.length, doubles, start: taxStart, end: new Date(taxEnd.getTime() - 86400000) })
+    // Universal Credit assessment periods (optional): run from day N of one month to the day before day N of the next
+    let uc = null
+    const n = parseInt(ucDay, 10)
+    if (n >= 1 && n <= 31) {
+      const periodStart = (y, m) => new Date(y, m, Math.min(n, new Date(y, m + 1, 0).getDate()), 12)
+      let y = today.getFullYear(), m = today.getMonth()
+      if (periodStart(y, m) > today) { m -= 1; if (m < 0) { m = 11; y -= 1 } }
+      for (let i = 0; i < 13 && !uc; i++) {
+        const a = periodStart(y, m + i), b = periodStart(y, m + i + 1)
+        const inP = paydaysBetween(a, b)
+        if (inP.length > 1) uc = { from: a, to: new Date(b.getTime() - 86400000), pays: inP }
+      }
+    }
+    setRes({ count: days.length, doubles, start: taxStart, end: new Date(taxEnd.getTime() - 86400000), uc, ucAsked: !!ucDay })
   }
 
   const fmt = d => d.toLocaleDateString("en-GB", { day: "numeric", month: "long", year: "numeric" })
+  const fmtShort = d => d.toLocaleDateString("en-GB", { day: "numeric", month: "long" })
 
   return (
     <div style={{ ...card, marginTop: 24 }}>
       <h2 style={h2}>Paid every four weeks?</h2>
-      <p style={{ ...sub, lineHeight: 1.6, marginBottom: 12 }}>Then you're paid 13 times a year, not 12 — and one month brings two paydays. Enter any payday to see which.</p>
+      <p style={{ ...sub, lineHeight: 1.6, marginBottom: 12 }}>Then you're paid 13 times a year, not 12 — and once a year two paydays land close together. Enter any payday to see when.</p>
       <label style={label}>ANY RECENT PAYDAY</label>
       <input type="date" value={dateStr} onChange={e => setDateStr(e.target.value)} style={input} />
+      <label style={{ ...label, marginTop: 14 }}>ON UNIVERSAL CREDIT? THE DAY YOUR ASSESSMENT PERIOD STARTS (OPTIONAL)</label>
+      <input type="number" min="1" max="31" inputMode="numeric" placeholder="e.g. 14" value={ucDay} onChange={e => setUcDay(e.target.value)} style={input} />
       <button onClick={run} style={{ ...btn, marginTop: 12 }}>FIND MY EXTRA PAYDAY</button>
       {res && (
         <div style={{ marginTop: 16 }}>
@@ -289,9 +312,18 @@ function PaydayCalculator() {
           <p style={{ ...sub, lineHeight: 1.6 }}>in this tax year ({fmt(res.start)} to {fmt(res.end)}).</p>
           {res.doubles.length > 0 && (
             <p style={{ fontSize: 15, color: W, marginTop: 8, lineHeight: 1.6 }}>
-              Two paydays land in <span style={gold}>{res.doubles.join(" and ")}</span>. Budget for that month on purpose rather than letting it disappear.
+              In the next 12 months, two paydays land in <span style={gold}>{res.doubles.join(" and ")}</span>. Plan that month on purpose rather than letting it disappear.
             </p>
           )}
+          {res.uc && (
+            <div style={{ ...goldCard, marginTop: 12 }}>
+              <p style={{ fontSize: 15, color: W, lineHeight: 1.6 }}>
+                <b>Universal Credit:</b> your assessment period from <span style={gold}>{fmtShort(res.uc.from)} to {fmt(res.uc.to)}</span> includes two paydays ({res.uc.pays.map(fmtShort).join(" and ")}). Both count as earnings in that period, so expect a lower Universal Credit payment for it.
+              </p>
+              <p style={{ fontSize: 12, color: M, marginTop: 8, lineHeight: 1.6 }}>Four-weekly pay means one assessment period a year counts two paydays (<a href="https://litrg.org.uk/benefits/universal-credit/universal-credit-and-employee-pay" style={{ color: G }} target="_blank" rel="noopener">LITRG guidance</a>). Check the exact dates in your Universal Credit journal.</p>
+            </div>
+          )}
+          {res.ucAsked && !res.uc && <p style={{ fontSize: 13, color: T, marginTop: 8 }}>No assessment period in the next year counts two paydays — check the day you entered against your Universal Credit journal.</p>}
           {res.count === 14 && <p style={{ fontSize: 13, color: T, marginTop: 8 }}>This is one of the occasional tax years with a 14th payday.</p>}
           <p style={{ fontSize: 12, color: M, marginTop: 12, lineHeight: 1.6 }}>In Sol, every month is exactly four weeks, so a four-weekly payday lands on the same date every month. This is a guide, not financial advice — check your payslips.</p>
         </div>
