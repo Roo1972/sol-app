@@ -159,7 +159,7 @@ function HomePage() {
           <div style={sub}>Day {moon.age} of 29.53</div>
         </div>
         <div style={{ ...card, flex: 1 }}>
-          <div style={label}>IFC MONTH</div>
+          <div style={label}>THIS SOL MONTH</div>
           <MiniGrid day={ifc.day} />
         </div>
       </div>
