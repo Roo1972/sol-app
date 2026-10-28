@@ -81,7 +81,7 @@ function page({ path, title, description, body }) {
 </head><body><main>
 <a class="tag" href="/">SOL</a>
 ${body}
-<nav class="foot"><a href="/?go=birthday">Find your True Birthday</a><a href="/dates">Every date</a><a href="/months">The 13 months</a><a href="/lost-days">Lost Days</a><a href="/garden">Gardening</a><a href="/routine">Routine chart</a><a href="/?go=privacy">Privacy</a></nav>
+<nav class="foot"><a href="/?go=birthday">Find your True Birthday</a><a href="/dates">Every date</a><a href="/months">The 13 months</a><a href="/lost-days">Lost Days</a><a href="/garden">Gardening</a><a href="/birds">Birdwatching</a><a href="/routine">Routine chart</a><a href="/?go=privacy">Privacy</a></nav>
 <p class="muted">Sol — Time, fixed.</p>
 </main></body></html>`
 }
@@ -232,6 +232,42 @@ const GARDEN = [
 <a class="btn" href="/?go=birthday">FIND YOUR TRUE BIRTHDAY</a>`
   write("garden.html", page({ path: "/garden", title: "The gardening year in 13 months — Sol", description: "What to sow, harvest and do in each of Sol's 13 four-week months, for Liverpool and North West England, with calculated day lengths.", body }))
   urls.push("/garden")
+}
+
+// ── Birdwatching page (RSPB vertical). Only timings the RSPB states on its own pages; sources listed on the page.
+{
+  const S = {
+    arrivals: "https://www.rspb.org.uk/birds-and-wildlife/spring-arrivals",
+    chorus: "https://www.rspb.org.uk/whats-happening/news/the-dawn-chorus-all-you-need-to-know-about-natures-big-show",
+    august: "https://www.rspb.org.uk/birds-and-wildlife/the-year-in-nature/the-year-in-nature-august",
+    october: "https://www.rspb.org.uk/birds-and-wildlife/birds-of-the-month/october-birds-of-the-month",
+    bgbw: "https://www.rspb.org.uk/whats-happening/big-garden-birdwatch/faqs",
+  }
+  const BIRDS = [
+    [0, "The RSPB's Big Garden Birdwatch runs over a weekend in late January: one hour counting the birds in one spot.", S.bgbw, "Late January falls at the end of Sol January or the start of Sol February."],
+    [2, "Chiffchaffs return in early March, wheatears arrive in growing numbers through March, and the first swallows appear from early March.", S.arrivals, ""],
+    [3, "Lesser whitethroats usually begin to return in April.", S.arrivals, ""],
+    [4, "The dawn chorus is at its peak in early May, loudest just before and after sunrise. International Dawn Chorus Day is the first Sunday in May. Swifts return in May, nightjars arrive, and Arctic terns come up from the Antarctic in late April and May.", S.chorus, "Sol May runs 23 April – 20 May in an ordinary year, so it holds the whole peak."],
+    [8, "Swifts prepare to leave for Africa, and young swifts make their first journey south.", S.august, ""],
+    [9, "Redwings and fieldfares arrive for the winter in October.", S.october, "October begins in the last week of Sol September and runs on into Sol October."],
+    [10, "Redwings and fieldfares are arriving for the winter.", S.october, ""],
+  ]
+  let body = `<h1>The birding year in Sol</h1>
+<p>Every Sol month is four identical weeks, so a note you make in week 2 of Sol May lines up day for day with week 2 of Sol May next year. Birders' records become directly comparable, year on year.</p>
+<p class="muted">Every timing below is taken from the RSPB's own pages, linked beside it. Months without an entry are months we haven't yet sourced, not months without birds.</p>`
+  for (let n = 0; n < 13; n++) {
+    const items = BIRDS.filter(b => b[0] === n)
+    if (!items.length) continue
+    const first = new Date(Date.UTC(ORD_YEAR, 0, n * 28 + 1)), last = new Date(Date.UTC(ORD_YEAR, 0, n * 28 + 28))
+    const span = `${first.getUTCDate()} ${G_MONTHS[first.getUTCMonth()].slice(0, 3)} – ${last.getUTCDate()} ${G_MONTHS[last.getUTCMonth()].slice(0, 3)}`
+    body += `<div class="card${n === 4 ? " gold" : ""}"><div class="muted">MONTH ${n + 1} · ${span}</div><h2>${SOL_MONTHS[n]}</h2>`
+    for (const [, txt, src, note] of items) body += `<p>${txt} <a href="${src}" rel="noopener">RSPB</a></p>${note ? `<p class="muted">${note}</p>` : ""}`
+    body += `</div>`
+  }
+  body += `<div class="card"><h2>Keep a Sol bird diary</h2><p>Print the <a href="/routine">same-every-month chart</a> and note first sightings by Sol date. Next year, the same square is the same point in the season.</p></div>
+<a class="btn" href="/?go=birthday">FIND YOUR TRUE BIRTHDAY</a>`
+  write("birds.html", page({ path: "/birds", title: "The birding year in 13 months — Sol", description: "Spring arrivals, the dawn chorus peak and winter visitors placed in Sol's 13 four-week months, with every timing sourced from the RSPB.", body }))
+  urls.push("/birds")
 }
 
 // ── Routine page (Autism vertical): one printable month that is the same every month
