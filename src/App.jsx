@@ -74,7 +74,7 @@ const FACTS = [
   ["Fact", "Japan adopted the Gregorian calendar at the start of 1873, jumping from early December straight to 1 January."],
   ["Fact", "Julius Caesar's calendar reform needed a 445-day year in 46 BC to put the seasons back in place."],
   ["Fact", "Moses Cotsworth proposed the International Fixed Calendar in 1902: 13 months of exactly 28 days."],
-  ["Fact", "The International Fixed Calendar League was founded in 1923 to campaign for 13 months."],
+  ["Fact", "Cotsworth founded the International Fixed Calendar League in 1922 to campaign for 13 months."],
   ["Fact", "Kodak ran 13 equal 28-day accounting periods, 1928–1989; employees lived by the Gregorian calendar."],
   ["Fact", "Religious leaders objected to the 13-month calendar because Year Day sits outside the week and would break the weekly Sabbath cycle."],
   ["Fact", "In a 13-month calendar of 28-day months, every date falls on the same weekday every year."],
