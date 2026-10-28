@@ -80,6 +80,7 @@ const FACTS = [
   ["Fact", "In a 13-month calendar of 28-day months, every date falls on the same weekday every year."],
   ["Fact", "Year Day and Leap Day belong to no week at all — they have no weekday."],
   ["Fact", "In Sol the 13th of every month is a Saturday, so Friday the 13th can never happen."],
+  ["Fact", "Cotsworth's 1902 calendar began every month on a Sunday, so it had a Friday the 13th in all thirteen months. Sol shifted the week by one day and abolished it."],
   ["Fact", "Ethiopia uses a 13-month calendar today: twelve months of 30 days and a short thirteenth."],
   ["Fact", "The Igbo of Nigeria independently developed a calendar built on 13 months of 28 days."],
   ["Fact", "Moon, month, measure, metre and menses all trace back to one ancient root, *me-, to measure."],
@@ -179,7 +180,7 @@ function HomePage() {
 
       <div style={{ ...card, textAlign: "center" }}>
         <p style={{ fontSize: 13, color: M, lineHeight: 1.6, fontStyle: "italic" }}>
-          In Sol, the 1st is always a Monday and the 13th is always a Saturday. Friday the 13th can never happen. Your birthday falls on the same day of the week every year. Forever.
+          Cotsworth's 1902 calendar started every month on a Sunday, so it had a Friday the 13th in every single month. Sol starts on a Monday instead: the 13th is always a Saturday, and Friday the 13th can never happen. Your birthday falls on the same day of the week every year. Forever.
         </p>
       </div>
     </div>
@@ -435,7 +436,7 @@ function BirthdayPage() {
 
             <div style={{ borderTop: `1px solid ${BD}`, margin: "16px 0", paddingTop: 16 }}>
               <div style={{ fontSize: 30, fontWeight: 700, color: G, fontFamily: SERIF }}>{result.f13}</div>
-              <p style={{ ...sub, lineHeight: 1.6 }}>Friday the 13ths you've lived through so far. In Sol, you'd have had none: the 13th is always a Saturday.</p>
+              <p style={{ ...sub, lineHeight: 1.6 }}>Friday the 13ths you've lived through so far. Cotsworth's original calendar would have given you thirteen a year. In Sol you'd have had none: the 13th is always a Saturday.</p>
             </div>
 
             {shared && !shared.ifc.special && !result.ifc.special && (
@@ -468,6 +469,7 @@ function HistoryPage() {
     { title: "The Pope Who Deleted Ten Days", text: "By the 1500s the calendar had drifted ten days against the seasons. In 1582 Pope Gregory XIII ordered a correction: Thursday 4 October was followed by Friday 15 October. Spain, Portugal, the Italian states and Poland–Lithuania switched that October, and France followed in December. Many Protestant states held out for generations, wary of a reform that came from Rome — the Protestant German states waited until 1700." },
     { title: "Britain's 1752 Switch", text: "Britain held out until 1752, 170 years after the reform. By then 11 days had to go: Wednesday 2 September was followed by Thursday 14 September. So that no tax was lost, the tax year was stretched by 11 days and the next one began on 5 April instead of 25 March. In 1800 it moved one more day, to 6 April — where the UK personal tax year still starts." },
     { title: "The International Fixed Calendar", text: "In 1902 Moses Cotsworth proposed 13 months of exactly 28 days. Every month identical. Your birthday on the same weekday every year. One 'Year Day' sits outside the weekly cycle. Kodak ran 13 equal 28-day accounting periods, 1928–1989; employees lived by the Gregorian calendar." },
+    { title: "Thirteen Friday the 13ths", text: "In Cotsworth's calendar every month began on a Sunday, so the 13th was always a Friday: thirteen Friday the 13ths a year, guaranteed. Sol keeps his 13 months of 28 days but starts the week on Monday, the international standard. One day's shift, and the 13th becomes a Saturday in every month. Friday the 13th never happens." },
     { title: "Sol — The 13th Month", text: "Sol sits between June and July, around the summer solstice and the longest days of the northern year. Its name is Latin for 'sun', and Sól was the sun personified in Norse myth. In 2026 it's been 124 years since Cotsworth's proposal. Sol is built on it." },
   ]
 
