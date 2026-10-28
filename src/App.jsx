@@ -49,13 +49,13 @@ function toIFC(date) {
 }
 
 function moonPhase(date) {
-  const known = new Date(2000, 0, 6, 18, 14)
+  const known = new Date(Date.UTC(2000, 0, 6, 18, 14))
   const diff = (date.getTime() - known.getTime()) / 86400000
-  const phase = ((diff % 29.53) + 29.53) % 29.53
-  const pct = phase / 29.53
+  const phase = ((diff % 29.530589) + 29.530589) % 29.530589
+  const pct = phase / 29.530589
   const names = ["New Moon","Waxing Crescent","First Quarter","Waxing Gibbous","Full Moon","Waning Gibbous","Third Quarter","Waning Crescent"]
   const icons = ["🌑","🌒","🌓","🌔","🌕","🌖","🌗","🌘"]
-  const i = Math.floor(pct * 8) % 8
+  const i = Math.round(pct * 8) % 8
   return { name: names[i], icon: icons[i], age: Math.round(phase) }
 }
 
