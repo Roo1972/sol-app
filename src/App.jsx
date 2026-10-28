@@ -504,11 +504,12 @@ function HistoryPage() {
 }
 
 // Kit (kit.com) form ID. Leave empty until the Kit form exists; the page then shows an honest "opening soon" state.
-const KIT_FORM_ID = ""
+const KIT_FORM_ID = "10109930" // Kit form "Sol waitlist (sol28.co.uk)": double opt-in, confirm link returns to /?go=waitlist&confirmed=1
 
 function WaitlistPage() {
   const [email, setEmail] = useState("")
-  const [status, setStatus] = useState("idle") // idle | sending | done | error
+  const confirmed = (() => { try { return new URLSearchParams(window.location.search).get("confirmed") === "1" } catch { return false } })()
+  const [status, setStatus] = useState(confirmed ? "confirmed" : "idle") // idle | sending | done | error | confirmed
 
   const handleSubmit = async () => {
     if (!email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) { setStatus("invalid"); return }
@@ -516,8 +517,9 @@ function WaitlistPage() {
     try {
       const body = new FormData()
       body.append("email_address", email)
-      await fetch(`https://app.kit.com/forms/${KIT_FORM_ID}/subscriptions`, { method: "POST", body, mode: "no-cors" })
-      setStatus("done")
+      const r = await fetch(`https://app.kit.com/forms/${KIT_FORM_ID}/subscriptions`, { method: "POST", body, headers: { Accept: "application/json" } })
+      const j = await r.json().catch(() => ({}))
+      setStatus(r.ok && j.status === "success" ? "done" : "error")
     } catch {
       setStatus("error")
     }
@@ -536,6 +538,15 @@ function WaitlistPage() {
           <div style={{ textAlign: "center" }}>
             <h2 style={h2}>The waitlist opens shortly</h2>
             <p style={{ ...sub, lineHeight: 1.6 }}>Sign-ups aren't open yet. In the meantime, find your True Birthday and share it.</p>
+          </div>
+        </div>
+      ) : status === "confirmed" ? (
+        <div style={goldCard}>
+          <div style={{ textAlign: "center" }}>
+            <div style={{ fontSize: 40, marginBottom: 12 }}>☀️</div>
+            <h2 style={h2}>You're on the list</h2>
+            <p style={{ ...sub, lineHeight: 1.6 }}>Thank you for confirming. You'll hear first when the book and the first Sol products launch.</p>
+            <a href="/?go=birthday" style={{ ...btn, display: "block", boxSizing: "border-box", textAlign: "center", textDecoration: "none", marginTop: 16 }}>FIND YOUR TRUE BIRTHDAY</a>
           </div>
         </div>
       ) : status !== "done" ? (
