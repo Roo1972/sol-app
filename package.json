@@ -5,7 +5,8 @@
   "type": "module",
   "scripts": {
     "dev": "vite",
-    "build": "vite build && node scripts/build-pages.mjs",
+    "build": "TZ=Europe/London node --test tests/*.test.mjs && vite build && node scripts/build-pages.mjs",
+    "test": "TZ=Europe/London node --test tests/*.test.mjs",
     "preview": "vite preview"
   },
   "dependencies": {

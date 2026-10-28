@@ -27,6 +27,8 @@ function toSol(y, m, d) {
   return { month: SOL_MONTHS[mn - 1], monthNum: mn, day: md, weekday: WEEKDAYS[(md - 1) % 7] }
 }
 const label = s => s.special ? s.special : `${s.weekday} ${s.day} ${s.month}`
+// Key of the shareable card for a Sol date (public/og/<key>.jpg, /b/<key>)
+const solKey = s => s.special ? s.special.toLowerCase().replace(" ", "-") : `${s.month.toLowerCase()}-${s.day}`
 const ordinal = n => n + ((n % 100 > 10 && n % 100 < 14) ? "th" : ({ 1: "st", 2: "nd", 3: "rd" }[n % 10] || "th"))
 const slug = (d, m) => `${d}-${G_MONTHS[m].toLowerCase()}`
 const esc = s => String(s).replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;")
@@ -67,7 +69,7 @@ table{width:100%;border-collapse:collapse;font-size:15px}td,th{padding:8px 6px;b
 .tl{border-left:2px solid var(--gold);margin-left:8px;padding-left:18px}.tl .card{position:relative}.tl .card:before{content:"";position:absolute;left:-27px;top:24px;width:14px;height:14px;border-radius:50%;background:var(--gold)}
 nav.foot{margin-top:32px;font-size:14px;color:var(--muted);display:flex;flex-wrap:wrap;gap:14px}`
 
-function page({ path, title, description, body }) {
+function page({ path, title, description, body, image = "default", noindex = false, head = "" }) {
   return `<!doctype html>
 <html lang="en-GB"><head>
 <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
@@ -76,6 +78,8 @@ function page({ path, title, description, body }) {
 <link rel="canonical" href="${SITE}${path}">
 <meta property="og:title" content="${esc(title)}"><meta property="og:description" content="${esc(description)}">
 <meta property="og:url" content="${SITE}${path}"><meta property="og:type" content="website"><meta property="og:site_name" content="Sol">
+<meta property="og:image" content="${SITE}/og/${image}.jpg"><meta property="og:image:width" content="1200"><meta property="og:image:height" content="630">
+<meta name="twitter:card" content="summary_large_image">${noindex ? '<meta name="robots" content="noindex">' : ""}${head}
 <meta name="theme-color" content="#1A1A2E"><link rel="icon" href="/icon-192.png"><link rel="manifest" href="/manifest.json">
 <style>${css}</style>
 </head><body><main>
@@ -123,7 +127,7 @@ ${differs ? `<p class="muted">In a leap year (such as ${LEAP_YEAR}) ${g} is <str
 ${fact ? `<div class="card"><h2>On this date</h2><p>${fact}</p><p class="muted">Checked against the Sol Claim Registry.</p></div>` : ""}
 <div class="card"><h2>Why this never changes</h2><p>13 months × 28 days is 364 days: exactly 52 weeks. Year Day — and, in leap years, Leap Day — sits outside the week, so the calendar starts on the same weekday every year. In Sol every month begins on a Monday, and the 13th is always a Saturday — Friday the 13th can never happen.</p></div>
 <p class="muted">${d > 1 || m > 0 ? `<a href="/date/${m === 0 && d === 1 ? "" : (d > 1 ? slug(d - 1, m) : slug(new Date(Date.UTC(LEAP_YEAR, m, 0)).getUTCDate(), m - 1))}">← previous date</a> · ` : ""}${!(m === 11 && d === 31) ? `<a href="/date/${d < days ? slug(d + 1, m) : slug(1, m + 1)}">next date →</a>` : ""}</p>`
-    write(`date/${slug(d, m)}.html`, page({ path, title: `${g} in the 13-month calendar — Sol date and weekday`, description: desc, body }))
+    write(`date/${slug(d, m)}.html`, page({ path, title: `${g} in the 13-month calendar — Sol date and weekday`, description: desc, body, image: solKey(main) }))
     urls.push(path)
   }
 }
@@ -171,6 +175,21 @@ ${n === 12 ? `<p class="muted">Year Day follows 28 December and belongs to no we
   for (let n = 0; n < 13; n++) body += `<a href="/month/${monthSlug(n)}">${n + 1}. ${SOL_MONTHS[n]}</a>`
   body += `</div>`
   write("months.html", page({ path: "/months", title: "The 13 months of Sol — the 28-day month calendar", description: "Sol's 13 months of 28 days, each starting on a Monday, with the ordinary-calendar dates for every day.", body }))
+}
+
+// ── Share pages: /b/<sol-date>. What a shared True Birthday link points at, so the preview shows that person's card.
+// A Sol date never changes, so these work for every year. Not indexed; people land on the app.
+{
+  const keys = [{ special: "Year Day" }, { special: "Leap Day" }]
+  for (let mn = 1; mn <= 13; mn++) for (let day = 1; day <= 28; day++) keys.push({ month: SOL_MONTHS[mn - 1], day, weekday: WEEKDAYS[(day - 1) % 7] })
+  for (const s of keys) {
+    const k = solKey(s), to = `/?sb=${k}`
+    const title = `My True Birthday is ${label(s)} — Sol`
+    const description = s.special ? `Born on ${s.special}: a day outside every week and month. Find your own True Birthday in Sol, the 13-month calendar.` : `The same day of the week, every year, for life. Find your own True Birthday in Sol, the 13-month calendar.`
+    write(`b/${k}.html`, page({ path: `/b/${k}`, title, description, image: k, noindex: true,
+      head: `<meta http-equiv="refresh" content="0;url=${to}">`,
+      body: `<h1>${esc(title)}</h1><a class="btn" href="${to}">FIND YOUR OWN TRUE BIRTHDAY</a>` }))
+  }
 }
 
 // ── Lost Days
