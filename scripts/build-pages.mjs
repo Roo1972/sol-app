@@ -218,6 +218,7 @@ ${n === 12 ? `<p class="muted">Year Day follows 28 December and belongs to no we
   const body = `
 <h1>In Ethiopia, it's ${now.year}.</h1>
 <p>Sol isn't the only 13-month calendar. Ethiopia lives by one today — and it's seven or eight years behind the rest of the world.</p>
+<p>This is no museum piece. It is the official calendar of a country of more than 130 million people (<a href="https://data.worldbank.org/indicator/SP.POP.TOTL?locations=ET" target="_blank" rel="noopener">World Bank, 2025</a>), the second most populous in Africa: proof that a 13-month year can run a modern nation.</p>
 <div class="card gold"><div class="muted">TODAY IN ETHIOPIA</div><div class="big" id="eth-today">${now.day} <span>${now.monthName} ${now.year}</span></div><p class="muted" id="eth-note">Worked out for today's date in the ordinary calendar.</p></div>
 <div class="card"><h2>Twelve months of 30 days — and one of five</h2>
 <p>The Ethiopian year has 13 months. The first twelve each have exactly 30 days. The thirteenth, Pagume, has just five — or six in a leap year — to make up the year.</p>

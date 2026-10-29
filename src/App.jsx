@@ -698,9 +698,16 @@ function ShopPage() {
       <div style={{ textAlign: "center", marginBottom: 20 }}>
         <div style={tag}>SOL</div>
         <h1 style={h1}>The Sol Shop</h1>
-        <p style={sub}>Undated printables that never go out of date. Opening to the waitlist in December.</p>
+        <p style={sub}>The book, and undated printables that never go out of date. Join the waitlist to hear first.</p>
       </div>
       <WaitlistPage embedded />
+      <div style={{ ...goldCard, marginTop: 16 }}>
+        <div style={label}>THE BOOK · OUT MONDAY 1 FEBRUARY 2027</div>
+        <h2 style={{ ...h2, marginBottom: 4 }}>Still Ruled by Rome</h2>
+        <p style={{ fontStyle: "italic", color: G, fontSize: 15, marginBottom: 10 }}>How an Empire Set the Calendar You Live By</p>
+        <p style={{ fontSize: 14, color: T, lineHeight: 1.6 }}>October means eight. It is the tenth month. Nineteen chapters on how the calendar you live by was built, who tried to replace it, and why nobody did. Every claim sourced; every chapter's sources online at <a href="/notes" style={{ color: G }}>sol28.co.uk/notes</a>.</p>
+        <p style={{ fontSize: 13, color: M, marginTop: 8 }}>Paperback and Kindle. Join the waitlist above to hear the day it's out.</p>
+      </div>
       <div style={{ marginTop: 16 }}>
         {PRODUCTS.map(p => (
           <div key={p.name} style={{ ...card, marginBottom: 12 }}>
