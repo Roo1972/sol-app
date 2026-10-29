@@ -375,6 +375,63 @@ def _():
     o += T(0, 372, "Year Day belongs to no week. In leap years Leap Day sits between June 28 and Sol 1.", 11.5, 400, MUTED)
     return o
 
+
+ROMAN = {1:"I",2:"II",3:"III",4:"IV",5:"V",6:"VI",7:"VII",8:"VIII",9:"IX",10:"X",11:"XI",12:"XII",13:"XIII",14:"XIV",15:"XV",16:"XVI",17:"XVII",18:"XVIII",19:"XIX"}
+@fig("03a-roman-march", 360)
+def _():
+    o = title("Reading a Roman month: March", "Each day counted down, both ends included, to the next fixed point: the Nones (7th), the Ides (15th), then the Kalends of April.")
+    cw, ch, x0, y0 = 84, 46, 6, 74
+    for d in range(1, 32):
+        if d == 1: lab, key = "Kalends", True
+        elif d < 7: lab, key = ("day before" if d == 6 else f"{ROMAN[8 - d]} Nones"), False
+        elif d == 7: lab, key = "Nones", True
+        elif d < 15: lab, key = ("day before" if d == 14 else f"{ROMAN[16 - d]} Ides"), False
+        elif d == 15: lab, key = "Ides", True
+        else: lab, key = ("day before" if d == 31 else f"{ROMAN[33 - d]} Kal. Apr."), False
+        r, c = divmod(d - 1, 7)
+        x, y = x0 + c * cw, y0 + r * (ch + 6)
+        o += R(x, y, cw - 4, ch, NAVY if key else "#fff", NAVY if key else RULE, 1, 4)
+        o += T(x + 8, y + 18, str(d), 13, 700, GOLDF if key else NAVY, fam="Gelasio")
+        o += T(x + 8, y + 36, lab, 9.5, 600 if key else 400, "#fff" if key else MUTED)
+    o += T(0, 352, "So 16 March was 'the seventeenth day before the Kalends of April'. Roman numerals give the count.", 11.5, 400, INK)
+    return o
+
+@fig("03b-caesars-ten-days", 320)
+def _():
+    o = title("Where Caesar put his ten extra days", "Month lengths before and after the reform of 46 BC. Odd numbers were thought lucky; February, at 28, was the only even month.")
+    old = [29,28,31,29,31,29,31,29,29,31,29,29]
+    new = [31,28,31,30,31,30,31,31,30,31,30,31]
+    names = ["Jan","Feb","Mar","Apr","May","Jun","Quint.","Sext.","Sep","Oct","Nov","Dec"]
+    x0, base, sc = 20, 262, 5.4
+    for i in range(12):
+        x = x0 + i * 48
+        o += R(x, base - old[i] * sc, 18, old[i] * sc, MUTED, rx=1)
+        o += R(x + 20, base - new[i] * sc, 18, new[i] * sc, NAVY, rx=1)
+        if new[i] > old[i]:
+            o += R(x + 20, base - new[i] * sc, 18, (new[i] - old[i]) * sc, GOLDF, rx=1)
+            o += T(x + 29, base - new[i] * sc - 6, f"+{new[i]-old[i]}", 11, 700, GOLD, "middle")
+        o += T(x + 19, base + 15, names[i], 10, 400, MUTED, "middle")
+    o += R(330, 62, 12, 12, MUTED) + T(348, 72, "before: 355 days", 11, 400, INK)
+    o += R(460, 62, 12, 12, NAVY) + T(478, 72, "after: 365 days", 11, 400, INK)
+    o += T(0, 312, "The new days went at the ends of months, so no festival had to move.", 11.5, 400, INK)
+    return o
+
+@fig("03c-bissextile", 230)
+def _():
+    o = title("The day counted twice", "In a Julian leap year the 24th of February, 'the sixth day before the Kalends of March', was repeated: bis sextum, hence 'bissextile'.")
+    labels = [("IX",21),("VIII",22),("Terminalia VII",23),("VI",24),("VI again",24),("V",25),("IV",26),("III",27),("day before",28)]
+    x0, w = 0, 66
+    for i, (lab, d) in enumerate(labels):
+        x = x0 + i * w
+        hot = i in (3, 4)
+        o += R(x, 90, w - 4, 70, GOLDF if hot else "#fff", NAVY if hot else RULE, 1.5 if hot else 1, 4)
+        o += T(x + (w - 4) / 2, 115, lab.replace("Terminalia ", ""), 13, 700, NAVY, "middle", "Gelasio")
+        o += T(x + (w - 4) / 2, 135, "Feb", 9.5, 400, MUTED, "middle")
+        if lab.startswith("Terminalia"): o += T(x + (w - 4) / 2, 152, "Terminalia", 9, 600, GOLD, "middle")
+    o += T(0, 190, "Roman numerals count down to the Kalends of March. The doubled day sat where the old leap month", 11.5, 400, INK)
+    o += T(0, 207, "had gone in, just after the Terminalia. The Church kept the custom for St Matthias until 1969.", 11.5, 400, INK)
+    return o
+
 def svg(name):
     h, fn = FIGS[name]
     return f'<svg xmlns="http://www.w3.org/2000/svg" width="600" height="{h}" viewBox="0 0 600 {h}">{fn()}</svg>'
