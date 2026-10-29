@@ -6,7 +6,7 @@
 //   sitemap.xml, robots.txt
 // Every fact used here must have a Verified row in the Sol Claim Registry.
 
-import { mkdirSync, writeFileSync } from "node:fs"
+import { mkdirSync, writeFileSync, readFileSync } from "node:fs"
 import { join } from "node:path"
 import { toEthiopian, ETH_MONTHS, toIFC } from "../src/engine.js"
 
@@ -404,3 +404,19 @@ const today = new Date().toISOString().slice(0, 10)
 writeFileSync(join(OUT, "sitemap.xml"), `<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n${urls.map(u => `<url><loc>${SITE}${u}</loc><lastmod>${today}</lastmod></url>`).join("\n")}\n</urlset>\n`)
 writeFileSync(join(OUT, "robots.txt"), `User-agent: *\nAllow: /\nSitemap: ${SITE}/sitemap.xml\n`)
 console.log(`Wrote ${urls.length - 1} pages + sitemap`)
+
+// ── Book notes: /notes and /notes/<chapter> (linked from the end of every chapter of Still Ruled by Rome)
+{
+  const notes = JSON.parse(readFileSync(new URL("../src/notes.json", import.meta.url), "utf8"))
+  const li = s => `<li>${esc(s.cite)}${s.url ? ` <a href="${esc(s.url)}" target="_blank" rel="noopener">Read it&nbsp;↗</a>` : ""}</li>`
+  const idx = notes.chapters.map(c => `<li><a href="/notes/${c.n}">${esc(c.title)}</a></li>`).join("")
+  write("notes.html", page({ path: "/notes", title: "Sources and notes — Still Ruled by Rome — Sol", description: "Sources and further reading for every chapter of Still Ruled by Rome, with links to the originals.",
+    body: `<h1>Sources and notes</h1><p class="lead">${esc(notes.book)}</p><p>${esc(notes.intro)}</p><ol class="plain">${idx}</ol>` }))
+  for (const c of notes.chapters) {
+    write(`notes/${c.n}.html`, page({ path: `/notes/${c.n}`, title: `${c.title} — sources — Sol`, description: `Sources and further reading for ${c.title} of Still Ruled by Rome.`,
+      body: `<p class="muted"><a href="/notes">All chapters</a></p><h1>${esc(c.title)}</h1><p>${esc(notes.intro)}</p><ol>${c.sources.map(li).join("")}</ol>` }))
+    urls.push(`/notes/${c.n}`)
+  }
+  urls.push("/notes")
+  writeFileSync(join(OUT, "sitemap.xml"), `<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n${urls.map(u => `<url><loc>${SITE}${u}</loc><lastmod>${new Date().toISOString().slice(0, 10)}</lastmod></url>`).join("\n")}\n</urlset>\n`)
+}

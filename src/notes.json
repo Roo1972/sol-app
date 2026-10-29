@@ -1,0 +1,122 @@
+{
+  "book": "Still Ruled by Rome: How an Empire Set the Calendar You Live By",
+  "intro": "Sources and further reading for each chapter. Ancient authors are cited by book and section, so any edition or translation will do. Where a source is free to read online, it is linked. If a link breaks or you spot an error, tell us at hello@sol28.co.uk and we will correct it here.",
+  "chapters": [
+    {"n": "preface", "title": "Preface: Why I Wrote This", "sources": [
+      {"cite": "E. G. Richards, Mapping Time: The Calendar and its History (Oxford University Press, 1998). The standard one-volume reference."},
+      {"cite": "Robert Poole, '\"Give us our eleven days!\": calendar reform in eighteenth-century England', Past & Present 149 (1995).", "url": "https://insight.cumbria.ac.uk/id/eprint/684/1/Poole_GiveUsOurEleven.pdf"}
+    ]},
+    {"n": "1", "title": "Chapter 1: October Means Eight", "sources": [
+      {"cite": "Censorinus, De Die Natali 20 (AD 238): the early Roman year, its months and its later reform. English translation by W. Maude.", "url": "https://elfinspell.com/ClassicalTexts/Maude/Censorinus/DeDieNatale-Part2.html"},
+      {"cite": "Macrobius, Saturnalia 1.12–1.13: the ten-month year, the months added by Numa, and the month names. Latin text and translation at LacusCurtius.", "url": "https://penelope.uchicago.edu/Thayer/E/Roman/Texts/Macrobius/Saturnalia/home.html"},
+      {"cite": "Livy, Periochae 47: consuls taking office on 1 January from 153 BC."},
+      {"cite": "Denis Feeney, Caesar's Calendar: Ancient Time and the Beginnings of History (University of California Press, 2007)."}
+    ]},
+    {"n": "2", "title": "Chapter 2: The Year of Confusion", "sources": [
+      {"cite": "Censorinus, De Die Natali 20.8–11: Caesar's reform and the 445-day year.", "url": "https://elfinspell.com/ClassicalTexts/Maude/Censorinus/DeDieNatale-Part2.html"},
+      {"cite": "Macrobius, Saturnalia 1.14: Caesar's reform, the 'last year of confusion' and the later leap-year error.", "url": "https://penelope.uchicago.edu/Thayer/E/Roman/Texts/Macrobius/Saturnalia/home.html"},
+      {"cite": "Pliny the Elder, Natural History 18.211: Sosigenes and the reform."},
+      {"cite": "Robert Hannah, Greek and Roman Calendars: Constructions of Time in the Classical World (Duckworth, 2005)."}
+    ]},
+    {"n": "3", "title": "Chapter 3: The Rules of the Roman Year", "sources": [
+      {"cite": "Macrobius, Saturnalia 1.12–1.16: Kalends, Nones and Ides; the calling-out of the Kalends; intercalation; the market day; the renaming of Sextilis.", "url": "https://penelope.uchicago.edu/Thayer/E/Roman/Texts/Macrobius/Saturnalia/home.html"},
+      {"cite": "Censorinus, De Die Natali 20: the 355-day year, odd-numbered months, intercalation and Caesar's ten days.", "url": "https://elfinspell.com/ClassicalTexts/Maude/Censorinus/DeDieNatale-Part2.html"},
+      {"cite": "Varro, On the Latin Language 6.27–6.34: the named days and the day letters."},
+      {"cite": "Livy, History of Rome 9.46: Gnaeus Flavius publishes the calendar."},
+      {"cite": "Codex Justinianus 3.12.2: Constantine's Sunday law of AD 321."},
+      {"cite": "Seneca, On Benefits 1.2 and 7.10: the kalendarium as a moneylender's account book. Suetonius, Life of Augustus 87: 'at the Greek Kalends'."},
+      {"cite": "The Fasti Antiates Maiores, the only surviving pre-Julian calendar (Encyclopaedia Romana, University of Chicago).", "url": "https://penelope.uchicago.edu/encyclopaedia_romana/calendar/antiates.html"},
+      {"cite": "William Smith (ed.), A Dictionary of Greek and Roman Antiquities (1875), 'Calendarium'. Useful for its quotations from ancient sources.", "url": "https://penelope.uchicago.edu/Thayer/E/Roman/Texts/secondary/SMIGRA*/Calendarium.html"},
+      {"cite": "Jörg Rüpke, The Roman Calendar from Numa to Constantine (Wiley-Blackwell, 2011); Agnes Kirsopp Michels, The Calendar of the Roman Republic (Princeton University Press, 1967); Denis Feeney, Caesar's Calendar (2007)."}
+    ]},
+    {"n": "4", "title": "Chapter 4: Ten Days That Never Happened", "sources": [
+      {"cite": "Gregory XIII, papal bull Inter Gravissimas (24 February 1582)."},
+      {"cite": "G. V. Coyne, M. A. Hoskin and O. Pedersen (eds), Gregorian Reform of the Calendar: Proceedings of the Vatican Conference to Commemorate its 400th Anniversary (Vatican Observatory, 1983)."},
+      {"cite": "E. G. Richards, Mapping Time (Oxford University Press, 1998), on adoption dates country by country."}
+    ]},
+    {"n": "5", "title": "Chapter 5: The Scar on Your Payslip", "sources": [
+      {"cite": "Calendar (New Style) Act 1750, 24 Geo. II c. 23 (legislation.gov.uk).", "url": "https://www.legislation.gov.uk/apgb/Geo2/24/23/contents/data.html"},
+      {"cite": "Robert Poole, '\"Give us our eleven days!\": calendar reform in eighteenth-century England', Past & Present 149 (1995). The study that dismantled the calendar-riots myth.", "url": "https://insight.cumbria.ac.uk/id/eprint/684/1/Poole_GiveUsOurEleven.pdf"},
+      {"cite": "Robert Poole, Time's Alteration: Calendar Reform in Early Modern England (UCL Press, 1998).", "url": "https://insight.cumbria.ac.uk/id/eprint/710/1/Poole_TimesAlteration.pdf"}
+    ]},
+    {"n": "interlude-1", "title": "Interlude I: A Baker Without a Year", "sources": [
+      {"cite": "Pliny the Elder, Natural History 7.214: Rome's first public sundial, brought from Catania, and the corrected dial of Quintus Marcius Philippus."},
+      {"cite": "Cicero, Pro Caelio (April 56 BC)."},
+      {"cite": "Macrobius, Saturnalia 1.16: the market day.", "url": "https://penelope.uchicago.edu/Thayer/E/Roman/Texts/Macrobius/Saturnalia/home.html"}
+    ]},
+    {"n": "6", "title": "Chapter 6: Every Month Is a Moon", "sources": [
+      {"cite": "Calvert Watkins (ed.), The American Heritage Dictionary of Indo-European Roots, 3rd edn (2011), entry mē-."},
+      {"cite": "Jonathan R. Bull et al., 'Real-world menstrual cycle characteristics of more than 600,000 menstrual cycles', npj Digital Medicine 2 (2019).", "url": "https://pmc.ncbi.nlm.nih.gov/articles/PMC6710244/"},
+      {"cite": "Charlotte Helfrich-Förster et al., 'Women temporarily synchronize their menstrual cycles with the luminance and gravimetric cycles of the Moon', Science Advances 7 (2021).", "url": "https://pmc.ncbi.nlm.nih.gov/articles/PMC7840133/"}
+    ]},
+    {"n": "7", "title": "Chapter 7: The Hour That Wasn't Horus", "sources": [
+      {"cite": "Oxford English Dictionary, 'hour': from Old French hore, Latin hora, Greek hōra."},
+      {"cite": "Otto Neugebauer and Richard A. Parker, Egyptian Astronomical Texts (Brown University Press, 1960–69): the decans and star clocks."},
+      {"cite": "Gerhard Dohrn-van Rossum, History of the Hour: Clocks and Modern Temporal Orders (University of Chicago Press, 1996)."}
+    ]},
+    {"n": "8", "title": "Chapter 8: Why a Circle Has 360 Degrees", "sources": [
+      {"cite": "F. R. Stephenson, L. V. Morrison and C. Y. Hohenkerk, 'Measurement of the Earth's rotation: 720 BC to AD 2015', Proceedings of the Royal Society A 472 (2016). Uses Babylonian eclipse records.", "url": "https://pmc.ncbi.nlm.nih.gov/articles/PMC5247521/"},
+      {"cite": "Abraham J. Sachs and Hermann Hunger, Astronomical Diaries and Related Texts from Babylonia (Austrian Academy of Sciences, 1988 onwards)."},
+      {"cite": "Otto Neugebauer, The Exact Sciences in Antiquity (2nd edn, 1957)."}
+    ]},
+    {"n": "9", "title": "Chapter 9: Death Rings the Hour", "sources": [
+      {"cite": "Radio Prague International, 'Prague's Astronomical Clock celebrates 600th anniversary' (2010).", "url": "https://english.radio.cz/node/8386213"},
+      {"cite": "T. Freeth et al., 'Decoding the ancient Greek astronomical calculator known as the Antikythera Mechanism', Nature 444 (2006).", "url": "https://orca.cardiff.ac.uk/id/eprint/1622/"}
+    ]},
+    {"n": "interlude-2", "title": "Interlude II: Waiting for Sirius", "sources": [
+      {"cite": "Richard A. Parker, The Calendars of Ancient Egypt (University of Chicago Press, 1950)."},
+      {"cite": "Eduard Meyer, Ägyptische Chronologie (1904): the source of the 4241 BC date, now abandoned by most Egyptologists."}
+    ]},
+    {"n": "10", "title": "Chapter 10: The World That Didn't End", "sources": [
+      {"cite": "Anthony F. Aveni, Skywatchers: A Revised and Updated Version of Skywatchers of Ancient Mexico (University of Texas Press, 2001)."},
+      {"cite": "The Dresden Codex, Saxon State and University Library Dresden (SLUB), Mscr.Dresd.R.310."}
+    ]},
+    {"n": "11", "title": "Chapter 11: Ramadan in Every Season", "sources": [
+      {"cite": "E. G. Richards, Mapping Time (Oxford University Press, 1998), chapters on the Islamic and Persian calendars."},
+      {"cite": "Edward M. Reingold and Nachum Dershowitz, Calendrical Calculations (4th edn, Cambridge University Press, 2018): the arithmetical Islamic calendar used for Figure 13."}
+    ]},
+    {"n": "12", "title": "Chapter 12: Thirteen Months of Sunshine", "sources": [
+      {"cite": "World Health Organization, Regional Office for Africa, 'Ethiopia to celebrate its New Year tomorrow, 12th September' (2019).", "url": "https://www.afro.who.int/pt/node/11715"},
+      {"cite": "Africanews, 'Ethiopia enters New Year, 2012' (12 September 2019).", "url": "https://www.africanews.com/2019/09/12/ethiopia-enters-new-year-2012"}
+    ]},
+    {"n": "interlude-3", "title": "Interlude III: Yellow Pavel, Purple Anna", "sources": [
+      {"cite": "Rambler, 'Непрерывка: почему в 1929 году отменили дни недели' (in Russian): the five colour groups and the 1931 six-day week.", "url": "https://weekend.rambler.ru/read/49521068-nepreryvka-pochemu-v-1929-godu-otmenili-dni-nedeli/"},
+      {"cite": "Eviatar Zerubavel, The Seven Day Circle: The History and Meaning of the Week (Free Press, 1985)."}
+    ]},
+    {"n": "13", "title": "Chapter 13: Ten-Hour Days and Ten-Day Weeks", "sources": [
+      {"cite": "Matthew Shaw, Time and the French Revolution: The Republican Calendar, 1789–Year XIV (Boydell Press, 2011)."},
+      {"cite": "E. G. Richards, Mapping Time (Oxford University Press, 1998), on the Republican calendar and decimal time."}
+    ]},
+    {"n": "14", "title": "Chapter 14: The Week Stalin Couldn't Kill", "sources": [
+      {"cite": "Eviatar Zerubavel, The Seven Day Circle (Free Press, 1985), chapter on the Soviet experiment."},
+      {"cite": "Rambler, 'Непрерывка: почему в 1929 году отменили дни недели' (in Russian).", "url": "https://weekend.rambler.ru/read/49521068-nepreryvka-pochemu-v-1929-godu-otmenili-dni-nedeli/"}
+    ]},
+    {"n": "15", "title": "Chapter 15: The Railway Clerk and the Camera King", "sources": [
+      {"cite": "Moses B. Cotsworth fonds, finding aid, Rare Books and Special Collections, University of British Columbia Library.", "url": "https://rbscarchives.library.ubc.ca/downloads/moses-cotsworth-fonds.pdf"},
+      {"cite": "Forrest Pass, 'No Leap of Faith', Library and Archives Canada blog (29 February 2024).", "url": "https://thediscoverblog.com/tag/yearal/"},
+      {"cite": "Nature 118, p. 776 (27 November 1926): the League of Nations committee report on calendar reform, 185 schemes received.", "url": "https://www.nature.com/articles/118776a0.pdf"},
+      {"cite": "N.A.C.A. Bulletin, National Association of Cost Accountants (1920s): articles on budgetary control and thirteen-period accounting."},
+      {"cite": "Elizabeth Brayer, George Eastman: A Biography (Johns Hopkins University Press, 1996)."},
+      {"cite": "Eastman Kodak Company calendars, 1985–1990 (copies supplied by Kodak, 2026): 1989 is the last thirteen-period year."}
+    ]},
+    {"n": "16", "title": "Chapter 16: QWERTY, A440 and Other Accidents", "sources": [
+      {"cite": "Koichi Yasuoka and Motoko Yasuoka, 'On the Prehistory of QWERTY', ZINBUN 42 (Kyoto University, 2011).", "url": "https://repository.kulib.kyoto-u.ac.jp/dspace/bitstream/2433/139379/1/42_161.pdf"},
+      {"cite": "Jimmy Stamp, 'Fact or Fiction? The Legend of the QWERTY Keyboard', Smithsonian Magazine (2013).", "url": "https://www.smithsonianmag.com/arts-culture/fact-of-fiction-the-legend-of-the-qwerty-keyboard-49863249/"},
+      {"cite": "S. J. Liebowitz and Stephen E. Margolis, 'The Fable of the Keys', Journal of Law and Economics 33 (1990): the case against the Dvorak speed claims."}
+    ]},
+    {"n": "17", "title": "Chapter 17: A Month for the Sun", "sources": [
+      {"cite": "Snorri Sturluson, Prose Edda, Gylfaginning: Sól and the wolf Sköll."},
+      {"cite": "Library and Archives Canada, 'No Leap of Faith' (2024): the thirteenth month, Sol, between June and July.", "url": "https://thediscoverblog.com/tag/yearal/"}
+    ]},
+    {"n": "18", "title": "Chapter 18: A Year Lived in Sol", "sources": [
+      {"cite": "ISO 8601, the international standard for dates and times, which starts the week on Monday.", "url": "https://help.iso.org/en/articles/376284-iso-8601-international-standard-for-date-and-time-format"},
+      {"cite": "Convert any date, and see every Sol date, at sol28.co.uk.", "url": "https://sol28.co.uk/dates"}
+    ]},
+    {"n": "19", "title": "Chapter 19: What This Book Refuses to Claim", "sources": [
+      {"cite": "Robert Poole, '\"Give us our eleven days!\"', Past & Present 149 (1995).", "url": "https://insight.cumbria.ac.uk/id/eprint/684/1/Poole_GiveUsOurEleven.pdf"},
+      {"cite": "Bull et al. (2019), npj Digital Medicine.", "url": "https://pmc.ncbi.nlm.nih.gov/articles/PMC6710244/"},
+      {"cite": "Helfrich-Förster et al. (2021), Science Advances.", "url": "https://pmc.ncbi.nlm.nih.gov/articles/PMC7840133/"},
+      {"cite": "The Sol fact register: every claim used by Sol, its status and its source."}
+    ]}
+  ]
+}
