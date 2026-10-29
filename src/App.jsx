@@ -374,6 +374,43 @@ function Reveal({ result, onDone }) {
   )
 }
 
+// Birthday entry as three plain fields: native date pickers on some phones and browsers
+// open on the current year, so a 1970 birthday was easy to submit as 2026.
+function DateFields({ value, onChange, onEnter }) {
+  const [d0, m0, y0] = value ? [String(+value.slice(8, 10)), String(+value.slice(5, 7)), value.slice(0, 4)] : ["", "", ""]
+  const [day, setDay] = useState(d0), [mon, setMon] = useState(m0), [yr, setYr] = useState(y0)
+  const thisYear = new Date().getFullYear()
+  const push = (d, m, y) => {
+    if (d && m && /^\d{4}$/.test(y) && +y >= 1900 && +y <= thisYear) {
+      const dt = new Date(+y, +m - 1, +d, 12)
+      if (dt.getDate() === +d && dt <= new Date()) { onChange(`${y}-${String(m).padStart(2, "0")}-${String(d).padStart(2, "0")}`); return }
+    }
+    onChange("")
+  }
+  const sel = { ...input, padding: "12px 8px", appearance: "auto" }
+  const ok = value ? new Date(value + "T12:00:00") : null
+  const bad = day && mon && yr.length === 4 && !value
+  return (
+    <div>
+      <div style={{ display: "grid", gridTemplateColumns: "1fr 1.6fr 1.2fr", gap: 8 }}>
+        <select aria-label="Day" value={day} onChange={e => { setDay(e.target.value); push(e.target.value, mon, yr) }} style={sel}>
+          <option value="">Day</option>{Array.from({ length: 31 }, (_, i) => <option key={i} value={i + 1}>{i + 1}</option>)}
+        </select>
+        <select aria-label="Month" value={mon} onChange={e => { setMon(e.target.value); push(day, e.target.value, yr) }} style={sel}>
+          <option value="">Month</option>{MONTH_NAMES.map((n, i) => <option key={n} value={i + 1}>{n}</option>)}
+        </select>
+        <input aria-label="Year" inputMode="numeric" pattern="[0-9]*" maxLength={4} placeholder="Year" value={yr}
+          onChange={e => { const v = e.target.value.replace(/\D/g, "").slice(0, 4); setYr(v); push(day, mon, v) }}
+          onKeyDown={e => { if (e.key === "Enter" && onEnter) onEnter() }} style={sel} />
+      </div>
+      <div style={{ fontSize: 13, marginTop: 8, minHeight: 18, color: bad ? "#E08A6B" : M }}>
+        {ok ? `You entered ${ok.toLocaleDateString("en-GB", { weekday: "long", day: "numeric", month: "long", year: "numeric" })}.`
+          : bad ? (+yr > thisYear || +yr < 1900 ? `Enter a year between 1900 and ${thisYear}.` : new Date(+yr, +mon - 1, +day) > new Date() ? "That date hasn't happened yet." : "That date doesn't exist. Check the day and month.") : "Day, month and the year you were born."}
+      </div>
+    </div>
+  )
+}
+
 function BirthdayPage() {
   const [shared] = useState(sharedBirthday)
   const [dateStr, setDateStr] = useState("")
@@ -486,8 +523,8 @@ function BirthdayPage() {
 
       <div style={card}>
         <label style={label}>YOUR BIRTHDAY</label>
-        <input type="date" value={dateStr} max={fmtDate(new Date()).replace(/(\d{4})(\d{2})(\d{2})/, "$1-$2-$3")} onChange={e => setDateStr(e.target.value)} style={input} />
-        <button onClick={calculate} style={{ ...btn, marginTop: 12 }}>FIND MY TRUE BIRTHDAY</button>
+        <DateFields value={dateStr} onChange={setDateStr} onEnter={calculate} />
+        <button onClick={calculate} disabled={!dateStr} style={{ ...btn, marginTop: 4, opacity: dateStr ? 1 : 0.55 }}>FIND MY TRUE BIRTHDAY</button>
       </div>
 
       <style>{REVEAL_CSS}</style>
