@@ -585,6 +585,8 @@ function BirthdayPage() {
         </div>
       )}
 
+      {result && revealed && <BirthdaySignup />}
+
       <div style={{ ...card, marginTop: 16 }}>
         <p style={{ fontSize: 12, color: M, lineHeight: 1.7 }}>
           Born on the 29th, 30th or 31st? Your birthday doesn't disappear — it converts to a permanent Sol date.
@@ -641,12 +643,10 @@ function HistoryPage() {
 // Kit (kit.com) form ID. Leave empty until the Kit form exists; the page then shows an honest "opening soon" state.
 const KIT_FORM_ID = "10109930" // Kit form "Sol waitlist (sol28.co.uk)": double opt-in, confirm link returns to /?go=waitlist&confirmed=1
 
-function WaitlistPage() {
+function useKitSignup() {
   const [email, setEmail] = useState("")
-  const confirmed = (() => { try { return new URLSearchParams(window.location.search).get("confirmed") === "1" } catch { return false } })()
-  const [status, setStatus] = useState(confirmed ? "confirmed" : "idle") // idle | sending | done | error | confirmed
-
-  const handleSubmit = async () => {
+  const [status, setStatus] = useState("idle") // idle | invalid | sending | done | error
+  const submit = async () => {
     if (!email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) { setStatus("invalid"); return }
     setStatus("sending")
     try {
@@ -655,18 +655,85 @@ function WaitlistPage() {
       const r = await fetch(`https://app.kit.com/forms/${KIT_FORM_ID}/subscriptions`, { method: "POST", body, headers: { Accept: "application/json" } })
       const j = await r.json().catch(() => ({}))
       setStatus(r.ok && j.status === "success" ? "done" : "error")
-    } catch {
-      setStatus("error")
-    }
+    } catch { setStatus("error") }
   }
+  return { email, setEmail: v => { setEmail(v); setStatus("idle") }, status, submit }
+}
+
+const GIFT_URL = "/gift/sol-perpetual-calendar.pdf"
+
+// Sign-up shown straight after the True Birthday result: the moment interest is highest.
+function BirthdaySignup() {
+  const k = useKitSignup()
+  if (k.status === "done") return (
+    <div style={{ ...card, marginTop: 16, textAlign: "center" }}>
+      <h2 style={h2}>Check your inbox</h2>
+      <p style={{ ...sub, lineHeight: 1.6 }}>Click the link in the confirmation email and you're on the list. Your calendar is ready now:</p>
+      <a href={GIFT_URL} download style={{ ...btn, display: "block", boxSizing: "border-box", textAlign: "center", textDecoration: "none", marginTop: 12 }}>DOWNLOAD THE SOL CALENDAR (PDF)</a>
+    </div>
+  )
+  return (
+    <div style={{ ...card, marginTop: 16 }}>
+      <h2 style={{ ...h2, marginBottom: 6 }}>Keep your Sol date to hand</h2>
+      <p style={{ fontSize: 14, color: T, lineHeight: 1.6, marginBottom: 12 }}>Get the free one-page Sol calendar, a single sheet that never goes out of date, and hear first when the book and shop open.</p>
+      <input type="email" aria-label="Email address" value={k.email} placeholder="you@example.com" onChange={e => k.setEmail(e.target.value)} onKeyDown={e => { if (e.key === "Enter") k.submit() }} style={input} />
+      <button onClick={k.submit} disabled={k.status === "sending"} style={{ ...btn, marginTop: 10 }}>{k.status === "sending" ? "SENDING…" : "SEND ME THE CALENDAR"}</button>
+      {k.status === "invalid" && <p style={{ fontSize: 12, color: G, marginTop: 8, textAlign: "center" }}>Please enter a valid email address.</p>}
+      {k.status === "error" && <p style={{ fontSize: 12, color: G, marginTop: 8, textAlign: "center" }}>Something went wrong. Please try again.</p>}
+      <p style={{ fontSize: 11, color: M, marginTop: 8, textAlign: "center" }}>Confirmation email first. Sol news only; unsubscribe any time. Your birthday is never sent.</p>
+    </div>
+  )
+}
+
+const PRODUCTS = [
+  { img: "/shop/challenge.jpg", name: "The 28-Day Challenge Workbook", text: "One habit, one Sol month. A daily page, a weekly check-in and an end-of-month review. Start any Monday and use it again whenever you like." },
+  { img: "/shop/habit.jpg", name: "The Sol Habit Tracker", text: "A whole year in thirteen equal 28-day blocks, so this month's results compare honestly with last month's. No short Februaries skewing the totals." },
+  { img: "/shop/sprint.jpg", name: "The Sol Sprint Journal", text: "Thirteen four-week sprints a year: plan each one, run it a week at a time, review it before the next." },
+  { img: "/shop/payday.jpg", name: "The 13-Payday Budget", text: "Paid every four weeks? You get 13 paydays a year, not 12. One page per payday, plus what the double-payday month means for Universal Credit. A guide, not financial advice." },
+]
+
+function ShopPage() {
+  return (
+    <div>
+      <div style={{ textAlign: "center", marginBottom: 20 }}>
+        <div style={tag}>SOL</div>
+        <h1 style={h1}>The Sol Shop</h1>
+        <p style={sub}>Undated printables that never go out of date. Opening to the waitlist in December.</p>
+      </div>
+      <WaitlistPage embedded />
+      <div style={{ marginTop: 16 }}>
+        {PRODUCTS.map(p => (
+          <div key={p.name} style={{ ...card, marginBottom: 12 }}>
+            <img src={p.img} alt={`${p.name}, sample pages`} loading="lazy" style={{ width: "100%", borderRadius: 8, display: "block", marginBottom: 12 }} />
+            <h2 style={{ ...h2, marginBottom: 6 }}>{p.name}</h2>
+            <p style={{ fontSize: 14, color: T, lineHeight: 1.6 }}>{p.text}</p>
+            <p style={{ fontSize: 12, color: M, marginTop: 8 }}>Instant PDF download, A4, print at home. Coming December 2026.</p>
+          </div>
+        ))}
+        <div style={{ ...card, textAlign: "center" }}>
+          <h2 style={h2}>Free now</h2>
+          <p style={{ fontSize: 14, color: T, lineHeight: 1.6 }}>The one-page Sol calendar: every Sol month on a single sheet.</p>
+          <a href={GIFT_URL} download style={{ ...btnOutline, display: "block", boxSizing: "border-box", textAlign: "center", textDecoration: "none", marginTop: 12 }}>DOWNLOAD THE FREE CALENDAR</a>
+        </div>
+      </div>
+    </div>
+  )
+}
+
+function WaitlistPage({ embedded }) {
+  const confirmed = (() => { try { return new URLSearchParams(window.location.search).get("confirmed") === "1" } catch { return false } })()
+  const k = useKitSignup()
+  const email = k.email, setEmail = k.setEmail, handleSubmit = k.submit
+  const status = confirmed && k.status === "idle" ? "confirmed" : k.status
+  const setStatus = () => {}
 
   return (
     <div>
-      <div style={{ textAlign: "center", marginBottom: 24 }}>
+      {!embedded && <div style={{ textAlign: "center", marginBottom: 24 }}>
         <div style={tag}>SOL</div>
         <h1 style={h1}>Join the Waitlist</h1>
         <p style={sub}>Be first to know when the book and the first Sol products launch</p>
-      </div>
+      </div>}
 
       {!KIT_FORM_ID ? (
         <div style={goldCard}>
@@ -701,20 +768,21 @@ function WaitlistPage() {
             <div style={{ fontSize: 40, marginBottom: 12 }}>☀️</div>
             <h2 style={h2}>Check your inbox</h2>
             <p style={{ ...sub, lineHeight: 1.6 }}>We've sent a confirmation email. Click the link in it and you're on the list.</p>
+            <a href={GIFT_URL} download style={{ ...btnOutline, display: "block", boxSizing: "border-box", textAlign: "center", textDecoration: "none", marginTop: 16 }}>DOWNLOAD YOUR FREE SOL CALENDAR</a>
           </div>
         </div>
       )}
 
-      <div style={{ ...card, marginTop: 16 }}>
+      {!embedded && <div style={{ ...card, marginTop: 16 }}>
         <h2 style={h2}>What's Coming</h2>
         <div style={{ fontSize: 14, color: T, lineHeight: 1.8 }}>
-          <div style={{ marginBottom: 8 }}><span style={gold}>☀ Still Ruled by Rome</span> — the book. The hidden history of how we measure time, and why we still live by a Roman calendar.</div>
+          <div style={{ marginBottom: 8 }}><span style={gold}>☀ Still Ruled by Rome</span> — the book, out 1 February 2027. How an empire set the calendar you live by.</div>
           <div style={{ marginBottom: 8 }}><span style={gold}>☀ Systems We Never Questioned</span> — the companion book on the everyday systems nobody chose.</div>
           <div style={{ marginBottom: 8 }}><span style={gold}>☀ Sol planners and journals</span> — 13 months of 28 days, built for the way Sol works.</div>
           <div><span style={gold}>☀ 28-day challenges</span> — printable workbooks that fit one Sol month exactly.</div>
         </div>
         <p style={{ fontSize: 12, color: M, marginTop: 12 }}>Waitlist members hear first, with launch dates and early access.</p>
-      </div>
+      </div>}
     </div>
   )
 }
@@ -742,17 +810,17 @@ function PrivacyPage() {
 export default function App() {
   const [page, setPage] = useState(() => {
     if (sharedBirthday()) return "birthday"
-    try { const go = new URLSearchParams(window.location.search).get("go"); if (["convert","birthday","history","waitlist","privacy"].includes(go)) return go } catch {}
+    try { const go = new URLSearchParams(window.location.search).get("go"); if (["convert","birthday","history","waitlist","shop","privacy"].includes(go)) return go } catch {}
     return "home"
   })
-  const pages = { home: HomePage, convert: ConverterPage, birthday: BirthdayPage, history: HistoryPage, waitlist: WaitlistPage, privacy: PrivacyPage }
+  const pages = { home: HomePage, convert: ConverterPage, birthday: BirthdayPage, history: HistoryPage, waitlist: WaitlistPage, shop: ShopPage, privacy: PrivacyPage }
   const Page = pages[page]
   const navItems = [
     { id: "home", label: "TODAY" },
     { id: "convert", label: "CONVERT" },
     { id: "birthday", label: "BIRTHDAY" },
     { id: "history", label: "HISTORY" },
-    { id: "waitlist", label: "WAITLIST" },
+    { id: "shop", label: "SHOP" },
   ]
 
   return (

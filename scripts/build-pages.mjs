@@ -83,7 +83,7 @@ function page({ path, title, description, body, image = "default", noindex = fal
 <meta name="twitter:card" content="summary_large_image">${noindex ? '<meta name="robots" content="noindex">' : ""}${head}
 <meta name="theme-color" content="#1A1A2E"><link rel="icon" href="/icon-192.png"><link rel="manifest" href="/manifest.json">
 <style>${css}</style>
-<script>window.va=window.va||function(){(window.vaq=window.vaq||[]).push(arguments)}</script><script defer src="/_vercel/insights/script.js"></script>
+<script src="/va.js"></script><script defer src="/_vercel/insights/script.js"></script>
 </head><body><main>
 <a class="tag" href="/">SOL</a>
 ${body}
@@ -238,11 +238,12 @@ ${n === 12 ? `<p class="muted">Year Day follows 28 December and belongs to no we
 <div class="big" id="eth-out"></div></div>
 <a class="btn" href="/?go=birthday">NOW FIND YOUR SOL BIRTHDAY</a>
 <p class="muted">Sources: <a href="https://blogs.fcdo.gov.uk/gregdorey/2015/09/11/enkuan-aderesachihu-happy-new-year" target="_blank" rel="noopener">UK Foreign Office, British Embassy Addis Ababa (2015)</a> · <a href="https://www.afro.who.int/pt/node/11715" target="_blank" rel="noopener">World Health Organization, Africa (2019)</a>. Dates are calculated with the standard Ethiopian calendar arithmetic and checked against both.</p>
-<script>(function(){var M=${JSON.stringify(ETH_MONTHS)},E=1724221;function j(y,m,d){return E-1+365*(y-1)+Math.floor(y/4)+30*(m-1)+d}
+<script src="/js/ethiopia.js" defer></script>`
+  mkdirSync(join(OUT, "js"), { recursive: true }); writeFileSync(join(OUT, "js/ethiopia.js"), `(function(){var M=${JSON.stringify(ETH_MONTHS)},E=1724221;function j(y,m,d){return E-1+365*(y-1)+Math.floor(y/4)+30*(m-1)+d}
 function eth(dt){var n=Math.floor(Date.UTC(dt.getFullYear(),dt.getMonth(),dt.getDate())/864e5)+2440588,y=Math.floor((4*(n-E)+1463)/1461),m=Math.floor((n-j(y,1,1))/30)+1;return{d:n-j(y,m,1)+1,m:M[m-1],y:y}}
 var t=eth(new Date());document.getElementById("eth-today").innerHTML=t.d+" <span>"+t.m+" "+t.y+"</span>";
 var i=document.getElementById("eth-in"),o=document.getElementById("eth-out");i.value=new Date().toISOString().slice(0,10);
-function show(){if(!i.value)return;var p=i.value.split("-"),r=eth(new Date(+p[0],p[1]-1,+p[2],12));o.innerHTML=r.d+" <span>"+r.m+" "+r.y+"</span>"}i.addEventListener("input",show);show()})()</script>`
+function show(){if(!i.value)return;var p=i.value.split("-"),r=eth(new Date(+p[0],p[1]-1,+p[2],12));o.innerHTML=r.d+" <span>"+r.m+" "+r.y+"</span>"}i.addEventListener("input",show);show()})()`)
   write("ethiopia.html", page({ path: "/ethiopia", title: `In Ethiopia it's ${now.year}: the 13-month calendar already in use — Sol`, description: "Ethiopia lives by a 13-month calendar: twelve months of 30 days and a thirteenth of five or six. See today's Ethiopian date and how it compares with Sol.", body }))
   urls.push("/ethiopia")
 }
@@ -388,13 +389,14 @@ button.pr{background:var(--gold);color:var(--navy);border:0;border-radius:8px;pa
 <p><strong>Leap Day</strong> comes after the 28th of June in leap years — the next is 17 June 2028 in the ordinary calendar.</p>
 <p class="muted">Both are known years in advance, so they can be marked on the chart long before they arrive.</p></div>
 <p class="noprint" id="nowline"></p>
-<button class="pr noprint" onclick="window.print()">PRINT THIS CHART</button>
-<script>
+<button class="pr noprint" id="printbtn">PRINT THIS CHART</button>
+<script src="/js/routine.js" defer></script>`
+  mkdirSync(join(OUT, "js"), { recursive: true }); writeFileSync(join(OUT, "js/routine.js"), `
 (function(){try{var M=${JSON.stringify(SOL_MONTHS)},W=${JSON.stringify(WEEKDAYS)};var t=new Date(),y=t.getFullYear(),L=(y%4===0&&(y%100!==0||y%400===0));
 var n=Math.round((Date.UTC(y,t.getMonth(),t.getDate())-Date.UTC(y,0,1))/864e5)+1;var s;
 if(n===(L?366:365))s="Today is Year Day.";else if(L&&n===169)s="Today is Leap Day.";else{var a=L&&n>169?n-1:n,m=Math.ceil(a/28),d=(a-1)%28+1;s="Today is "+W[(d-1)%7]+" "+d+" "+M[m-1]+" — day "+d+" on the chart above.";}
-document.getElementById("nowline").textContent=s;}catch(e){}})();
-</script>`
+document.getElementById("nowline").textContent=s;var pb=document.getElementById("printbtn");if(pb)pb.addEventListener("click",function(){window.print()});}catch(e){}})();
+`)
   write("routine.html", page({ path: "/routine", title: "A calendar that doesn't change — printable Sol month", description: "Every Sol month is identical: 28 days, Monday to Sunday. Print one chart and use it all year.", body }))
   urls.push("/routine")
 }
