@@ -1,0 +1,104 @@
+@font-face{font-family:'EBG';src:url('fonts/package/files/eb-garamond-latin-400-normal.woff');font-weight:400;font-style:normal;}
+@font-face{font-family:'EBG';src:url('fonts/package/files/eb-garamond-latin-400-italic.woff');font-weight:400;font-style:italic;}
+@font-face{font-family:'EBG';src:url('fonts/package/files/eb-garamond-latin-500-normal.woff');font-weight:500;font-style:normal;}
+@font-face{font-family:'EBG';src:url('fonts/package/files/eb-garamond-latin-500-italic.woff');font-weight:500;font-style:italic;}
+@font-face{font-family:'EBG';src:url('fonts/package/files/eb-garamond-latin-600-normal.woff');font-weight:600;font-style:normal;}
+@font-face{font-family:'EBG';src:url('fonts/package/files/eb-garamond-latin-600-italic.woff');font-weight:600;font-style:italic;}
+@font-face{font-family:'EBG';src:url('fonts/package/files/eb-garamond-latin-700-normal.woff');font-weight:700;font-style:normal;}
+@font-face{font-family:'EBG';src:url('fonts/package/files/eb-garamond-latin-700-italic.woff');font-weight:700;font-style:italic;}
+@font-face{font-family:'EBG Ext';src:url('fonts/package/files/eb-garamond-latin-ext-400-normal.woff');font-weight:400;font-style:normal;}
+@font-face{font-family:'EBG Ext';src:url('fonts/package/files/eb-garamond-latin-ext-400-italic.woff');font-weight:400;font-style:italic;}
+@font-face{font-family:'EBG Ext';src:url('fonts/package/files/eb-garamond-latin-ext-500-normal.woff');font-weight:500;font-style:normal;}
+@font-face{font-family:'EBG Ext';src:url('fonts/package/files/eb-garamond-latin-ext-500-italic.woff');font-weight:500;font-style:italic;}
+@font-face{font-family:'EBG Ext';src:url('fonts/package/files/eb-garamond-latin-ext-600-normal.woff');font-weight:600;font-style:normal;}
+@font-face{font-family:'EBG Ext';src:url('fonts/package/files/eb-garamond-latin-ext-600-italic.woff');font-weight:600;font-style:italic;}
+@font-face{font-family:'EBG Ext';src:url('fonts/package/files/eb-garamond-latin-ext-700-normal.woff');font-weight:700;font-style:normal;}
+@font-face{font-family:'EBG Ext';src:url('fonts/package/files/eb-garamond-latin-ext-700-italic.woff');font-weight:700;font-style:italic;}
+@font-face{font-family:'EBG Cyr';src:url('fonts/package/files/eb-garamond-cyrillic-400-normal.woff');font-weight:400;font-style:normal;}
+@font-face{font-family:'EBG Cyr';src:url('fonts/package/files/eb-garamond-cyrillic-400-italic.woff');font-weight:400;font-style:italic;}
+@font-face{font-family:'EBG Cyr';src:url('fonts/package/files/eb-garamond-cyrillic-500-normal.woff');font-weight:500;font-style:normal;}
+@font-face{font-family:'EBG Cyr';src:url('fonts/package/files/eb-garamond-cyrillic-500-italic.woff');font-weight:500;font-style:italic;}
+@font-face{font-family:'EBG Cyr';src:url('fonts/package/files/eb-garamond-cyrillic-600-normal.woff');font-weight:600;font-style:normal;}
+@font-face{font-family:'EBG Cyr';src:url('fonts/package/files/eb-garamond-cyrillic-600-italic.woff');font-weight:600;font-style:italic;}
+@font-face{font-family:'EBG Cyr';src:url('fonts/package/files/eb-garamond-cyrillic-700-normal.woff');font-weight:700;font-style:normal;}
+@font-face{font-family:'EBG Cyr';src:url('fonts/package/files/eb-garamond-cyrillic-700-italic.woff');font-weight:700;font-style:italic;}
+@font-face{font-family:'EBG Grk';src:url('fonts/package/files/eb-garamond-greek-400-normal.woff');font-weight:400;font-style:normal;}
+@font-face{font-family:'EBG Grk';src:url('fonts/package/files/eb-garamond-greek-400-italic.woff');font-weight:400;font-style:italic;}
+@font-face{font-family:'EBG Grk';src:url('fonts/package/files/eb-garamond-greek-500-normal.woff');font-weight:500;font-style:normal;}
+@font-face{font-family:'EBG Grk';src:url('fonts/package/files/eb-garamond-greek-500-italic.woff');font-weight:500;font-style:italic;}
+@font-face{font-family:'EBG Grk';src:url('fonts/package/files/eb-garamond-greek-600-normal.woff');font-weight:600;font-style:normal;}
+@font-face{font-family:'EBG Grk';src:url('fonts/package/files/eb-garamond-greek-600-italic.woff');font-weight:600;font-style:italic;}
+@font-face{font-family:'EBG Grk';src:url('fonts/package/files/eb-garamond-greek-700-normal.woff');font-weight:700;font-style:normal;}
+@font-face{font-family:'EBG Grk';src:url('fonts/package/files/eb-garamond-greek-700-italic.woff');font-weight:700;font-style:italic;}
+:root{--ff:'EBG','EBG Ext','FreeSerif','DejaVu Serif',serif;}
+@page{size:6in 9in;margin:0.72in 0.6in 0.8in 0.82in;
+  @bottom-center{content:counter(page);font:10pt var(--ff);color:#222;padding-top:0.18in;vertical-align:top}}
+@page :left{margin:0.72in 0.82in 0.8in 0.6in;
+  @top-left{content:string(book,first-except);font:italic 9pt var(--ff);color:#555;vertical-align:bottom;padding-bottom:0.12in}}
+@page :right{@top-right{content:string(run,first-except);font:italic 9pt var(--ff);color:#555;vertical-align:bottom;padding-bottom:0.12in}}
+@page front{@bottom-center{content:counter(page,lower-roman)}@top-left{content:none}@top-right{content:none}}
+@page bare{@bottom-center{content:none}@top-left{content:none}@top-right{content:none}}
+@page :blank{@bottom-center{content:none}@top-left{content:none}@top-right{content:none}}
+html{font-family:var(--ff);font-size:11pt;line-height:14.6pt;color:#111;font-variant-numeric:oldstyle-nums proportional-nums}
+body{margin:0}
+p{hyphenate-character:"-";margin:0;text-align:justify;hyphens:auto;text-indent:1.3em;orphans:2;widows:2}
+p.first,h3+p,figure+p,.scene+p,.pull+p,.srcline+p,.myth+p{text-indent:0}
+h3{font-weight:600;font-size:11pt;margin:1.1em 0 0.35em;break-after:avoid;font-variant-numeric:lining-nums;letter-spacing:0.01em}
+.fm{page:front}
+.halftitle,.titlepage,.blank{page:bare}
+.fm+.fm{break-before:page}
+.halftitle{padding-top:2.2in;text-align:center}
+.ht{font-size:15pt;letter-spacing:0.12em;text-transform:uppercase;font-variant-numeric:lining-nums}
+.titlepage{padding-top:1.5in;text-align:center;break-before:right}
+.tp-title{font-size:34pt;line-height:38pt;font-weight:600;letter-spacing:0.01em}
+.tp-sub{font-style:italic;font-size:13pt;margin-top:16pt}
+.tp-rule{width:0.9in;border-top:1.2pt solid #b8890f;margin:28pt auto}
+.tp-author{font-size:14pt;letter-spacing:0.14em;text-transform:uppercase}
+.tp-pub{position:absolute;bottom:0;left:0;right:0;font-size:9.5pt;letter-spacing:0.08em;color:#444}
+.copyright{padding-top:3.6in;font-size:8.6pt;line-height:11.4pt}
+.copyright p{text-indent:0;text-align:left;hyphens:manual;margin-bottom:6pt}
+.contents{break-before:right}
+.contents h2{font-weight:500;font-size:17pt;text-align:center;letter-spacing:0.08em;text-transform:uppercase;margin:0.5in 0 0.3in}
+.toc{list-style:none;padding:0;margin:0;font-size:10.4pt;line-height:13.5pt}
+.toc li{margin:0 0 3pt}
+.toc a{color:inherit;text-decoration:none;display:block}
+.toc a::after{content:leader(' ') attr(data-p);font-variant-numeric:lining-nums}
+.toc-part{margin-top:10pt!important;font-size:8.5pt;letter-spacing:0.12em;text-transform:uppercase;color:#7a5a08}
+.toc-pt{margin-left:0.6em;color:#444}
+.toc-lab{display:inline-block;width:5.4em;color:#555;font-size:9.5pt}
+.toc-interlude a{font-style:italic}
+.toc-front,.toc-back{margin-top:6pt!important}
+.part{break-before:right;page:bare;text-align:center;padding-top:2.4in}
+.part+.opener{break-before:right}
+.part-label{font-size:10pt;letter-spacing:0.2em;text-transform:uppercase;color:#7a5a08}
+.part-title{font-size:22pt;line-height:27pt;margin-top:14pt;font-weight:500}
+.opener{break-before:page;text-align:center;padding-top:0.9in;margin-bottom:24pt;string-set:run attr(data-run),book "Still Ruled by Rome"}
+.mainmatter>.opener:first-child{break-before:auto}
+.ch-label{font-size:9.5pt;letter-spacing:0.2em;text-transform:uppercase;color:#7a5a08;font-variant-numeric:lining-nums}
+.ch-title{font-size:21pt;line-height:25pt;font-weight:600;margin:10pt 0.2in 0;hyphens:none}
+.ch-sub{font-style:italic;font-size:10.5pt;line-height:13.5pt;color:#444;margin:12pt 0.35in 0}
+.ch-sub i{font-style:normal}
+figure{margin:12pt 0 10pt;break-inside:avoid;text-align:center}
+figure img{width:100%}
+figcaption{font-size:8.5pt;font-style:italic;color:#444;margin-top:3pt;font-variant-numeric:lining-nums}
+.scene{text-align:center;margin:9pt 0;letter-spacing:0.1em;color:#555}
+.pull{text-align:center;font-style:italic;text-indent:0;margin:12pt 0.3in;hyphens:none}
+.pull i{font-style:normal}
+.myth{text-indent:0;margin:0 0 4pt 0;padding-left:10pt;border-left:1.2pt solid #b8890f;font-size:10pt;line-height:13pt;text-align:left}
+.srcline{display:flex;align-items:center;gap:9pt;margin-top:16pt;padding-top:8pt;border-top:0.5pt solid #bbb;break-inside:avoid}
+.qr{width:0.62in;height:0.62in;flex:none}
+.srctext{font-size:8.6pt;line-height:11pt;color:#333}
+.srctext .url{font-variant-numeric:lining-nums;letter-spacing:0.02em}
+.sc{font-variant:small-caps;letter-spacing:0.04em}
+.notes-sub{display:none}
+.notes-intro{font-style:italic;font-size:9.5pt;line-height:12.5pt;text-indent:0;margin-bottom:6pt}
+.note-head{font-size:9.8pt;margin:9pt 0 2pt;font-weight:600}
+.note{font-size:8.8pt;line-height:11.2pt;text-indent:-1em;padding-left:1em;text-align:left;margin-bottom:1.5pt;hyphens:manual}
+.end{text-align:center;font-size:10pt;letter-spacing:0.3em;text-transform:uppercase;margin-top:18pt}
+.colophon{break-before:page;page:bare;text-align:center;padding-top:3in}
+.col-sol{font-size:20pt;font-weight:600;letter-spacing:0.06em}
+.col-tag{font-style:italic;margin-top:4pt}
+.col-url{font-size:9.5pt;margin-top:10pt;letter-spacing:0.06em}
+.srcline{break-before:avoid}
+p.entry{text-indent:-1em;padding-left:1em;margin-top:3pt}
+.entry+p:not(.entry){margin-top:3pt}
