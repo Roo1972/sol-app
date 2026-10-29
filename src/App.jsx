@@ -158,7 +158,7 @@ function HomePage() {
 
       <div style={{ ...card, textAlign: "center" }}>
         <p style={{ fontSize: 13, color: M, lineHeight: 1.6, fontStyle: "italic" }}>
-          Cotsworth's 1902 calendar started every month on a Sunday, so it had a Friday the 13th in every single month. Sol starts on a Monday instead: the 13th is always a Saturday, and Friday the 13th can never happen. Your birthday falls on the same day of the week every year. Forever.
+          Cotsworth's original calendar started every month on a Sunday, so it had a Friday the 13th in every single month. Sol starts on a Monday instead: the 13th is always a Saturday, and Friday the 13th can never happen. Your birthday falls on the same day of the week every year. Forever.
         </p>
       </div>
     </div>
@@ -258,7 +258,9 @@ function PaydayCalculator() {
     const doubles = Object.keys(byMonth).filter(m => byMonth[m] > 1)
     // Universal Credit assessment periods (optional): run from day N of one month to the day before day N of the next
     let uc = null
-    const n = parseInt(ucDay, 10)
+    // Accepts the start date of any assessment period (from the UC journal); only its day of the month matters
+    const ucDate = ucDay ? new Date(ucDay + "T12:00:00") : null
+    const n = ucDate && !isNaN(ucDate) ? ucDate.getDate() : NaN
     if (n >= 1 && n <= 31) {
       const periodStart = (y, m) => new Date(y, m, Math.min(n, new Date(y, m + 1, 0).getDate()), 12)
       let y = today.getFullYear(), m = today.getMonth()
@@ -281,8 +283,9 @@ function PaydayCalculator() {
       <p style={{ ...sub, lineHeight: 1.6, marginBottom: 12 }}>Then you're paid 13 times a year, not 12 — and once a year two paydays land close together. Enter any payday to see when.</p>
       <label style={label}>ANY RECENT PAYDAY</label>
       <input type="date" value={dateStr} onChange={e => setDateStr(e.target.value)} style={input} />
-      <label style={{ ...label, marginTop: 14 }}>ON UNIVERSAL CREDIT? THE DAY YOUR ASSESSMENT PERIOD STARTS (OPTIONAL)</label>
-      <input type="number" min="1" max="31" inputMode="numeric" placeholder="e.g. 14" value={ucDay} onChange={e => setUcDay(e.target.value)} style={input} />
+      <label style={{ ...label, marginTop: 14 }}>ON UNIVERSAL CREDIT? START DATE OF ANY ASSESSMENT PERIOD (OPTIONAL)</label>
+      <input type="date" value={ucDay} onChange={e => setUcDay(e.target.value)} style={input} aria-describedby="uc-help" />
+      <p id="uc-help" style={{ fontSize: 12, color: M, marginTop: 6, lineHeight: 1.5 }}>It's on your Universal Credit statement in your online journal, e.g. "14 October to 13 November". Any period works.</p>
       <button onClick={run} style={{ ...btn, marginTop: 12 }}>FIND MY EXTRA PAYDAY</button>
       {res && (
         <div style={{ marginTop: 16 }}>
