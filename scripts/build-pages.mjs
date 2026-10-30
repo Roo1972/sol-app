@@ -68,6 +68,8 @@ h1,h2{font-family:Georgia,"Times New Roman",serif;color:var(--white);line-height
 table{width:100%;border-collapse:collapse;font-size:15px}td,th{padding:8px 6px;border-bottom:1px solid var(--line);text-align:left}th{color:var(--muted);font-size:12px;letter-spacing:1px}
 .grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(130px,1fr));gap:6px}.grid a{display:block;padding:6px 8px;background:var(--card);border-radius:6px;text-decoration:none;font-size:14px}
 .tl{border-left:2px solid var(--gold);margin-left:8px;padding-left:18px}.tl .card{position:relative}.tl .card:before{content:"";position:absolute;left:-27px;top:24px;width:14px;height:14px;border-radius:50%;background:var(--gold)}
+.top{display:flex;justify-content:space-between;align-items:center;gap:12px;margin-bottom:4px}.top .home{font-size:14px;font-weight:600;text-decoration:none;padding:10px 0;min-height:44px;display:inline-flex;align-items:center}.top .home:hover,.top .home:focus-visible{text-decoration:underline}
+a:focus-visible,button:focus-visible{outline:2px solid var(--gold);outline-offset:3px;border-radius:4px}
 nav.foot{margin-top:32px;font-size:14px;color:var(--muted);display:flex;flex-wrap:wrap;gap:14px}`
 
 function page({ path, title, description, body, image = "default", noindex = false, head = "" }) {
@@ -85,9 +87,9 @@ function page({ path, title, description, body, image = "default", noindex = fal
 <style>${css}</style>
 <script src="/va.js"></script><script defer src="/_vercel/insights/script.js"></script>
 </head><body><main>
-<a class="tag" href="/">SOL</a>
+<header class="top"><a class="tag" href="/" aria-label="Sol home">SOL</a><a class="home" href="/">← Home</a></header>
 ${body}
-<nav class="foot"><a href="/?go=birthday">Find your True Birthday</a><a href="/dates">Every date</a><a href="/months">The 13 months</a><a href="/lost-days">Lost Days</a><a href="/ethiopia">Ethiopia</a><a href="/calendar">Sol in your calendar</a><a href="/garden">Gardening</a><a href="/birds">Birdwatching</a><a href="/routine">Routine chart</a><a href="/?go=privacy">Privacy</a></nav>
+<nav class="foot" aria-label="More from Sol"><a href="/">Home</a><a href="/?go=birthday">Find your True Birthday</a><a href="/dates">Every date</a><a href="/months">The 13 months</a><a href="/lost-days">Lost Days</a><a href="/ethiopia">Ethiopia</a><a href="/calendar">Sol in your calendar</a><a href="/garden">Gardening</a><a href="/birds">Birdwatching</a><a href="/routine">Routine chart</a><a href="/?go=privacy">Privacy</a></nav>
 <p class="muted">Sol — Time, fixed.</p>
 </main></body></html>`
 }
@@ -368,7 +370,7 @@ const GARDEN = [
 
 // ── Routine page (Autism vertical): one printable month that is the same every month
 {
-  const printCss = `<style>@media print{body{background:#fff!important;color:#000!important}.noprint,nav.foot,.tag{display:none!important}.card{background:#fff!important;border:1px solid #000!important;break-inside:avoid}h1,h2,.muted,td,th,p{color:#000!important}a{color:#000!important}main{max-width:none;padding:0}}
+  const printCss = `<style>@media print{body{background:#fff!important;color:#000!important}.noprint,nav.foot,.tag,.top{display:none!important}.card{background:#fff!important;border:1px solid #000!important;break-inside:avoid}h1,h2,.muted,td,th,p{color:#000!important}a{color:#000!important}main{max-width:none;padding:0}}
 .cal{width:100%;border-collapse:collapse;table-layout:fixed}.cal th{text-align:center;color:var(--gold)}.cal td{height:64px;vertical-align:top;border:1px solid var(--line);font-family:Georgia,serif;font-size:15px;padding:4px 6px}
 .cal td.sat13{border:2px solid var(--gold)}.lines td{height:40px;border-bottom:1px solid var(--line)}
 button.pr{background:var(--gold);color:var(--navy);border:0;border-radius:8px;padding:13px;font-weight:700;letter-spacing:1px;width:100%;cursor:pointer;font-size:14px}</style>`

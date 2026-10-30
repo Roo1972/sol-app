@@ -74,7 +74,7 @@ const card = { background: BG, border: `1px solid ${BD}`, borderRadius: 12, padd
 const goldCard = { ...card, border: `1px solid ${G}`, background: "rgba(212,160,23,0.05)" }
 const btn = { background: G, color: D, border: "none", borderRadius: 8, padding: "12px 24px", fontSize: 14, fontWeight: 700, cursor: "pointer", letterSpacing: 1, width: "100%" }
 const btnOutline = { ...btn, background: "transparent", color: G, border: `1px solid ${G}` }
-const input = { width: "100%", padding: "12px 16px", fontSize: 16, background: "#15152A", border: `1px solid ${BD}`, borderRadius: 8, color: W, boxSizing: "border-box" }
+const input = { width: "100%", padding: "12px 16px", fontSize: 16, background: "#15152A", border: `1px solid ${BD}`, borderRadius: 8, color: W, boxSizing: "border-box", display: "block", minWidth: 0, maxWidth: "100%" }
 const navBtn = (active) => ({ background: active ? G : "transparent", color: active ? D : M, border: "none", padding: "8px 0", fontSize: 11, fontWeight: 700, cursor: "pointer", flex: 1, letterSpacing: 1 })
 const label = { fontSize: 11, color: M, letterSpacing: 2, fontWeight: 700, marginBottom: 8, display: "block" }
 const h1 = { fontSize: 26, fontWeight: 700, color: W, marginBottom: 4, fontFamily: SERIF }
@@ -202,7 +202,7 @@ function ConverterPage() {
 
       <div style={card}>
         <label style={label}>GREGORIAN DATE</label>
-        <input type="date" value={dateStr} onChange={e => setDateStr(e.target.value)} style={input} />
+        <DateFields value={dateStr} onChange={setDateStr} onEnter={convert} minYear={1583} maxYear={2200} allowFuture hint="Any date from 1583 onwards: day, month and year." />
         <button onClick={convert} style={{ ...btn, marginTop: 12 }}>CONVERT</button>
       </div>
 
@@ -282,9 +282,9 @@ function PaydayCalculator() {
       <h2 style={h2}>Paid every four weeks?</h2>
       <p style={{ ...sub, lineHeight: 1.6, marginBottom: 12 }}>Then you're paid 13 times a year, not 12 — and once a year two paydays land close together. Enter any payday to see when.</p>
       <label style={label}>ANY RECENT PAYDAY</label>
-      <input type="date" value={dateStr} onChange={e => setDateStr(e.target.value)} style={input} />
+      <DateFields value={dateStr} onChange={setDateStr} onEnter={run} minYear={new Date().getFullYear() - 2} maxYear={new Date().getFullYear() + 1} allowFuture hint="Any payday, past or upcoming." />
       <label style={{ ...label, marginTop: 14 }}>ON UNIVERSAL CREDIT? START DATE OF ANY ASSESSMENT PERIOD (OPTIONAL)</label>
-      <input type="date" value={ucDay} onChange={e => setUcDay(e.target.value)} style={input} aria-describedby="uc-help" />
+      <DateFields value={ucDay} onChange={setUcDay} onEnter={run} minYear={new Date().getFullYear() - 2} maxYear={new Date().getFullYear() + 1} allowFuture hint="Day, month and year the period starts." />
       <p id="uc-help" style={{ fontSize: 12, color: M, marginTop: 6, lineHeight: 1.5 }}>It's on your Universal Credit statement in your online journal, e.g. "14 October to 13 November". Any period works.</p>
       <button onClick={run} style={{ ...btn, marginTop: 12 }}>FIND MY EXTRA PAYDAY</button>
       {res && (
@@ -376,23 +376,24 @@ function Reveal({ result, onDone }) {
 
 // Birthday entry as three plain fields: native date pickers on some phones and browsers
 // open on the current year, so a 1970 birthday was easy to submit as 2026.
-function DateFields({ value, onChange, onEnter }) {
+function DateFields({ value, onChange, onEnter, minYear = 1900, maxYear, allowFuture = false, hint = "Day, month and the year you were born." }) {
   const [d0, m0, y0] = value ? [String(+value.slice(8, 10)), String(+value.slice(5, 7)), value.slice(0, 4)] : ["", "", ""]
   const [day, setDay] = useState(d0), [mon, setMon] = useState(m0), [yr, setYr] = useState(y0)
   const thisYear = new Date().getFullYear()
+  const hiYear = maxYear || thisYear
   const push = (d, m, y) => {
-    if (d && m && /^\d{4}$/.test(y) && +y >= 1900 && +y <= thisYear) {
+    if (d && m && /^\d{4}$/.test(y) && +y >= minYear && +y <= hiYear) {
       const dt = new Date(+y, +m - 1, +d, 12)
-      if (dt.getDate() === +d && dt <= new Date()) { onChange(`${y}-${String(m).padStart(2, "0")}-${String(d).padStart(2, "0")}`); return }
+      if (dt.getDate() === +d && (allowFuture || dt <= new Date())) { onChange(`${y}-${String(m).padStart(2, "0")}-${String(d).padStart(2, "0")}`); return }
     }
     onChange("")
   }
-  const sel = { ...input, padding: "12px 8px", appearance: "auto" }
+  const sel = { ...input, padding: "12px 6px", appearance: "auto", minWidth: 0 }
   const ok = value ? new Date(value + "T12:00:00") : null
   const bad = day && mon && yr.length === 4 && !value
   return (
     <div>
-      <div style={{ display: "grid", gridTemplateColumns: "1fr 1.6fr 1.2fr", gap: 8 }}>
+      <div style={{ display: "grid", gridTemplateColumns: "minmax(0,1.1fr) minmax(0,1.5fr) minmax(0,1.1fr)", gap: 8 }}>
         <select aria-label="Day" value={day} onChange={e => { setDay(e.target.value); push(e.target.value, mon, yr) }} style={sel}>
           <option value="">Day</option>{Array.from({ length: 31 }, (_, i) => <option key={i} value={i + 1}>{i + 1}</option>)}
         </select>
@@ -405,7 +406,7 @@ function DateFields({ value, onChange, onEnter }) {
       </div>
       <div style={{ fontSize: 13, marginTop: 8, minHeight: 18, color: bad ? "#E08A6B" : M }}>
         {ok ? `You entered ${ok.toLocaleDateString("en-GB", { weekday: "long", day: "numeric", month: "long", year: "numeric" })}.`
-          : bad ? (+yr > thisYear || +yr < 1900 ? `Enter a year between 1900 and ${thisYear}.` : new Date(+yr, +mon - 1, +day) > new Date() ? "That date hasn't happened yet." : "That date doesn't exist. Check the day and month.") : "Day, month and the year you were born."}
+          : bad ? (+yr > hiYear || +yr < minYear ? `Enter a year between ${minYear} and ${hiYear}.` : !allowFuture && new Date(+yr, +mon - 1, +day) > new Date() ? "That date hasn't happened yet." : "That date doesn't exist. Check the day and month.") : hint}
       </div>
     </div>
   )
