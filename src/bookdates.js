@@ -33,6 +33,31 @@ export const BOOK_DATES = [
   { g: [1971, 2, 15], from: "Chapter 16 of Still Ruled by Rome", text: "Decimal Day: Britain abandons shillings and the pound becomes 100 new pence, on 15 February 1971 (Gregorian)." },
   { g: [2007, 9, 12], from: "Chapter 12 of Still Ruled by Rome", text: "Ethiopia celebrates its millennium: 1 Meskerem 2000 (Ethiopian), 12 September 2007 (Gregorian)." },
   { g: [2012, 12, 21], from: "Chapter 10 of Still Ruled by Rome", text: "The Maya Long Count completes a b'ak'tun, 13.0.0.0.0 (Maya Long Count), on 21 December 2012 (Gregorian). Tortuguero Monument 6, which mentions it, describes a ceremony, not a catastrophe." },
+  { g: [14, 8, 17], from: "Chapter 2 of Still Ruled by Rome", converted: true, text: "Augustus dies near Naples on 19 August AD 14 (Julian). The month of August still carries his name." },
+  { g: [337, 5, 23], from: "Chapter 3 of Still Ruled by Rome", converted: true, text: "Constantine, the emperor who made Sunday a day of rest in 321, dies on 22 May 337 (Julian)." },
+  { g: [632, 6, 11], from: "Chapter 11 of Still Ruled by Rome", converted: true, text: "The Prophet Muhammad dies in Medina on 8 June 632 (Julian). The Islamic calendar counts its years from his migration to Medina ten years earlier." },
+  { g: [1048, 5, 24], from: "Chapter 11 of Still Ruled by Rome", converted: true, text: "Omar Khayyam, poet and one of the astronomers behind Persia's Jalali calendar, is born on 18 May 1048 (Julian)." },
+  { g: [1131, 12, 11], from: "Chapter 11 of Still Ruled by Rome", converted: true, text: "Omar Khayyam dies in Nishapur on 4 December 1131 (Julian)." },
+  { g: [1241, 9, 29], from: "Chapter 17 of Still Ruled by Rome", converted: true, text: "Snorri Sturluson, who wrote down the Norse myths of the Sun and Moon in the Prose Edda, is killed on 22 September 1241 (Julian)." },
+  { g: [1388, 10, 27], from: "Chapter 9 of Still Ruled by Rome", converted: true, text: "Giovanni Dondi, builder of the Astrarium, an astronomical clock, in Padua, dies on 19 October 1388 (Julian)." },
+  { g: [1527, 7, 23], from: "Chapter 5 of Still Ruled by Rome", converted: true, text: "John Dee, who proposed an English calendar reform in 1583, is born on 13 July 1527 (Julian)." },
+  { g: [1533, 9, 17], from: "Chapter 5 of Still Ruled by Rome", converted: true, text: "Elizabeth I is born on 7 September 1533 (Julian). Under her, England kept the old calendar." },
+  { g: [1603, 4, 3], from: "Chapter 5 of Still Ruled by Rome", converted: true, text: "Elizabeth I dies on 24 March 1603 (Julian), the last day of the English year as it was then counted." },
+  { g: [1694, 10, 2], from: "Chapter 5 of Still Ruled by Rome", converted: true, text: "Lord Chesterfield, who steered Britain's 1750 Calendar Act, is born on 22 September 1694 (Julian)." },
+  { g: [1773, 3, 24], from: "Chapter 5 of Still Ruled by Rome", text: "Lord Chesterfield dies on 24 March 1773 (Gregorian)." },
+  { g: [1697, 11, 20], from: "Chapter 5 of Still Ruled by Rome", converted: true, text: "William Hogarth, painter of 'An Election Entertainment', is born on 10 November 1697 (Julian)." },
+  { g: [1764, 10, 26], from: "Chapter 5 of Still Ruled by Rome", text: "William Hogarth dies on 26 October 1764 (Gregorian)." },
+  { g: [1750, 3, 26], from: "Chapter 13 of Still Ruled by Rome", text: "Gilbert Romme, who led the making of France's Republican calendar, is born on 26 March 1750 (Gregorian)." },
+  { g: [1795, 6, 17], from: "Chapter 13 of Still Ruled by Rome", text: "Gilbert Romme dies on 17 June 1795 (Gregorian), 29 Prairial Year III (French Republican)." },
+  { g: [1819, 2, 14], from: "Chapter 16 of Still Ruled by Rome", text: "Christopher Latham Sholes, inventor of the QWERTY typewriter, is born on 14 February 1819 (Gregorian)." },
+  { g: [1890, 2, 17], from: "Chapter 16 of Still Ruled by Rome", text: "Christopher Latham Sholes dies on 17 February 1890 (Gregorian)." },
+  { g: [1879, 3, 14], from: "Chapter 9 of Still Ruled by Rome", text: "Albert Einstein is born in Ulm on 14 March 1879 (Gregorian). He later lived beside Bern's Zytglogge clock tower." },
+  { g: [1955, 4, 18], from: "Chapter 9 of Still Ruled by Rome", text: "Albert Einstein dies in Princeton on 18 April 1955 (Gregorian)." },
+  { g: [1894, 5, 5], from: "Chapter 16 of Still Ruled by Rome", text: "August Dvorak, who designed a faster keyboard that never replaced QWERTY, is born on 5 May 1894 (Gregorian)." },
+  { g: [1975, 10, 10], from: "Chapter 16 of Still Ruled by Rome", text: "August Dvorak dies on 10 October 1975 (Gregorian)." },
+  { g: [1890, 10, 14], from: "Chapter 15 of Still Ruled by Rome", text: "Dwight D. Eisenhower is born on 14 October 1890 (Gregorian)." },
+  { g: [1953, 3, 5], from: "Chapter 14 of Still Ruled by Rome", text: "Joseph Stalin, whose government replaced the seven-day week from 1929 to 1940, dies on 5 March 1953 (Gregorian)." },
+  { g: [1975, 8, 27], from: "Chapter 12 of Still Ruled by Rome", text: "Haile Selassie, the last Emperor of Ethiopia, dies on 27 August 1975 (Gregorian)." },
 ]
 
 // Position in the Sol year: 1-364 for month days, Leap Day between 28 June and 1 Sol, Year Day last.
@@ -43,7 +68,8 @@ export function solPos(ifc) {
 }
 
 const ENTRIES = BOOK_DATES.map(e => {
-  const ifc = toIFC(new Date(e.g[0], e.g[1] - 1, e.g[2], 12))
+  const d = new Date(2000, 0, 1, 12); d.setFullYear(e.g[0], e.g[1] - 1, e.g[2])
+  const ifc = toIFC(d)
   return { ...e, ifc, pos: solPos(ifc) }
 })
 
