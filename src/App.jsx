@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react'
-import { toEthiopian, IFC_MONTHS, WEEKDAYS, SHORT_WD, MONTH_NAMES, ordinal, fmtDate, countFriday13ths, daysUntil, isLeapYear, doy, toIFC, moonPhase } from './engine.js'
+import { toEthiopian, IFC_MONTHS, WEEKDAYS, SHORT_WD, MONTH_NAMES, ordinal, fmtDate, countFriday13ths, daysUntil, isLeapYear, doy, toIFC } from './engine.js'
 
 // ═══ IFC ENGINE (src/engine.js) ═══
 function sharedBirthday() {
@@ -89,7 +89,6 @@ function HomePage() {
   const [now, setNow] = useState(new Date())
   useEffect(() => { const i = setInterval(() => setNow(new Date()), 60000); return () => clearInterval(i) }, [])
   const ifc = toIFC(now)
-  const moon = moonPhase(now)
   const greg = now.toLocaleDateString('en-GB', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' })
 
   return (
@@ -130,17 +129,9 @@ function HomePage() {
         <div style={{ ...sub, marginTop: 4 }}>Today's Sol date in Google, Apple or Outlook, every day →</div>
       </a>
 
-      <div style={{ display: "flex", gap: 12, marginBottom: 12 }}>
-        <div style={{ ...card, flex: 1 }}>
-          <div style={label}>MOON</div>
-          <div style={{ fontSize: 28 }}>{moon.icon}</div>
-          <div style={{ fontSize: 13, color: T, marginTop: 4 }}>{moon.name}</div>
-          <div style={sub}>Day {moon.age} of 29.53</div>
-        </div>
-        <div style={{ ...card, flex: 1 }}>
-          <div style={label}>THIS SOL MONTH</div>
-          <MiniGrid day={ifc.day} />
-        </div>
+      <div style={card}>
+        <div style={label}>THIS SOL MONTH</div>
+        <MiniGrid day={ifc.day} />
       </div>
 
       {(() => { const [kind, text] = factOfDay(now); return (
@@ -188,8 +179,7 @@ function ConverterPage() {
     const d = new Date(dateStr + "T12:00:00")
     if (isNaN(d)) return
     const ifc = toIFC(d)
-    const moon = moonPhase(d)
-    setResult({ date: d, ifc, moon })
+    setResult({ date: d, ifc })
   }
 
   return (
@@ -217,9 +207,6 @@ function ConverterPage() {
               <div style={{ ...sub, marginTop: 8 }}>Month {result.ifc.monthNum} of 13 · Day {result.ifc.doy} of year</div>
             </>
           )}
-          <div style={{ marginTop: 12, paddingTop: 12, borderTop: `1px solid ${BD}` }}>
-            <span style={{ fontSize: 13, color: M }}>{result.moon.icon} {result.moon.name} · Moon age: {result.moon.age} days</span>
-          </div>
         </div>
       )}
 
@@ -508,7 +495,7 @@ function BirthdayPage() {
       <div style={{ textAlign: "center", marginBottom: 24 }}>
         <div style={tag}>SOL</div>
         <h1 style={h1}>Your True Birthday</h1>
-        <p style={sub}>The day of the week you'd celebrate every year. Forever.</p>
+        <p style={{ ...sub, fontSize: 15, color: T, lineHeight: 1.6, maxWidth: 420, margin: "8px auto 0" }}>Sol is a calendar of 13 months, each exactly 28 days. Every date falls on the same day of the week, every year. Enter your birthday to see yours.</p>
       </div>
 
       {shared && (
@@ -818,14 +805,15 @@ export default function App() {
   const [page, setPage] = useState(() => {
     if (sharedBirthday()) return "birthday"
     try { const go = new URLSearchParams(window.location.search).get("go"); if (["convert","birthday","history","waitlist","shop","privacy"].includes(go)) return go } catch {}
-    return "home"
+    try { const path = window.location.pathname.replace(/^\/+|\/+$/g, ""); const byPath = { today: "home", convert: "convert", birthday: "birthday", history: "history", shop: "shop", waitlist: "waitlist", privacy: "privacy" }[path]; if (byPath) return byPath } catch {}
+    return "birthday"
   })
   const pages = { home: HomePage, convert: ConverterPage, birthday: BirthdayPage, history: HistoryPage, waitlist: WaitlistPage, shop: ShopPage, privacy: PrivacyPage }
   const Page = pages[page]
   const navItems = [
+    { id: "birthday", label: "BIRTHDAY" },
     { id: "home", label: "TODAY" },
     { id: "convert", label: "CONVERT" },
-    { id: "birthday", label: "BIRTHDAY" },
     { id: "history", label: "HISTORY" },
     { id: "shop", label: "SHOP" },
   ]
