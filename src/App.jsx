@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react'
+import { bookDatesFor } from './bookdates.js'
 import { toEthiopian, IFC_MONTHS, WEEKDAYS, SHORT_WD, MONTH_NAMES, ordinal, fmtDate, countFriday13ths, daysUntil, isLeapYear, doy, toIFC } from './engine.js'
 
 // ═══ IFC ENGINE (src/engine.js) ═══
@@ -557,6 +558,24 @@ function BirthdayPage() {
               <div style={{ fontSize: 30, fontWeight: 700, color: G, fontFamily: SERIF }}>{result.f13}</div>
               <p style={{ ...sub, lineHeight: 1.6 }}>Friday the 13ths you've lived through so far. Cotsworth's original calendar would have given you thirteen a year. In Sol you'd have had none: the 13th is always a Saturday.</p>
             </div>
+
+            {(() => {
+              const hits = bookDatesFor(result.ifc)
+              const d = hits[0].diff
+              const when = d === 0 ? "ON YOUR TRUE BIRTHDAY" : `${Math.abs(d)} DAY${Math.abs(d) === 1 ? "" : "S"} ${d > 0 ? "AFTER" : "BEFORE"} YOUR TRUE BIRTHDAY`
+              return (
+                <div style={{ borderTop: `1px solid ${BD}`, margin: "0 0 16px", paddingTop: 16, textAlign: "left" }}>
+                  <div style={{ ...label, textAlign: "center" }}>{when}, IN HISTORY</div>
+                  {hits.map((h, i) => (
+                    <div key={i} style={{ marginTop: 8 }}>
+                      <div style={{ fontSize: 15, color: G, fontFamily: SERIF }}>{h.ifc.special || `${h.ifc.weekday} ${h.ifc.day} ${h.ifc.month}`} (Sol calendar)</div>
+                      <p style={{ fontSize: 14, color: T, lineHeight: 1.6 }}>{h.text}</p>
+                      <p style={{ fontSize: 12, color: M }}>From {h.from}.{h.converted ? " Sol date converted from the Julian calendar." : ""}</p>
+                    </div>
+                  ))}
+                </div>
+              )
+            })()}
 
             {shared && !shared.ifc.special && !result.ifc.special && (
               <p style={{ fontSize: 14, color: sameWeekday ? G : T, marginBottom: 16 }}>
