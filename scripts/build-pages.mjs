@@ -83,7 +83,7 @@ function page({ path, title, description, body, image = "default", noindex = fal
 <meta name="twitter:card" content="summary_large_image">${noindex ? '<meta name="robots" content="noindex">' : ""}${head}
 <meta name="theme-color" content="#1A1A2E"><link rel="icon" href="/icon-192.png"><link rel="manifest" href="/manifest.json">
 <style>${css}</style>
-<script src="/va.js"></script><script defer src="/_vercel/insights/script.js"></script>
+<script>window.va=window.va||function(){(window.vaq=window.vaq||[]).push(arguments)}</script><script defer src="/_vercel/insights/script.js"></script>
 </head><body><main>
 <a class="tag" href="/">SOL</a>
 ${body}
