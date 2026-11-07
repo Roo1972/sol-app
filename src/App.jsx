@@ -701,6 +701,13 @@ function ShopPage() {
         <p style={{ fontSize: 14, color: T, lineHeight: 1.6 }}>Thirteen months of 28 days, all on one A3 page. Every month starts on a Monday, so the 13th always falls on a Saturday. Friday the 13th can't happen. Includes Year Day and Leap Day. It's undated, so it never goes out of date.</p>
         <p style={{ fontSize: 12, color: M, marginTop: 8 }}>Instant PDF download, cream or navy. Print at home or at any print shop. Join the waitlist above to hear the day it's on sale.</p>
       </div>
+      <div style={{ ...card, marginTop: 16 }}>
+        <img src="/shop/certificate.jpg" alt="True Birthday certificate, sample" loading="lazy" style={{ width: "100%", borderRadius: 8, display: "block", marginBottom: 12 }} />
+        <div style={label}>PERSONALISED · COMING SOON</div>
+        <h2 style={{ ...h2, marginBottom: 6 }}>Your True Birthday Certificate</h2>
+        <p style={{ fontSize: 14, color: T, lineHeight: 1.6 }}>An A4 certificate made for one person: their name, the day they were born, and their True Birthday, the Sol date and weekday it falls on every year for life. A gift for anyone who loves history, maths or calendars.</p>
+        <p style={{ fontSize: 12, color: M, marginTop: 8 }}>Personalised PDF, print at home. Join the waitlist above to hear when it's available.</p>
+      </div>
       <div style={{ marginTop: 16 }}>
         {PRODUCTS.map(p => (
           <div key={p.name} style={{ ...card, marginBottom: 12 }}>
