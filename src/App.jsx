@@ -52,7 +52,7 @@ const FACTS = [
   ["Fact", "Moon, month, measure, metre and menses all trace back to one ancient root, *me-, to measure."],
   ["Myth", "'History' doesn't come from 'his story'. It comes from the Greek historia, meaning inquiry."],
   ["Myth", "'Hours' has nothing to do with the god Horus. It comes from the Greek hōra."],
-  ["Fact", "Big retailers such as Walmart, Tesco and M&S plan their year in 4-4-5 periods: quarters of 13 weeks."],
+  ["Fact", "Walmart and much of US retail plan their year on the 4-5-4 calendar: months of four, five and four weeks, so every quarter is exactly 13 weeks."],
   ["Fact", "The Ishango bone from the Congo, around 20,000 years old, may be one of the oldest calendar objects ever found."],
   ["Myth", "Railway gauge does not come from Roman chariot ruts. Snopes rates the story false; the similar width is coincidence."],
   ["Myth", "There's no evidence QWERTY was designed to slow typists down. Its patent never mentions jamming."],
