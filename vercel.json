@@ -4,7 +4,7 @@
   "outputDirectory": "dist",
   "rewrites": [
     {
-      "source": "/((?!_vercel/|assets/|date/|month/|b/|og/|book-art/|gift/|js/|shop/|va\\.js|notes|dates|months|lost-days|sitemap|robots).*)",
+      "source": "/((?!_vercel/|assets/|date/|month/|b/|og/|book-art/|gift/|js/|shop/|va\\.js|notes|dates|months|lost-days|friday13|sitemap|robots).*)",
       "destination": "/index.html"
     }
   ],

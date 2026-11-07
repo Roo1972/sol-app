@@ -247,6 +247,18 @@ var i=document.getElementById("eth-in"),o=document.getElementById("eth-out");i.v
 function show(){if(!i.value)return;var p=i.value.split("-"),r=eth(new Date(+p[0],p[1]-1,+p[2],12));o.innerHTML=r.d+" <span>"+r.m+" "+r.y+"</span>"}i.addEventListener("input",show);show()})()`)
   write("ethiopia.html", page({ path: "/ethiopia", title: `In Ethiopia it's ${now.year}: the 13-month calendar already in use — Sol`, description: "Ethiopia lives by a 13-month calendar: twelve months of 30 days and a thirteenth of five or six. See today's Ethiopian date and how it compares with Sol.", body }))
   urls.push("/ethiopia")
+  {
+    const body = `<h1>Friday the 13th can't happen in Sol</h1>
+<p class="muted">13 November 2026 is a Friday the 13th, the third this year. Here's why the calendar Sol is built on had thirteen of them a year, and Sol has none.</p>
+<div class="card"><h2>Cotsworth's calendar: one every month</h2><p>Moses Cotsworth's International Fixed Calendar has thirteen months of exactly 28 days. Every month started on a Sunday, so Sunday the 1st, Sunday the 8th, and then Friday the 13th. Every month. Thirteen a year.</p></div>
+<div class="card"><h2>Our calendar: one to three a year</h2><p>Months of 28 to 31 days push the weekdays around, so the 13th wanders. Every year has at least one Friday the 13th and never more than three: 2026 has three (February, March, November), 2027 has one (August), 2028 has one (October). Over the calendar's full 400-year cycle the 13th falls on a Friday 688 times, more often than on any other weekday.</p></div>
+<div class="card"><h2>Sol: none, ever</h2><p>Sol keeps Cotsworth's thirteen months of 28 days but starts the week on Monday, as the international standard ISO 8601 does. One day's shift: the 13th of every month is a Saturday, every year. Fridays fall on the 5th, 12th, 19th and 26th.</p></div>
+<div class="card"><h2>The fear is younger than you think</h2><p>The first clear record of Friday the 13th as unlucky is from 1869, in Henry Sutherland Edwards's biography of the composer Rossini, who died on Friday 13 November 1868. The story that it began with the arrest of the Knights Templar in 1307 has no support in any document from the time.</p></div>
+<a class="btn" href="/?go=birthday">COUNT THE FRIDAY THE 13THS YOU'VE LIVED THROUGH</a>
+<p class="muted">Sources: <a href="https://earthsky.org/human-world/13-month-calendar-would-mean-13-friday-the-13ths" target="_blank" rel="noopener">EarthSky (2021)</a> · <a href="https://gizmodo.com/why-people-think-friday-the-13th-is-unlucky-1306401570" target="_blank" rel="noopener">Gizmodo</a> · <a href="https://theweek.com/culture-life/behind-the-myth-of-friday-the-13th" target="_blank" rel="noopener">The Week</a> · <a href="https://gutenberg.org/ebooks/45705" target="_blank" rel="noopener">Edwards, The Life of Rossini (1869)</a>. The 400-year count is our own calculation.</p>`
+    write("friday13.html", page({ path: "/friday13", title: "Friday the 13th can't happen in Sol — Sol", description: "The 13-month calendar had a Friday the 13th every month. Sol starts the week on Monday, so it has none. Count the ones you've lived through.", body, image: "friday13" }))
+    urls.push("/friday13")
+  }
 }
 
 // ── Calendar feed: /sol.ics — one all-day entry per day with its Sol date, subscribed to from phones and laptops
