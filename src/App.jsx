@@ -695,6 +695,12 @@ function ShopPage() {
         <p style={{ fontSize: 14, color: T, lineHeight: 1.6 }}>October means eight. It is the tenth month. Nineteen chapters on how the calendar you live by was built, who tried to replace it, and why nobody did. Every claim sourced; every chapter's sources online at <a href="/notes" style={{ color: G }}>sol28.co.uk/notes</a>.</p>
         <p style={{ fontSize: 13, color: M, marginTop: 8 }}>Paperback and Kindle. Join the waitlist above to hear the day it's out.</p>
       </div>
+      <div style={{ ...goldCard, marginTop: 16 }}>
+        <div style={label}>THE POSTER · £4.99 · COMING SOON</div>
+        <h2 style={{ ...h2, marginBottom: 6 }}>The Sol Year: 13-Month Calendar Poster</h2>
+        <p style={{ fontSize: 14, color: T, lineHeight: 1.6 }}>Thirteen months of 28 days, all on one A3 page. Every month starts on a Monday, so the 13th always falls on a Saturday. Friday the 13th can't happen. Includes Year Day and Leap Day. It's undated, so it never goes out of date.</p>
+        <p style={{ fontSize: 12, color: M, marginTop: 8 }}>Instant PDF download, cream or navy. Print at home or at any print shop. Join the waitlist above to hear the day it's on sale.</p>
+      </div>
       <div style={{ marginTop: 16 }}>
         {PRODUCTS.map(p => (
           <div key={p.name} style={{ ...card, marginBottom: 12 }}>
