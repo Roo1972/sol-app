@@ -805,16 +805,37 @@ function PrivacyPage() {
   )
 }
 
+function TermsPage() {
+  const sec = (t, body) => (<div style={card}><h2 style={h2}>{t}</h2><p style={{ fontSize: 14, color: T, lineHeight: 1.7 }}>{body}</p></div>)
+  return (
+    <div>
+      <div style={{ textAlign: "center", marginBottom: 24 }}>
+        <div style={tag}>SOL</div>
+        <h1 style={h1}>Terms of Sale</h1>
+        <p style={sub}>Last updated 7 November 2026</p>
+      </div>
+      {sec("Who you're buying from", "Sol (sol28.co.uk) is run by Stephen Rooney, a sole trader. Address: [BUSINESS ADDRESS]. Email: hello@sol28.co.uk. Payments are taken by our checkout provider; we never see your card details.")}
+      {sec("What you're buying", "Sol products are digital downloads: PDF files you print at home or at a print shop. Each product page says what's included, the paper size and the price. Prices are in pounds sterling. [VAT LINE]")}
+      {sec("Delivery", "Your download link arrives by email straight after payment. If it hasn't arrived within an hour, check your spam folder, then email hello@sol28.co.uk and we'll send it again.")}
+      {sec("Your right to cancel", "You normally have 14 days to cancel an online purchase. For digital downloads that right ends once the download starts, and at checkout we ask you to agree to this before you can buy. Until you start the download, you can cancel for a full refund.")}
+      {sec("If something's wrong", "Under the Consumer Rights Act 2015, a download must be as described, of satisfactory quality and fit for purpose. If a file is faulty, won't open or isn't what the page described, email hello@sol28.co.uk within 30 days. We'll fix or replace it, and if we can't, we'll refund you. None of this affects your statutory rights.")}
+      {sec("Using what you buy", "Each purchase is for your own personal use. You can print as many copies as you like for yourself, your family or your classroom. Please don't resell, share or upload the files. The designs and text are copyright Stephen Rooney.")}
+      {sec("Your data", "We use your email address to deliver your purchase and, only if you've opted in, to send you news. See the Privacy page for details.")}
+      {sec("The law", "These terms are governed by the law of England and Wales. If you live elsewhere in the UK, you can also bring a claim in your local courts.")}
+    </div>
+  )
+}
+
 // ═══ MAIN APP ═══
 
 export default function App() {
   const [page, setPage] = useState(() => {
     if (sharedBirthday()) return "birthday"
-    try { const go = new URLSearchParams(window.location.search).get("go"); if (["convert","birthday","history","waitlist","shop","privacy"].includes(go)) return go } catch {}
-    try { const path = window.location.pathname.replace(/^\/+|\/+$/g, ""); const byPath = { today: "home", convert: "convert", birthday: "birthday", history: "history", shop: "shop", waitlist: "waitlist", privacy: "privacy" }[path]; if (byPath) return byPath } catch {}
+    try { const go = new URLSearchParams(window.location.search).get("go"); if (["convert","birthday","history","waitlist","shop","privacy","terms"].includes(go)) return go } catch {}
+    try { const path = window.location.pathname.replace(/^\/+|\/+$/g, ""); const byPath = { today: "home", convert: "convert", birthday: "birthday", history: "history", shop: "shop", waitlist: "waitlist", privacy: "privacy", terms: "terms" }[path]; if (byPath) return byPath } catch {}
     return "birthday"
   })
-  const pages = { home: HomePage, convert: ConverterPage, birthday: BirthdayPage, history: HistoryPage, waitlist: WaitlistPage, shop: ShopPage, privacy: PrivacyPage }
+  const pages = { home: HomePage, convert: ConverterPage, birthday: BirthdayPage, history: HistoryPage, waitlist: WaitlistPage, shop: ShopPage, privacy: PrivacyPage, terms: TermsPage }
   const Page = pages[page]
   const navItems = [
     { id: "birthday", label: "BIRTHDAY" },
@@ -830,6 +851,8 @@ export default function App() {
         <Page />
         <div style={{ textAlign: "center", padding: "24px 0 8px" }}>
           <button onClick={() => { setPage("privacy"); window.scrollTo(0, 0) }} style={{ background: "none", border: "none", color: M, fontSize: 12, textDecoration: "underline", cursor: "pointer" }}>Privacy</button>
+          <span style={{ color: M, fontSize: 12 }}> · </span>
+          <button onClick={() => { setPage("terms"); window.scrollTo(0, 0) }} style={{ background: "none", border: "none", color: M, fontSize: 12, textDecoration: "underline", cursor: "pointer" }}>Terms of sale</button>
           <span style={{ color: M, fontSize: 12 }}> · Sol — Time, fixed.</span>
         </div>
       </div>
