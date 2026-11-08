@@ -426,10 +426,10 @@ console.log(`Wrote ${urls.length - 1} pages + sitemap`)
   const li = s => `<li>${esc(s.cite)}${s.url ? ` <a href="${esc(s.url)}" target="_blank" rel="noopener">Read it&nbsp;↗</a>` : ""}</li>`
   const idx = notes.chapters.map(c => `<li><a href="/notes/${c.n}">${esc(c.title)}</a></li>`).join("")
   write("notes.html", page({ path: "/notes", title: "Sources and notes — Still Ruled by Rome — Sol", description: "Sources and further reading for every chapter of Still Ruled by Rome, with links to the originals.",
-    body: `<h1>Sources and notes</h1><p class="lead">${esc(notes.book)}</p><p>${esc(notes.intro)}</p><ol class="plain">${idx}</ol>` }))
+    body: `<a class="card gold" href="/shop" style="display:block;text-decoration:none"><div class="muted">THE BOOK</div><div class="big" style="font-size:22px">Still Ruled by Rome</div><p style="margin:6px 0 0">These are the sources. The story is in the book: how an empire set the calendar you live by. <span style="color:var(--gold);font-weight:700">Get the book →</span></p></a><h1>Sources and notes</h1><p class="lead">${esc(notes.book)}</p><p>${esc(notes.intro)}</p><ol class="plain">${idx}</ol>` }))
   for (const c of notes.chapters) {
     write(`notes/${c.n}.html`, page({ path: `/notes/${c.n}`, title: `${c.title} — sources — Sol`, description: `Sources and further reading for ${c.title} of Still Ruled by Rome.`,
-      body: `<p class="muted"><a href="/notes">All chapters</a></p><h1>${esc(c.title)}</h1><p>${esc(notes.intro)}</p><ol>${c.sources.map(li).join("")}</ol>` }))
+      body: `<a class="card gold" href="/shop" style="display:block;text-decoration:none"><div class="muted">THE BOOK</div><div class="big" style="font-size:22px">Still Ruled by Rome</div><p style="margin:6px 0 0">These are the sources. The story is in the book: how an empire set the calendar you live by. <span style="color:var(--gold);font-weight:700">Get the book →</span></p></a><p class="muted"><a href="/notes">All chapters</a></p><h1>${esc(c.title)}</h1><p>${esc(notes.intro)}</p><ol>${c.sources.map(li).join("")}</ol>` }))
     urls.push(`/notes/${c.n}`)
   }
   urls.push("/notes")
