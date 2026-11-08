@@ -108,6 +108,16 @@ function HomePage() {
             <div style={{ fontSize: 28, fontWeight: 900, color: W }}>{ifc.weekday}</div>
             <div style={{ fontSize: 22, fontWeight: 700, color: G }}>{ifc.day} {ifc.month}</div>
             <div style={{ ...sub, marginTop: 8 }}>Month {ifc.monthNum} of 13 · Day {ifc.day} of 28 · Week {Math.ceil(ifc.day/7)}</div>
+            {(() => {
+              const gw = now.toLocaleDateString('en-GB', { weekday: 'long' })
+              const n = ifc.day, s = (n % 10 === 1 && n !== 11) ? 'st' : (n % 10 === 2 && n !== 12) ? 'nd' : (n % 10 === 3 && n !== 13) ? 'rd' : 'th'
+              return (
+                <div style={{ fontSize: 14, color: T, marginTop: 12, lineHeight: 1.5 }}>
+                  Every {n}{s} is a {ifc.weekday} in Sol. Forever.{' '}
+                  {gw === ifc.weekday ? 'Today the two calendars happen to agree.' : `That's why it isn't ${gw}.`}
+                </div>
+              )
+            })()}
           </>
         )}
       </div>
