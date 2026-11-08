@@ -115,6 +115,7 @@ function HomePage() {
                 <div style={{ fontSize: 14, color: T, marginTop: 12, lineHeight: 1.5 }}>
                   Every {n}{s} is a {ifc.weekday} in Sol. Forever.{' '}
                   {gw === ifc.weekday ? 'Today the two calendars happen to agree.' : `That's why it isn't ${gw}.`}
+                  <a href="/birthday" style={{ display: "block", marginTop: 8, color: G, fontWeight: 700, textDecoration: "none" }}>Your birthday works the same way. Find yours →</a>
                 </div>
               )
             })()}
@@ -154,8 +155,12 @@ function HomePage() {
 
       <div style={{ ...card, textAlign: "center" }}>
         <div style={label}>COUNTDOWN</div>
-        <div style={{ fontSize: 34, fontWeight: 700, color: G, fontFamily: SERIF }}>{daysUntil(new Date(2029, 0, 1), now).toLocaleString("en-GB")} days</div>
-        <p style={{ ...sub, marginTop: 6, lineHeight: 1.6 }}>until 1 January 2029, the next time New Year's Day falls on a Monday — the day every Sol year begins.</p>
+        {(() => { const d = daysUntil(new Date(now.getFullYear(), 11, 31), now); return d <= 0 ? (
+          <div style={{ fontSize: 28, fontWeight: 700, color: G, fontFamily: SERIF }}>Today is Year Day</div>
+        ) : (<>
+          <div style={{ fontSize: 34, fontWeight: 700, color: G, fontFamily: SERIF }}>{d.toLocaleString("en-GB")} {d === 1 ? "day" : "days"}</div>
+          <p style={{ ...sub, marginTop: 6, lineHeight: 1.6 }}>until Year Day, 31 December: the one day of the year that belongs to no month and no week.</p>
+        </>) })()}
       </div>
 
       <div style={{ ...card, textAlign: "center" }}>
@@ -871,6 +876,13 @@ export default function App() {
     try { const path = window.location.pathname.replace(/^\/+|\/+$/g, ""); const byPath = { today: "home", convert: "convert", birthday: "birthday", history: "history", shop: "shop", waitlist: "waitlist", privacy: "privacy", terms: "terms" }[path]; if (byPath) return byPath } catch {}
     return "birthday"
   })
+  // Give every tab its own web address, so it can be shared and bookmarked
+  const PATHS = { home: "/today", convert: "/convert", birthday: "/birthday", history: "/history", shop: "/shop", waitlist: "/waitlist", privacy: "/privacy", terms: "/terms" }
+  const go = id => { setPage(id); try { if (window.location.pathname !== PATHS[id]) window.history.pushState({ page: id }, "", PATHS[id]) } catch {} ; window.scrollTo(0, 0) }
+  useEffect(() => {
+    const onPop = () => { const p = window.location.pathname.replace(/^\/+|\/+$/g, ""); const id = { today: "home", convert: "convert", birthday: "birthday", history: "history", shop: "shop", waitlist: "waitlist", privacy: "privacy", terms: "terms", "": "birthday" }[p]; if (id) setPage(id) }
+    window.addEventListener("popstate", onPop); return () => window.removeEventListener("popstate", onPop)
+  }, [])
   const pages = { home: HomePage, convert: ConverterPage, birthday: BirthdayPage, history: HistoryPage, waitlist: WaitlistPage, shop: ShopPage, privacy: PrivacyPage, terms: TermsPage }
   const Page = pages[page]
   const navItems = [
@@ -886,9 +898,9 @@ export default function App() {
       <div style={wrap}>
         <Page />
         <div style={{ textAlign: "center", padding: "24px 0 8px" }}>
-          <button onClick={() => { setPage("privacy"); window.scrollTo(0, 0) }} style={{ background: "none", border: "none", color: M, fontSize: 12, textDecoration: "underline", cursor: "pointer" }}>Privacy</button>
+          <button onClick={() => go("privacy")} style={{ background: "none", border: "none", color: M, fontSize: 12, textDecoration: "underline", cursor: "pointer" }}>Privacy</button>
           <span style={{ color: M, fontSize: 12 }}> · </span>
-          <button onClick={() => { setPage("terms"); window.scrollTo(0, 0) }} style={{ background: "none", border: "none", color: M, fontSize: 12, textDecoration: "underline", cursor: "pointer" }}>Terms of sale</button>
+          <button onClick={() => go("terms")} style={{ background: "none", border: "none", color: M, fontSize: 12, textDecoration: "underline", cursor: "pointer" }}>Terms of sale</button>
           <span style={{ color: M, fontSize: 12 }}> · Sol — Time, fixed.</span>
         </div>
       </div>
@@ -898,7 +910,7 @@ export default function App() {
         justifyContent: "space-around", zIndex: 100
       }}>
         {navItems.map(n => (
-          <button key={n.id} onClick={() => setPage(n.id)} style={navBtn(page === n.id)}>{n.label}</button>
+          <button key={n.id} onClick={() => go(n.id)} style={navBtn(page === n.id)}>{n.label}</button>
         ))}
       </nav>
       <div style={{ height: 60 }} />

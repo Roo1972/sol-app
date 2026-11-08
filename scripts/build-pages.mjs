@@ -435,3 +435,10 @@ console.log(`Wrote ${urls.length - 1} pages + sitemap`)
   urls.push("/notes")
   writeFileSync(join(OUT, "sitemap.xml"), `<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n${urls.map(u => `<url><loc>${SITE}${u}</loc><lastmod>${new Date().toISOString().slice(0, 10)}</lastmod></url>`).join("\n")}\n</urlset>\n`)
 }
+
+// ── App tabs at their own addresses (/today, /convert, /terms …): serve the app shell there too,
+// so links to these pages work when shared, bookmarked or opened fresh.
+{
+  const shell = readFileSync(join(OUT, "index.html"), "utf8")
+  for (const p of ["today", "convert", "birthday", "history", "shop", "waitlist", "privacy", "terms"]) writeFileSync(join(OUT, `${p}.html`), shell)
+}
