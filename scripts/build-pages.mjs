@@ -87,7 +87,7 @@ function page({ path, title, description, body, image = "default", noindex = fal
 </head><body><main>
 <a class="tag" href="/">SOL</a>
 ${body}
-<nav class="foot"><a href="/?go=birthday">Find your True Birthday</a><a href="/dates">Every date</a><a href="/months">The 13 months</a><a href="/lost-days">Lost Days</a><a href="/ethiopia">Ethiopia</a><a href="/calendar">Sol in your calendar</a><a href="/garden">Gardening</a><a href="/birds">Birdwatching</a><a href="/routine">Routine chart</a><a href="/?go=privacy">Privacy</a></nav>
+<nav class="foot"><a href="/?go=birthday">Find your True Birthday</a><a href="/dates">Every date</a><a href="/months">The 13 months</a><a href="/lost-days">Lost Days</a><a href="/ethiopia">Ethiopia</a><a href="/calendar">Sol in your calendar</a><a href="/garden">Gardening</a><a href="/birds">Birdwatching</a><a href="/routine">Routine and autism</a><a href="/?go=privacy">Privacy</a></nav>
 <p class="muted">Sol — Time, fixed.</p>
 </main></body></html>`
 }
