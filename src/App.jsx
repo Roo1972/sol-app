@@ -843,10 +843,13 @@ function ShopPage() {
         <p style={{ fontSize: 13, color: M, marginTop: 8 }}>Paperback and Kindle. Join the waitlist above to hear the day it's out.</p>
       </div>
       <div style={{ ...goldCard, marginTop: 16 }}>
-        <div style={label}>THE POSTER · £4.99 · COMING SOON</div>
+        <img src="/shop/poster.jpg" alt="The Sol Year poster in cream and in navy with gold" loading="lazy" style={{ width: "100%", borderRadius: 8, display: "block", marginBottom: 12 }} />
+        <div style={label}>THE POSTER · £4.99 · ON SALE NOW</div>
         <h2 style={{ ...h2, marginBottom: 6 }}>The Sol Year: 13-Month Calendar Poster</h2>
         <p style={{ fontSize: 14, color: T, lineHeight: 1.6 }}>Thirteen months of 28 days, all on one A3 page. Every month starts on a Monday, so the 13th always falls on a Saturday. Friday the 13th can't happen. Includes Year Day and Leap Day. It's undated, so it never goes out of date.</p>
-        <p style={{ fontSize: 12, color: M, marginTop: 8 }}>Instant PDF download, cream or navy. Print at home or at any print shop. Join the waitlist above to hear the day it's on sale.</p>
+        <p style={{ fontSize: 12, color: M, marginTop: 8, marginBottom: 14 }}>Instant PDF download, both versions: cream for home printing, navy with gold for a print shop. Prints at A4 and A5 too.</p>
+        <a href="https://hello-sol28-co-uk.kit.com/products/the-sol-year-13-month-calendar-poster-?utm_source=sol28&utm_medium=shop" target="_blank" rel="noopener" style={{ ...btn, display: "block", textAlign: "center", textDecoration: "none", boxSizing: "border-box" }}>BUY THE POSTER · £4.99</a>
+        <p style={{ fontSize: 11, color: M, marginTop: 8, textAlign: "center" }}>Secure checkout by Kit. Your download starts as soon as you pay. <a href="/terms" style={{ color: M }}>Terms of sale</a></p>
       </div>
       <div style={{ ...card, marginTop: 16 }}>
         <img src="/shop/certificate.jpg" alt="True Birthday certificate, sample" loading="lazy" style={{ width: "100%", borderRadius: 8, display: "block", marginBottom: 12 }} />
