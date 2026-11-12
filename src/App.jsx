@@ -859,9 +859,9 @@ function TermsPage() {
       <div style={{ textAlign: "center", marginBottom: 24 }}>
         <div style={tag}>SOL</div>
         <h1 style={h1}>Terms of Sale</h1>
-        <p style={sub}>Last updated 7 November 2026</p>
+        <p style={sub}>Last updated 12 November 2026</p>
       </div>
-      {sec("Who you're buying from", "Sol (sol28.co.uk) is run by Stephen Rooney, a sole trader. Postal address on request: email hello@sol28.co.uk. Email: hello@sol28.co.uk. Payments are taken by our checkout provider; we never see your card details.")}
+      {sec("Who you're buying from", "Sol (sol28.co.uk) is run by Stephen Rooney, a sole trader. Postal address: Level One, Basecamp Liverpool, 49 Jamaica Street, Liverpool L1 0AH, United Kingdom. Email: hello@sol28.co.uk. Payments are taken by our checkout provider; we never see your card details.")}
       {sec("What you're buying", "Sol products are digital downloads: PDF files you print at home or at a print shop. Each product page says what's included, the paper size and the price. Prices are in pounds sterling. Sol is not VAT-registered, so no VAT is added.")}
       {sec("Delivery", "Your download link arrives by email straight after payment. If it hasn't arrived within an hour, check your spam folder, then email hello@sol28.co.uk and we'll send it again.")}
       {sec("Your right to cancel", "You normally have 14 days to cancel an online purchase. For digital downloads that right ends once the download starts, and at checkout we ask you to agree to this before you can buy. Until you start the download, you can cancel for a full refund.")}
