@@ -966,12 +966,12 @@ function TermsPage() {
       <div style={{ textAlign: "center", marginBottom: 24 }}>
         <div style={tag}>SOL</div>
         <h1 style={h1}>Terms of Sale</h1>
-        <p style={sub}>Last updated 12 November 2026</p>
+        <p style={sub}>Last updated 12 November 2026 (evening)</p>
       </div>
       {sec("Who you're buying from", "Sol (sol28.co.uk) is run by Stephen Rooney, a sole trader. Postal address: Level One, Basecamp Liverpool, 49 Jamaica Street, Liverpool L1 0AH, United Kingdom. Email: hello@sol28.co.uk. Payments are taken by our checkout provider; we never see your card details.")}
       {sec("What you're buying", "Sol products are digital downloads: PDF files you print at home or at a print shop. Each product page says what's included, the paper size and the price. Prices are in pounds sterling. Sol is not VAT-registered, so no VAT is added.")}
       {sec("Delivery", "Your download link arrives by email straight after payment. If it hasn't arrived within an hour, check your spam folder, then email hello@sol28.co.uk and we'll send it again.")}
-      {sec("Your right to cancel", "You normally have 14 days to cancel an online purchase. For digital downloads that right ends once the download starts, and at checkout we ask you to agree to this before you can buy. Until you start the download, you can cancel for a full refund.")}
+      {sec("Your right to cancel", "You normally have 14 days to cancel an online purchase. For digital downloads that right ends once the download starts. Each product page says so directly above the buy button, and buying is how you ask for immediate access and agree to it. Your receipt email confirms this in writing. Until you start the download, you can cancel for a full refund.")}
       {sec("If something's wrong", "Under the Consumer Rights Act 2015, a download must be as described, of satisfactory quality and fit for purpose. If a file is faulty, won't open or isn't what the page described, email hello@sol28.co.uk within 30 days. We'll fix or replace it, and if we can't, we'll refund you. None of this affects your statutory rights.")}
       {sec("Using what you buy", "Each purchase is for your own personal use. You can print as many copies as you like for yourself, your family or your classroom. Please don't resell, share or upload the files. The designs and text are copyright Stephen Rooney.")}
       {sec("Your data", "We use your email address to deliver your purchase and, only if you've opted in, to send you news. See the Privacy page for details.")}
