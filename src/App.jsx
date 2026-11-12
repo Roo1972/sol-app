@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react'
 import { bookDatesFor } from './bookdates.js'
 import { sunAngle, moonInfo, solarReturn } from './sky.js'
+import { schedule, doubleMonths, extraPaydayPeriods, solRuns, toICS, key as dayKey } from './payday.js'
 import { toEthiopian, IFC_MONTHS, WEEKDAYS, SHORT_WD, MONTH_NAMES, ordinal, fmtDate, countFriday13ths, daysUntil, isLeapYear, doy, toIFC } from './engine.js'
 
 // ═══ IFC ENGINE (src/engine.js) ═══
@@ -229,90 +230,172 @@ function ConverterPage() {
 
       <p style={{ textAlign: "center", margin: "8px 0 0" }}><a href="/dates" style={{ color: G, fontSize: 14 }}>Browse every date in Sol →</a></p>
 
-      <PaydayCalculator />
+      <a href="/payday" style={{ ...goldCard, display: "block", marginTop: 24, textDecoration: "none" }}>
+        <div style={{ ...h2, marginBottom: 6 }}>The Payday Calendar →</div>
+        <p style={{ ...sub, lineHeight: 1.6 }}>PIP, State Pension, Universal Credit or four-weekly wages? See every payment for the next 12 months: the early ones, the long waits, and the months with two.</p>
+      </a>
     </div>
   )
 }
 
-function PaydayCalculator() {
-  const [dateStr, setDateStr] = useState("")
-  const [ucDay, setUcDay] = useState("")
+// ═══ THE PAYDAY CALENDAR ═══ Dates only: no amounts, nothing stored, nothing sent.
+const PAY_TYPES = [
+  { id: "pip", name: "PIP", every: 28 },
+  { id: "sp", name: "State Pension", every: 28 },
+  { id: "aa", name: "Attendance Allowance", every: 28 },
+  { id: "dla", name: "Disability Living Allowance", every: 28 },
+  { id: "pc", name: "Pension Credit", every: 28 },
+  { id: "cb", name: "Child Benefit", every: 28 },
+  { id: "ca", name: "Carer's Allowance (paid every 4 weeks)", short: "Carer's Allowance", every: 28 },
+  { id: "esa", name: "Employment and Support Allowance", short: "ESA", every: 14 },
+  { id: "jsa", name: "Jobseeker's Allowance", every: 14 },
+  { id: "uc", name: "Universal Credit", every: "month" },
+  { id: "wage", name: "Wages", every: null },
+]
+const PAY_SOURCES = {
+  how: "https://www.gov.uk/how-to-have-your-benefits-paid",
+  uc: "https://www.gov.uk/government/publications/universal-credit-different-earning-patterns-and-your-payments",
+  cb: "https://www.gov.uk/child-benefit-payment-dates/bank-holidays",
+}
+function PaydayPage() {
+  const [rows, setRows] = useState([{ type: "pip", date: "", freq: "28" }])
+  const [apStart, setApStart] = useState("")
   const [res, setRes] = useState(null)
+  useEffect(() => { const t = document.title; document.title = "The Payday Calendar: PIP, State Pension and Universal Credit dates — Sol"; return () => { document.title = t } }, [])
+  const setRow = (i, patch) => { setRows(rows.map((r, j) => j === i ? { ...r, ...patch } : r)); setRes(null) }
+  const hasWage = rows.some(r => r.type === "wage" && r.freq !== "month"), hasUC = rows.some(r => r.type === "uc")
+  const fmt = d => d.toLocaleDateString("en-GB", { weekday: "short", day: "numeric", month: "short", year: "numeric" })
+  const fmtS = d => d.toLocaleDateString("en-GB", { day: "numeric", month: "long" })
+  const fmtM = d => d.toLocaleDateString("en-GB", { month: "long", year: "numeric" })
 
   const run = () => {
-    if (!dateStr) return
-    const anchor = new Date(dateStr + "T12:00:00")
-    if (isNaN(anchor)) return
     const today = new Date(); today.setHours(12, 0, 0, 0)
-    const step = 28 * 86400000
-    const paydaysBetween = (from, to) => {
-      const k = Math.ceil((from - anchor) / step)
-      const out = []
-      for (let d = new Date(anchor.getTime() + k * step); d < to; d = new Date(d.getTime() + step)) out.push(d)
-      return out
-    }
-    // Tax year
-    const taxStart = new Date(today.getMonth() > 3 || (today.getMonth() === 3 && today.getDate() >= 6) ? today.getFullYear() : today.getFullYear() - 1, 3, 6, 12)
-    const taxEnd = new Date(taxStart.getFullYear() + 1, 3, 6, 12)
-    const days = paydaysBetween(taxStart, taxEnd)
-    // Calendar months with two paydays, over the next 12 months
-    const ahead = new Date(today.getFullYear() + 1, today.getMonth(), today.getDate(), 12)
-    const byMonth = {}
-    paydaysBetween(new Date(today.getFullYear(), today.getMonth(), 1, 12), ahead).forEach(d => { const key = `${MONTH_NAMES[d.getMonth()]} ${d.getFullYear()}`; byMonth[key] = (byMonth[key] || 0) + 1 })
-    const doubles = Object.keys(byMonth).filter(m => byMonth[m] > 1)
-    // Universal Credit assessment periods (optional): run from day N of one month to the day before day N of the next
-    let uc = null
-    // Accepts the start date of any assessment period (from the UC journal); only its day of the month matters
-    const ucDate = ucDay ? new Date(ucDay + "T12:00:00") : null
-    const n = ucDate && !isNaN(ucDate) ? ucDate.getDate() : NaN
-    if (n >= 1 && n <= 31) {
-      const periodStart = (y, m) => new Date(y, m, Math.min(n, new Date(y, m + 1, 0).getDate()), 12)
-      let y = today.getFullYear(), m = today.getMonth()
-      if (periodStart(y, m) > today) { m -= 1; if (m < 0) { m = 11; y -= 1 } }
-      for (let i = 0; i < 13 && !uc; i++) {
-        const a = periodStart(y, m + i), b = periodStart(y, m + i + 1)
-        const inP = paydaysBetween(a, b)
-        if (inP.length > 1) uc = { from: a, to: new Date(b.getTime() - 86400000), pays: inP }
-      }
-    }
-    setRes({ count: days.length, doubles, start: taxStart, end: new Date(taxEnd.getTime() - 86400000), uc, ucAsked: !!ucDay })
+    const items = []
+    rows.forEach(r => {
+      if (!r.date) return
+      const anchor = new Date(r.date + "T12:00:00"); if (isNaN(anchor)) return
+      const t = PAY_TYPES.find(x => x.id === r.type)
+      const every = r.type === "wage" ? (r.freq === "month" ? "month" : Number(r.freq)) : t.every
+      const name = t.short || t.name
+      const sched = schedule(anchor, every, today, 12, r.type !== "wage")
+      items.push({ id: r.type, name, every, anchor, sched, doubles: every === 28 ? doubleMonths(sched) : [], runs: every === 28 ? solRuns(sched) : [] })
+    })
+    if (!items.length) return
+    const all = items.flatMap(it => it.sched.map(s => ({ ...s, name: it.name, id: it.id }))).sort((a, b) => a.paid - b.paid)
+    let extra = []
+    const ap = apStart ? new Date(apStart + "T12:00:00") : null
+    const wage = items.find(it => it.id === "wage" && it.every !== "month")
+    if (ap && !isNaN(ap) && wage) extra = extraPaydayPeriods(wage.anchor, wage.every, ap, today, 13)
+    setRes({ items, all, extra, apAsked: !!(ap && wage) })
+    setTimeout(() => { const el = document.getElementById("payday-result"); if (el) el.scrollIntoView({ behavior: "smooth", block: "start" }) }, 50)
   }
-
-  const fmt = d => d.toLocaleDateString("en-GB", { day: "numeric", month: "long", year: "numeric" })
-  const fmtShort = d => d.toLocaleDateString("en-GB", { day: "numeric", month: "long" })
+  const download = () => {
+    const blob = new Blob([toICS(res.all)], { type: "text/calendar" })
+    const a = document.createElement("a"); a.href = URL.createObjectURL(blob); a.download = "my-paydays.ics"; document.body.appendChild(a); a.click(); a.remove()
+  }
+  const sel = { ...input, appearance: "auto" }
+  const small = { fontSize: 13, color: M, lineHeight: 1.6 }
+  const waits = res ? res.all.filter(r => r.longWait) : []
+  const src = (k, t) => <a href={PAY_SOURCES[k]} target="_blank" rel="noopener" style={{ color: G }}>{t}</a>
 
   return (
-    <div style={{ ...card, marginTop: 24 }}>
-      <h2 style={h2}>Paid every four weeks?</h2>
-      <p style={{ ...sub, lineHeight: 1.6, marginBottom: 12 }}>Then you're paid 13 times a year, not 12 — and once a year two paydays land close together. Enter any payday to see when.</p>
-      <label style={label}>ANY RECENT PAYDAY</label>
-      <input type="date" value={dateStr} onChange={e => setDateStr(e.target.value)} style={input} />
-      <label style={{ ...label, marginTop: 14 }}>ON UNIVERSAL CREDIT? START DATE OF ANY ASSESSMENT PERIOD (OPTIONAL)</label>
-      <input type="date" value={ucDay} onChange={e => setUcDay(e.target.value)} style={input} aria-describedby="uc-help" />
-      <p id="uc-help" style={{ fontSize: 12, color: M, marginTop: 6, lineHeight: 1.5 }}>It's on your Universal Credit statement in your online journal, e.g. "14 October to 13 November". Any period works.</p>
-      <button onClick={run} style={{ ...btn, marginTop: 12 }}>FIND MY EXTRA PAYDAY</button>
+    <div>
+      <style>{`@media print { * { background: #fff !important; color: #000 !important; border-color: #999 !important } .no-print { display: none !important } }`}</style>
+      <div style={{ textAlign: "center", padding: "28px 0 8px" }}>
+        <div style={{ fontSize: 11, color: G, letterSpacing: 4, fontWeight: 700 }}>SOL</div>
+        <h1 style={{ fontSize: 30, color: W, fontFamily: SERIF, fontWeight: 400, margin: "8px 0" }}>The Payday Calendar</h1>
+        <p style={{ fontSize: 15, color: T, lineHeight: 1.6 }}>Most benefits are paid every four weeks. That's <span style={gold}>13 payments a year</span>, not 12. Enter your last payment and see the year ahead: the early ones, the long waits, and the months with two.</p>
+      </div>
+      <div style={{ ...card, marginTop: 12 }} className="no-print">
+        {rows.map((r, i) => (
+          <div key={i} style={{ borderBottom: i < rows.length - 1 ? `1px solid ${BD}` : "none", paddingBottom: 14, marginBottom: 14 }}>
+            <label style={label} htmlFor={`pt${i}`}>WHAT YOU RECEIVE</label>
+            <select id={`pt${i}`} value={r.type} onChange={e => setRow(i, { type: e.target.value })} style={sel}>
+              {PAY_TYPES.map(t => <option key={t.id} value={t.id}>{t.name}</option>)}
+            </select>
+            {r.type === "wage" && (<>
+              <label style={{ ...label, marginTop: 12 }} htmlFor={`pf${i}`}>HOW OFTEN YOU'RE PAID</label>
+              <select id={`pf${i}`} value={r.freq} onChange={e => setRow(i, { freq: e.target.value })} style={sel}>
+                <option value="7">Every week</option><option value="14">Every 2 weeks</option><option value="28">Every 4 weeks</option><option value="month">Monthly, same date</option>
+              </select>
+            </>)}
+            <label style={{ ...label, marginTop: 12 }} htmlFor={`pd${i}`}>DATE OF YOUR LAST PAYMENT</label>
+            <input id={`pd${i}`} type="date" value={r.date} onChange={e => setRow(i, { date: e.target.value })} style={input} />
+            {r.type === "uc" && <p style={{ ...small, marginTop: 6 }}>Use your usual payment date. If the last one came early for a weekend or bank holiday, enter the date it was due.</p>}
+            {rows.length > 1 && <button onClick={() => { setRows(rows.filter((_, j) => j !== i)); setRes(null) }} style={{ background: "none", border: "none", color: M, fontSize: 13, textDecoration: "underline", cursor: "pointer", marginTop: 8, padding: 0 }}>Remove</button>}
+          </div>
+        ))}
+        {rows.length < 6 && <button onClick={() => setRows([...rows, { type: "uc", date: "", freq: "28" }])} style={{ ...btn, background: "none", color: G, border: `1px solid ${G}`, marginBottom: 12 }}>+ ADD ANOTHER PAYMENT</button>}
+        {hasWage && hasUC && (<div style={{ marginBottom: 12 }}>
+          <label style={label} htmlFor="apstart">START DATE OF ANY UNIVERSAL CREDIT ASSESSMENT PERIOD (OPTIONAL)</label>
+          <input id="apstart" type="date" value={apStart} onChange={e => { setApStart(e.target.value); setRes(null) }} style={input} />
+          <p style={{ ...small, marginTop: 6 }}>It's on your statement in your online journal, for example "14 October to 13 November". This shows which periods will count extra paydays.</p>
+        </div>)}
+        <button onClick={run} style={btn}>SHOW MY YEAR</button>
+        <p style={{ fontSize: 12, color: M, marginTop: 10, lineHeight: 1.6 }}>Worked out on your device. Nothing you enter is stored or sent anywhere. Dates only: this page never deals with amounts.</p>
+      </div>
+
       {res && (
-        <div style={{ marginTop: 16 }}>
-          <div style={{ fontSize: 30, fontWeight: 700, color: G, fontFamily: SERIF }}>{res.count} paydays</div>
-          <p style={{ ...sub, lineHeight: 1.6 }}>in this tax year ({fmt(res.start)} to {fmt(res.end)}).</p>
-          {res.doubles.length > 0 && (
-            <p style={{ fontSize: 15, color: W, marginTop: 8, lineHeight: 1.6 }}>
-              In the next 12 months, two paydays land in <span style={gold}>{res.doubles.join(" and ")}</span>. Plan that month on purpose rather than letting it disappear.
-            </p>
-          )}
-          {res.uc && (
-            <div style={{ ...goldCard, marginTop: 12 }}>
-              <p style={{ fontSize: 15, color: W, lineHeight: 1.6 }}>
-                <b>Universal Credit:</b> your assessment period from <span style={gold}>{fmtShort(res.uc.from)} to {fmt(res.uc.to)}</span> includes two paydays ({res.uc.pays.map(fmtShort).join(" and ")}). Both count as earnings in that period, so expect a lower Universal Credit payment for it.
-              </p>
-              <p style={{ fontSize: 12, color: M, marginTop: 8, lineHeight: 1.6 }}>Four-weekly pay means one assessment period a year counts two paydays (<a href="https://litrg.org.uk/benefits/universal-credit/universal-credit-and-employee-pay" style={{ color: G }} target="_blank" rel="noopener">LITRG guidance</a>). Check the exact dates in your Universal Credit journal.</p>
+        <div id="payday-result">
+          {res.items.map(it => (
+            <div key={it.id + it.name} style={card}>
+              <div style={label}>{it.name.toUpperCase()}</div>
+              <div style={{ fontSize: 26, fontWeight: 700, color: G, fontFamily: SERIF }}>{it.sched.length} payments</div>
+              <p style={sub}>in the next 12 months{it.every === 28 ? ", one every four weeks" : it.every === 14 ? ", one every two weeks" : it.every === 7 ? ", one every week" : ", one a month"}.</p>
+              {it.doubles.map((dm, i) => <p key={i} style={{ fontSize: 15, color: W, marginTop: 8, lineHeight: 1.6 }}>Two arrive in <span style={gold}>{fmtM(dm[0].paid)}</span> ({dm.map(x => fmtS(x.paid)).join(" and ")}). It isn't extra money: the next month's comes early in the cycle, so plan for it.</p>)}
+              {it.runs.length > 0 && !it.runs[0].label.includes("Day") && (
+                <p style={{ fontSize: 14, color: T, marginTop: 10, lineHeight: 1.6, borderTop: `1px solid ${BD}`, paddingTop: 10 }}>
+                  <strong style={{ color: W }}>In Sol</strong>, this payment is due on <span style={gold}>{it.runs[0].label}</span> of every month{it.runs.length > 1 ? <> until {fmtS(it.runs[0].to)}, then on <span style={gold}>{it.runs[1].label}</span></> : ""}. Every Sol month is exactly four weeks, so a four-weekly payment keeps its date.
+                </p>)}
+            </div>
+          ))}
+
+          {waits.length > 0 && (
+            <div style={goldCard}>
+              <h2 style={h2}>The long waits</h2>
+              <p style={{ ...small, marginBottom: 8 }}>When a payment comes early for a weekend or bank holiday, the next one doesn't. These are the stretches to plan for.</p>
+              {waits.map((r, i) => <p key={i} style={{ fontSize: 15, color: W, lineHeight: 1.6, marginBottom: 6 }}><strong>{r.name}</strong> arriving {fmt(r.paid)} has to last <span style={gold}>{r.toNext} days</span>.</p>)}
             </div>
           )}
-          {res.ucAsked && !res.uc && <p style={{ fontSize: 13, color: T, marginTop: 8 }}>No assessment period in the next year counts two paydays — check the day you entered against your Universal Credit journal.</p>}
-          {res.count === 14 && <p style={{ fontSize: 13, color: T, marginTop: 8 }}>This is one of the occasional tax years with a 14th payday.</p>}
-          <p style={{ fontSize: 12, color: M, marginTop: 12, lineHeight: 1.6 }}>In Sol, every month is exactly four weeks, so a four-weekly payday lands on the same date every month. This is a guide, not financial advice — check your payslips.</p>
+
+          {res.extra.length > 0 && (
+            <div style={goldCard}>
+              <h2 style={h2}>Universal Credit: periods with extra paydays</h2>
+              {res.extra.map((x, i) => <p key={i} style={{ fontSize: 15, color: W, lineHeight: 1.6, marginBottom: 6 }}><span style={gold}>{fmtS(x.from)} to {fmt(x.to)}</span>: {x.pays.length} paydays instead of {x.usual} ({x.pays.map(fmtS).join(", ")}).</p>)}
+              <p style={{ ...small, marginTop: 8 }}>All of them count as earnings in that period, so GOV.UK says you may get less Universal Credit for it, or none ({src("uc", "GOV.UK guidance")}). If a payment looks wrong, tell DWP in your online account.</p>
+            </div>
+          )}
+          {res.apAsked && res.extra.length === 0 && <p style={{ ...small, margin: "0 4px 12px" }}>No assessment period in the next year counts extra paydays. Check the dates you entered against your journal.</p>}
+
+          <div style={card}>
+            <h2 style={h2}>Every payment, in order</h2>
+            {res.all.map((r, i) => (
+              <div key={i} style={{ display: "flex", justifyContent: "space-between", gap: 10, padding: "8px 0", borderBottom: `1px solid ${BD}`, alignItems: "baseline" }}>
+                <span style={{ fontSize: 15, color: W }}>{fmt(r.paid)}{r.early && <span style={{ fontSize: 12, color: G }}> · early (due {fmtS(r.due)})</span>}</span>
+                <span style={{ fontSize: 13, color: r.longWait ? G : M, textAlign: "right" }}>{r.name}{r.longWait ? ` · ${r.toNext} days to next` : ""}</span>
+              </div>
+            ))}
+            <div className="no-print" style={{ display: "flex", gap: 8, marginTop: 14 }}>
+              <button onClick={download} style={{ ...btn, flex: 1 }}>ADD TO MY CALENDAR</button>
+              <button onClick={() => window.print()} style={{ ...btn, flex: 1, background: "none", color: G, border: `1px solid ${G}` }}>PRINT</button>
+            </div>
+          </div>
         </div>
       )}
+
+      <div style={card}>
+        <h2 style={h2}>How this works</h2>
+        <p style={small}>A planning tool, not benefits advice. Your award letter and your Universal Credit journal are the authority; if they disagree with this page, they are right.</p>
+        <p style={{ ...small, marginTop: 8 }}><strong style={{ color: T }}>How often:</strong> PIP, State Pension, Attendance Allowance, DLA and Pension Credit are usually paid every 4 weeks; ESA and Jobseeker's Allowance every 2 weeks; Universal Credit every month ({src("how", "GOV.UK")}).</p>
+        <p style={{ ...small, marginTop: 8 }}><strong style={{ color: T }}>Early payments:</strong> if a payment date falls on a weekend or bank holiday, you're usually paid on the working day before ({src("how", "GOV.UK")}). This page uses bank holidays for England and Wales. Wages are shown on their due date, because employers differ.</p>
+        <p style={{ ...small, marginTop: 8 }}><strong style={{ color: T }}>Child Benefit</strong> can follow different bank holiday dates: check {src("cb", "HMRC's table")}. <strong style={{ color: T }}>Universal Credit on the 29th, 30th or 31st:</strong> check your journal for short months.</p>
+        <p style={{ ...small, marginTop: 8 }}><strong style={{ color: T }}>Scotland:</strong> PIP has been replaced by Adult Disability Payment, and some bank holidays differ. <strong style={{ color: T }}>Northern Ireland:</strong> Universal Credit is usually paid twice a month, and bank holidays differ.</p>
+        <p style={{ ...small, marginTop: 8 }}>For help with a claim, contact <a href="https://www.citizensadvice.org.uk/benefits/" target="_blank" rel="noopener" style={{ color: G }}>Citizens Advice</a> or <a href="https://www.turn2us.org.uk/" target="_blank" rel="noopener" style={{ color: G }}>Turn2us</a>. Rules checked against GOV.UK on 12 November 2026.</p>
+      </div>
+      <div style={{ ...card, textAlign: "center" }} className="no-print">
+        <p style={{ fontSize: 15, color: T, lineHeight: 1.6 }}>Sol is a calendar of 13 months, each exactly four weeks. The benefits system already pays by it.</p>
+        <a href="/birthday" style={{ color: G, fontSize: 15 }}>Find your True Birthday in Sol →</a>
+      </div>
     </div>
   )
 }
@@ -902,18 +985,18 @@ function TermsPage() {
 export default function App() {
   const [page, setPage] = useState(() => {
     if (sharedBirthday()) return "birthday"
-    try { const go = new URLSearchParams(window.location.search).get("go"); if (["convert","birthday","history","waitlist","shop","privacy","terms"].includes(go)) return go } catch {}
-    try { const path = window.location.pathname.replace(/^\/+|\/+$/g, ""); const byPath = { today: "home", convert: "convert", birthday: "birthday", history: "history", shop: "shop", waitlist: "waitlist", privacy: "privacy", terms: "terms" }[path]; if (byPath) return byPath } catch {}
+    try { const go = new URLSearchParams(window.location.search).get("go"); if (["convert","birthday","history","waitlist","shop","privacy","terms","payday"].includes(go)) return go } catch {}
+    try { const path = window.location.pathname.replace(/^\/+|\/+$/g, ""); const byPath = { today: "home", convert: "convert", birthday: "birthday", history: "history", shop: "shop", waitlist: "waitlist", privacy: "privacy", terms: "terms", payday: "payday" }[path]; if (byPath) return byPath } catch {}
     return "birthday"
   })
   // Give every tab its own web address, so it can be shared and bookmarked
-  const PATHS = { home: "/today", convert: "/convert", birthday: "/birthday", history: "/history", shop: "/shop", waitlist: "/waitlist", privacy: "/privacy", terms: "/terms" }
+  const PATHS = { home: "/today", convert: "/convert", birthday: "/birthday", history: "/history", shop: "/shop", waitlist: "/waitlist", privacy: "/privacy", terms: "/terms", payday: "/payday" }
   const go = id => { setPage(id); try { if (window.location.pathname !== PATHS[id]) window.history.pushState({ page: id }, "", PATHS[id]) } catch {} ; window.scrollTo(0, 0) }
   useEffect(() => {
-    const onPop = () => { const p = window.location.pathname.replace(/^\/+|\/+$/g, ""); const id = { today: "home", convert: "convert", birthday: "birthday", history: "history", shop: "shop", waitlist: "waitlist", privacy: "privacy", terms: "terms", "": "birthday" }[p]; if (id) setPage(id) }
+    const onPop = () => { const p = window.location.pathname.replace(/^\/+|\/+$/g, ""); const id = { today: "home", convert: "convert", birthday: "birthday", history: "history", shop: "shop", waitlist: "waitlist", privacy: "privacy", terms: "terms", payday: "payday", "": "birthday" }[p]; if (id) setPage(id) }
     window.addEventListener("popstate", onPop); return () => window.removeEventListener("popstate", onPop)
   }, [])
-  const pages = { home: HomePage, convert: ConverterPage, birthday: BirthdayPage, history: HistoryPage, waitlist: WaitlistPage, shop: ShopPage, privacy: PrivacyPage, terms: TermsPage }
+  const pages = { home: HomePage, convert: ConverterPage, birthday: BirthdayPage, history: HistoryPage, waitlist: WaitlistPage, shop: ShopPage, privacy: PrivacyPage, terms: TermsPage, payday: PaydayPage }
   const Page = pages[page]
   const navItems = [
     { id: "birthday", label: "BIRTHDAY" },
@@ -928,6 +1011,8 @@ export default function App() {
       <div style={wrap}>
         <Page />
         <div style={{ textAlign: "center", padding: "24px 0 8px" }}>
+          <button onClick={() => go("payday")} style={{ background: "none", border: "none", color: M, fontSize: 12, textDecoration: "underline", cursor: "pointer" }}>Payday Calendar</button>
+          <span style={{ color: M, fontSize: 12 }}> · </span>
           <button onClick={() => go("privacy")} style={{ background: "none", border: "none", color: M, fontSize: 12, textDecoration: "underline", cursor: "pointer" }}>Privacy</button>
           <span style={{ color: M, fontSize: 12 }}> · </span>
           <button onClick={() => go("terms")} style={{ background: "none", border: "none", color: M, fontSize: 12, textDecoration: "underline", cursor: "pointer" }}>Terms of sale</button>
