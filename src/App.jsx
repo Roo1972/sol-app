@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react'
 import { bookDatesFor } from './bookdates.js'
+import { sunAngle, moonInfo, solarReturn } from './sky.js'
 import { toEthiopian, IFC_MONTHS, WEEKDAYS, SHORT_WD, MONTH_NAMES, ordinal, fmtDate, countFriday13ths, daysUntil, isLeapYear, doy, toIFC } from './engine.js'
 
 // ═══ IFC ENGINE (src/engine.js) ═══
@@ -573,6 +574,29 @@ function BirthdayPage() {
               <div style={{ fontSize: 30, fontWeight: 700, color: G, fontFamily: SERIF }}>{result.f13}</div>
               <p style={{ ...sub, lineHeight: 1.6 }}>Friday the 13ths you've lived through so far. Cotsworth's original calendar would have given you thirteen a year. In Sol you'd have had none: the 13th is always a Saturday.</p>
             </div>
+
+            {(() => {
+              const b = result.date
+              const noon = new Date(Date.UTC(b.getFullYear(), b.getMonth(), b.getDate(), 12))
+              const angle = sunAngle(noon)
+              const moon = moonInfo(noon)
+              const now = new Date()
+              let ret = solarReturn(angle, now.getFullYear(), b.getMonth(), b.getDate())
+              if (ret < now) ret = solarReturn(angle, now.getFullYear() + 1, b.getMonth(), b.getDate())
+              const retDay = ret.toLocaleDateString("en-GB", { weekday: "long", day: "numeric", month: "long", year: "numeric", timeZone: "Europe/London" })
+              const retTime = ret.toLocaleTimeString("en-GB", { hour: "2-digit", minute: "2-digit", timeZone: "Europe/London" })
+              const row = { display: "flex", justifyContent: "space-between", alignItems: "baseline", gap: 12, padding: "8px 0", borderBottom: `1px solid ${BD}` }
+              return (
+                <div style={{ borderTop: `1px solid ${BD}`, margin: "0 0 16px", paddingTop: 16, textAlign: "left" }}>
+                  <div style={{ ...label, textAlign: "center" }}>THE SKY ON THE DAY YOU WERE BORN</div>
+                  <div style={row}><span style={{ fontSize: 13, color: M }}>The Sun</span><span style={{ fontSize: 15, color: W, fontFamily: SERIF, textAlign: "right" }}><strong style={{ color: G }}>{Math.round(angle) % 360}°</strong> past the March equinox</span></div>
+                  <div style={row}><span style={{ fontSize: 13, color: M }}>The Moon</span><span style={{ fontSize: 15, color: W, fontFamily: SERIF, textAlign: "right" }}><strong style={{ color: G }}>Day {moon.day}</strong> · {moon.phase}</span></div>
+                  <div style={row}><span style={{ fontSize: 13, color: M }}>The week</span><span style={{ fontSize: 15, color: W, fontFamily: SERIF, textAlign: "right" }}>A <strong style={{ color: G }}>{b.toLocaleDateString("en-GB", { weekday: "long" })}</strong> on the ordinary calendar</span></div>
+                  <p style={{ fontSize: 14, color: T, lineHeight: 1.6, marginTop: 12 }}>Your <strong style={{ color: W }}>solar birthday</strong> is the moment the Sun returns to that exact point. Next: <strong style={{ color: G }}>{retDay}</strong>, at about <strong style={{ color: G }}>{retTime}</strong> UK time. It arrives nearly six hours later each year, which is why leap years exist.</p>
+                  <p style={{ fontSize: 12, color: M, lineHeight: 1.6, marginTop: 6 }}>Worked out for midday on your birth date. If you were born earlier or later in the day, your solar birthday moves by the same amount. You were born in lunation {moon.lunation.toLocaleString("en-GB")}, counting new moons the way astronomers do. Three clocks, the Sun, the Moon and the week, and none of them divides evenly into the others.</p>
+                </div>
+              )
+            })()}
 
             {(() => {
               const hits = bookDatesFor(result.ifc)
