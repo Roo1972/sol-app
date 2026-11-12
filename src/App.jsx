@@ -78,8 +78,8 @@ const goldCard = { ...card, border: `1px solid ${G}`, background: "rgba(212,160,
 const btn = { background: G, color: D, border: "none", borderRadius: 8, padding: "12px 24px", fontSize: 14, fontWeight: 700, cursor: "pointer", letterSpacing: 1, width: "100%" }
 const btnOutline = { ...btn, background: "transparent", color: G, border: `1px solid ${G}` }
 const input = { width: "100%", padding: "12px 16px", fontSize: 16, background: "#15152A", border: `1px solid ${BD}`, borderRadius: 8, color: W, boxSizing: "border-box" }
-const navBtn = (active) => ({ background: active ? G : "transparent", color: active ? D : M, border: "none", padding: "8px 0", fontSize: 11, fontWeight: 700, cursor: "pointer", flex: 1, letterSpacing: 1 })
-const label = { fontSize: 11, color: M, letterSpacing: 2, fontWeight: 700, marginBottom: 8, display: "block" }
+const navBtn = (active) => ({ background: active ? G : "transparent", color: active ? D : M, border: "none", padding: "8px 0", fontSize: 12, fontWeight: 700, cursor: "pointer", flex: 1, letterSpacing: 1 })
+const label = { fontSize: 12, color: M, letterSpacing: 2, fontWeight: 700, marginBottom: 8, display: "block" }
 const h1 = { fontSize: 26, fontWeight: 700, color: W, marginBottom: 4, fontFamily: SERIF }
 const h2 = { fontSize: 19, fontWeight: 700, color: W, marginBottom: 12, fontFamily: SERIF }
 const sub = { fontSize: 13, color: M }
@@ -152,7 +152,7 @@ function HomePage() {
         <div style={card}>
           <div style={label}>{kind === "Myth" ? "MYTH OF THE DAY" : "FACT OF THE DAY"}</div>
           <p style={{ fontSize: 15, color: W, lineHeight: 1.6, fontFamily: SERIF }}>{text}</p>
-          <p style={{ fontSize: 11, color: M, marginTop: 8 }}>Checked against the Sol Claim Registry. We never repeat a myth as fact.</p>
+          <p style={{ fontSize: 12, color: M, marginTop: 8 }}>Checked against the Sol Claim Registry. We never repeat a myth as fact.</p>
         </div>) })()}
 
       <div style={{ ...card, textAlign: "center" }}>
@@ -302,7 +302,7 @@ function PaydayPage() {
     <div>
       <style>{`@media print { * { background: #fff !important; color: #000 !important; border-color: #999 !important } .no-print { display: none !important } }`}</style>
       <div style={{ textAlign: "center", padding: "28px 0 8px" }}>
-        <div style={{ fontSize: 11, color: G, letterSpacing: 4, fontWeight: 700 }}>SOL</div>
+        <div style={{ fontSize: 12, color: G, letterSpacing: 4, fontWeight: 700 }}>SOL</div>
         <h1 style={{ fontSize: 30, color: W, fontFamily: SERIF, fontWeight: 400, margin: "8px 0" }}>The Payday Calendar</h1>
         <p style={{ fontSize: 15, color: T, lineHeight: 1.6 }}>Most benefits are paid every four weeks. That's <span style={gold}>13 payments a year</span>, not 12. Enter your last payment and see the year ahead: the early ones, the long waits, and the months with two.</p>
       </div>
@@ -332,7 +332,7 @@ function PaydayPage() {
           <p style={{ ...small, marginTop: 6 }}>It's on your statement in your online journal, for example "14 October to 13 November". This shows which periods will count extra paydays.</p>
         </div>)}
         <button onClick={run} style={btn}>SHOW MY YEAR</button>
-        <p style={{ fontSize: 12, color: M, marginTop: 10, lineHeight: 1.6 }}>Worked out on your device. Nothing you enter is stored or sent anywhere. Dates only: this page never deals with amounts.</p>
+        <p style={{ fontSize: 13, color: M, marginTop: 10, lineHeight: 1.6 }}>Worked out on your device. Nothing you enter is stored or sent anywhere. Dates only: this page never deals with amounts.</p>
       </div>
 
       {res && (
@@ -371,7 +371,7 @@ function PaydayPage() {
             <h2 style={h2}>Every payment, in order</h2>
             {res.all.map((r, i) => (
               <div key={i} style={{ display: "flex", justifyContent: "space-between", gap: 10, padding: "8px 0", borderBottom: `1px solid ${BD}`, alignItems: "baseline" }}>
-                <span style={{ fontSize: 15, color: W }}>{fmt(r.paid)}{r.early && <span style={{ fontSize: 12, color: G }}> · early (due {fmtS(r.due)})</span>}</span>
+                <span style={{ fontSize: 15, color: W }}>{fmt(r.paid)}{r.early && <span style={{ fontSize: 13, color: G }}> · early (due {fmtS(r.due)})</span>}</span>
                 <span style={{ fontSize: 13, color: r.longWait ? G : M, textAlign: "right" }}>{r.name}{r.longWait ? ` · ${r.toNext} days to next` : ""}</span>
               </div>
             ))}
@@ -456,7 +456,7 @@ function Reveal({ result, onDone }) {
         </div>
       )}
       {stage >= 3 && <div className="sol-ring" style={{ width: 96, height: 96, borderRadius: "50%", border: `2px solid ${G}`, margin: "14px auto 0", display: "flex", alignItems: "center", justifyContent: "center", fontFamily: SERIF, fontSize: ifc.special ? 18 : 40, fontWeight: 700, color: G }}>{ifc.special ? ifc.special : ifc.day}</div>}
-      <div style={{ fontSize: 11, color: M, marginTop: 16 }}>Tap to skip</div>
+      <div style={{ fontSize: 12, color: M, marginTop: 16 }}>Tap to skip</div>
     </div>
   )
 }
@@ -498,12 +498,23 @@ function DateFields({ value, onChange, onEnter }) {
   )
 }
 
+// A UK clock time on a given date as an instant (handles GMT, BST and the historic oddities in the time-zone database).
+function ukTime(y, m, d, hh, mm) {
+  const guess = Date.UTC(y, m, d, hh, mm)
+  try {
+    const parts = new Intl.DateTimeFormat("en-GB", { timeZone: "Europe/London", hourCycle: "h23", year: "numeric", month: "numeric", day: "numeric", hour: "numeric", minute: "numeric" }).formatToParts(new Date(guess))
+    const v = Object.fromEntries(parts.map(x => [x.type, +x.value]))
+    return new Date(guess - (Date.UTC(v.year, v.month - 1, v.day, v.hour, v.minute) - guess))
+  } catch { return new Date(guess) }
+}
+
 function BirthdayPage() {
   const [shared] = useState(sharedBirthday)
   const [dateStr, setDateStr] = useState("")
   const [result, setResult] = useState(null)
   const [revealed, setRevealed] = useState(false)
   const [copied, setCopied] = useState(false)
+  const [birthTime, setBirthTime] = useState("")
 
   const calculate = () => {
     if (!dateStr) return
@@ -559,6 +570,15 @@ function BirthdayPage() {
     x.fillStyle = M; x.font = "36px Georgia"
     x.fillText(`Friday the 13ths I've lived through: ${result.f13}`, 540, 1300)
     x.fillText("In Sol: none.", 540, 1356)
+    try {
+      const b = result.date
+      const at = /^\d\d:\d\d$/.test(birthTime) ? ukTime(b.getFullYear(), b.getMonth(), b.getDate(), +birthTime.slice(0, 2), +birthTime.slice(3)) : new Date(Date.UTC(b.getFullYear(), b.getMonth(), b.getDate(), 12))
+      const mi = moonInfo(at)
+      x.fillStyle = G; x.font = "bold 30px Georgia"; x.fillText("T H E   S K Y   T H A T   D A Y", 540, 1480)
+      x.fillStyle = W; x.font = "40px Georgia"
+      x.fillText(`Sun ${Math.round(sunAngle(at)) % 360}° past the March equinox`, 540, 1544)
+      x.fillText(`Moon day ${mi.day} · ${mi.phase}`, 540, 1600)
+    } catch {}
     x.fillStyle = G; x.font = "bold 46px Georgia"; x.fillText("sol28.co.uk", 540, 1700)
     x.fillStyle = M; x.font = "italic 34px Georgia"; x.fillText("Time, fixed.", 540, 1764)
     const a = document.createElement("a")
@@ -660,7 +680,8 @@ function BirthdayPage() {
 
             {(() => {
               const b = result.date
-              const noon = new Date(Date.UTC(b.getFullYear(), b.getMonth(), b.getDate(), 12))
+              const timed = /^\d\d:\d\d$/.test(birthTime)
+              const noon = timed ? ukTime(b.getFullYear(), b.getMonth(), b.getDate(), +birthTime.slice(0, 2), +birthTime.slice(3)) : new Date(Date.UTC(b.getFullYear(), b.getMonth(), b.getDate(), 12))
               const angle = sunAngle(noon)
               const moon = moonInfo(noon)
               const now = new Date()
@@ -676,7 +697,11 @@ function BirthdayPage() {
                   <div style={row}><span style={{ fontSize: 13, color: M }}>The Moon</span><span style={{ fontSize: 15, color: W, fontFamily: SERIF, textAlign: "right" }}><strong style={{ color: G }}>Day {moon.day}</strong> · {moon.phase}</span></div>
                   <div style={row}><span style={{ fontSize: 13, color: M }}>The week</span><span style={{ fontSize: 15, color: W, fontFamily: SERIF, textAlign: "right" }}>A <strong style={{ color: G }}>{b.toLocaleDateString("en-GB", { weekday: "long" })}</strong> on the ordinary calendar</span></div>
                   <p style={{ fontSize: 14, color: T, lineHeight: 1.6, marginTop: 12 }}>Your <strong style={{ color: W }}>solar birthday</strong> is the moment the Sun returns to that exact point. Next: <strong style={{ color: G }}>{retDay}</strong>, at about <strong style={{ color: G }}>{retTime}</strong> UK time. It arrives nearly six hours later each year, which is why leap years exist.</p>
-                  <p style={{ fontSize: 12, color: M, lineHeight: 1.6, marginTop: 6 }}>Worked out for midday on your birth date. If you were born earlier or later in the day, your solar birthday moves by the same amount. You were born in lunation {moon.lunation.toLocaleString("en-GB")}, counting new moons the way astronomers do. Three clocks, the Sun, the Moon and the week, and none of them divides evenly into the others.</p>
+                  <div style={{ margin: "12px 0 4px" }}>
+                    <label htmlFor="birth-time" style={{ ...label, display: "block" }}>TIME YOU WERE BORN, UK TIME (OPTIONAL)</label>
+                    <input id="birth-time" type="time" value={birthTime} onChange={e => setBirthTime(e.target.value)} style={{ ...input, marginTop: 6 }} />
+                  </div>
+                  <p style={{ fontSize: 13, color: M, lineHeight: 1.6, marginTop: 6 }}>{timed ? `Worked out for ${birthTime} UK time on your birth date, to within a few minutes.` : "Worked out for midday on your birth date. Add your birth time above and the solar birthday becomes exact to within a few minutes."} Born abroad? Convert your birth time to UK time first. Nothing you type here leaves your device. You were born in lunation {moon.lunation.toLocaleString("en-GB")}, counting new moons the way astronomers do. Three clocks, the Sun, the Moon and the week, and none of them divides evenly into the others.</p>
                 </div>
               )
             })()}
@@ -692,7 +717,7 @@ function BirthdayPage() {
                     <div key={i} style={{ marginTop: 8 }}>
                       <div style={{ fontSize: 15, color: G, fontFamily: SERIF }}>{h.ifc.special || `${h.ifc.weekday} ${h.ifc.day} ${h.ifc.month}`} (Sol calendar)</div>
                       <p style={{ fontSize: 14, color: T, lineHeight: 1.6 }}>{h.text}</p>
-                      <p style={{ fontSize: 12, color: M }}>From {h.from}.{h.converted ? " Sol date converted from the Julian calendar." : ""}</p>
+                      <p style={{ fontSize: 13, color: M }}>From {h.from}.{h.converted ? " Sol date converted from the Julian calendar." : ""}</p>
                     </div>
                   ))}
                 </div>
@@ -716,11 +741,11 @@ function BirthdayPage() {
       {result && revealed && <BirthdaySignup />}
 
       <div style={{ ...card, marginTop: 16 }}>
-        <p style={{ fontSize: 12, color: M, lineHeight: 1.7 }}>
+        <p style={{ fontSize: 13, color: M, lineHeight: 1.7 }}>
           Born on the 29th, 30th or 31st? Your birthday doesn't disappear — it converts to a permanent Sol date.
           Roughly one person in twelve was born on a 29th, 30th or 31st. Every one of those dates converts cleanly.
         </p>
-        <p style={{ fontSize: 11, color: M, lineHeight: 1.6, marginTop: 8 }}>Your birthday is worked out on your device and never sent anywhere. Shared links include only your Sol date, never your year of birth.</p>
+        <p style={{ fontSize: 12, color: M, lineHeight: 1.6, marginTop: 8 }}>Your birthday is worked out on your device and never sent anywhere. Shared links include only your Sol date, never your year of birth.</p>
       </div>
     </div>
   )
@@ -752,7 +777,7 @@ function HistoryPage() {
         <div key={i} style={card}>
           <h2 style={h2}>{s.title}</h2>
           <p style={{ fontSize: 14, color: T, lineHeight: 1.7 }}>{s.text}</p>
-          {s.src && <p style={{ fontSize: 12, color: M, marginTop: 10, lineHeight: 1.6 }}>Sources: {s.src.map(([l, u], j) => <span key={j}>{j ? " · " : ""}<a href={u} {...(u.startsWith("http") ? { target: "_blank", rel: "noopener" } : {})} style={{ color: G }}>{l}</a></span>)} · <a href={`/notes/${s.ch}`} style={{ color: G }}>All sources for this chapter of the book</a></p>}
+          {s.src && <p style={{ fontSize: 13, color: M, marginTop: 10, lineHeight: 1.6 }}>Sources: {s.src.map(([l, u], j) => <span key={j}>{j ? " · " : ""}<a href={u} {...(u.startsWith("http") ? { target: "_blank", rel: "noopener" } : {})} style={{ color: G }}>{l}</a></span>)} · <a href={`/notes/${s.ch}`} style={{ color: G }}>All sources for this chapter of the book</a></p>}
         </div>
       ))}
       <div style={{ ...card, textAlign: "center" }}>
@@ -768,7 +793,7 @@ function HistoryPage() {
         <p style={{ fontSize: 14, color: G, fontStyle: "italic" }}>
           We're not using this calendar because it's the best one. We're using it because it's the one we inherited.
         </p>
-        <p style={{ fontSize: 12, color: M, marginTop: 8 }}>Sol — Time, fixed.</p>
+        <p style={{ fontSize: 13, color: M, marginTop: 8 }}>Sol — Time, fixed.</p>
       </div>
     </div>
   )
@@ -812,9 +837,9 @@ function BirthdaySignup() {
       <p style={{ fontSize: 14, color: T, lineHeight: 1.6, marginBottom: 12 }}>Get the free one-page Sol calendar, a single sheet that never goes out of date, and hear first when the book and shop open.</p>
       <input type="email" aria-label="Email address" value={k.email} placeholder="you@example.com" onChange={e => k.setEmail(e.target.value)} onKeyDown={e => { if (e.key === "Enter") k.submit() }} style={input} />
       <button onClick={k.submit} disabled={k.status === "sending"} style={{ ...btn, marginTop: 10 }}>{k.status === "sending" ? "SENDING…" : "SEND ME THE CALENDAR"}</button>
-      {k.status === "invalid" && <p style={{ fontSize: 12, color: G, marginTop: 8, textAlign: "center" }}>Please enter a valid email address.</p>}
-      {k.status === "error" && <p style={{ fontSize: 12, color: G, marginTop: 8, textAlign: "center" }}>Something went wrong. Please try again.</p>}
-      <p style={{ fontSize: 11, color: M, marginTop: 8, textAlign: "center" }}>Confirmation email first. Sol news only; unsubscribe any time. Your birthday is never sent.</p>
+      {k.status === "invalid" && <p style={{ fontSize: 13, color: G, marginTop: 8, textAlign: "center" }}>Please enter a valid email address.</p>}
+      {k.status === "error" && <p style={{ fontSize: 13, color: G, marginTop: 8, textAlign: "center" }}>Something went wrong. Please try again.</p>}
+      <p style={{ fontSize: 12, color: M, marginTop: 8, textAlign: "center" }}>Confirmation email first. Sol news only; unsubscribe any time. Your birthday is never sent.</p>
     </div>
   )
 }
@@ -847,16 +872,16 @@ function ShopPage() {
         <div style={label}>THE POSTER · £4.99 · ON SALE NOW</div>
         <h2 style={{ ...h2, marginBottom: 6 }}>The Sol Year: 13-Month Calendar Poster</h2>
         <p style={{ fontSize: 14, color: T, lineHeight: 1.6 }}>Thirteen months of 28 days, all on one A3 page. Every month starts on a Monday, so the 13th always falls on a Saturday. Friday the 13th can't happen. Includes Year Day and Leap Day. It's undated, so it never goes out of date.</p>
-        <p style={{ fontSize: 12, color: M, marginTop: 8, marginBottom: 14 }}>Instant PDF download, both versions: cream for home printing, navy with gold for a print shop. Prints at A4 and A5 too.</p>
+        <p style={{ fontSize: 13, color: M, marginTop: 8, marginBottom: 14 }}>Instant PDF download, both versions: cream for home printing, navy with gold for a print shop. Prints at A4 and A5 too.</p>
         <a href="https://hello-sol28-co-uk.kit.com/products/the-sol-year-13-month-calendar-poster-?utm_source=sol28&utm_medium=shop" target="_blank" rel="noopener" style={{ ...btn, display: "block", textAlign: "center", textDecoration: "none", boxSizing: "border-box" }}>BUY THE POSTER · £4.99</a>
-        <p style={{ fontSize: 11, color: M, marginTop: 8, textAlign: "center" }}>Secure checkout by Kit. Your download starts as soon as you pay. <a href="/terms" style={{ color: M }}>Terms of sale</a></p>
+        <p style={{ fontSize: 12, color: M, marginTop: 8, textAlign: "center" }}>Secure checkout by Kit. Your download starts as soon as you pay. <a href="/terms" style={{ color: M }}>Terms of sale</a></p>
       </div>
       <div style={{ ...card, marginTop: 16 }}>
         <img src="/shop/certificate.jpg" alt="True Birthday certificate, sample" loading="lazy" style={{ width: "100%", borderRadius: 8, display: "block", marginBottom: 12 }} />
         <div style={label}>PERSONALISED · COMING SOON</div>
         <h2 style={{ ...h2, marginBottom: 6 }}>Your True Birthday Certificate</h2>
         <p style={{ fontSize: 14, color: T, lineHeight: 1.6 }}>An A4 certificate made for one person: their name, the day they were born, and their True Birthday, the Sol date and weekday it falls on every year for life. A gift for anyone who loves history, maths or calendars.</p>
-        <p style={{ fontSize: 12, color: M, marginTop: 8 }}>Personalised PDF, print at home. Join the waitlist above to hear when it's available.</p>
+        <p style={{ fontSize: 13, color: M, marginTop: 8 }}>Personalised PDF, print at home. Join the waitlist above to hear when it's available.</p>
       </div>
       <div style={{ marginTop: 16 }}>
         {PRODUCTS.map(p => (
@@ -864,7 +889,7 @@ function ShopPage() {
             <img src={p.img} alt={`${p.name}, sample pages`} loading="lazy" style={{ width: "100%", borderRadius: 8, display: "block", marginBottom: 12 }} />
             <h2 style={{ ...h2, marginBottom: 6 }}>{p.name}</h2>
             <p style={{ fontSize: 14, color: T, lineHeight: 1.6 }}>{p.text}</p>
-            <p style={{ fontSize: 12, color: M, marginTop: 8 }}>Instant PDF download, A4, print at home. Coming December 2026.</p>
+            <p style={{ fontSize: 13, color: M, marginTop: 8 }}>Instant PDF download, A4, print at home. Coming December 2026.</p>
           </div>
         ))}
         <div style={{ ...card, textAlign: "center" }}>
@@ -915,9 +940,9 @@ function WaitlistPage({ embedded }) {
           <button onClick={handleSubmit} disabled={status === "sending"} style={{ ...btn, marginTop: 12 }}>
             {status === "sending" ? "JOINING…" : "JOIN THE WAITLIST"}
           </button>
-          {status === "invalid" && <p style={{ fontSize: 12, color: G, marginTop: 8, textAlign: "center" }}>Please enter a valid email address.</p>}
-          {status === "error" && <p style={{ fontSize: 12, color: G, marginTop: 8, textAlign: "center" }}>Something went wrong. Please try again.</p>}
-          <p style={{ fontSize: 11, color: M, marginTop: 8, textAlign: "center" }}>We'll only use your email for Sol news. You'll get a confirmation email first, and you can unsubscribe anytime.</p>
+          {status === "invalid" && <p style={{ fontSize: 13, color: G, marginTop: 8, textAlign: "center" }}>Please enter a valid email address.</p>}
+          {status === "error" && <p style={{ fontSize: 13, color: G, marginTop: 8, textAlign: "center" }}>Something went wrong. Please try again.</p>}
+          <p style={{ fontSize: 12, color: M, marginTop: 8, textAlign: "center" }}>We'll only use your email for Sol news. You'll get a confirmation email first, and you can unsubscribe anytime.</p>
         </div>
       ) : (
         <div style={goldCard}>
@@ -938,7 +963,7 @@ function WaitlistPage({ embedded }) {
           <div style={{ marginBottom: 8 }}><span style={gold}>☀ Sol planners and journals</span> — 13 months of 28 days, built for the way Sol works.</div>
           <div><span style={gold}>☀ 28-day challenges</span> — printable workbooks that fit one Sol month exactly.</div>
         </div>
-        <p style={{ fontSize: 12, color: M, marginTop: 12 }}>Waitlist members hear first, with launch dates and early access.</p>
+        <p style={{ fontSize: 13, color: M, marginTop: 12 }}>Waitlist members hear first, with launch dates and early access.</p>
       </div>}
     </div>
   )
@@ -1014,12 +1039,14 @@ export default function App() {
       <div style={wrap}>
         <Page />
         <div style={{ textAlign: "center", padding: "24px 0 8px" }}>
-          <button onClick={() => go("payday")} style={{ background: "none", border: "none", color: M, fontSize: 12, textDecoration: "underline", cursor: "pointer" }}>Payday Calendar</button>
-          <span style={{ color: M, fontSize: 12 }}> · </span>
-          <button onClick={() => go("privacy")} style={{ background: "none", border: "none", color: M, fontSize: 12, textDecoration: "underline", cursor: "pointer" }}>Privacy</button>
-          <span style={{ color: M, fontSize: 12 }}> · </span>
-          <button onClick={() => go("terms")} style={{ background: "none", border: "none", color: M, fontSize: 12, textDecoration: "underline", cursor: "pointer" }}>Terms of sale</button>
-          <span style={{ color: M, fontSize: 12 }}> · Sol — Time, fixed.</span>
+          <a href="/about" style={{ color: M, fontSize: 13 }}>About</a>
+          <span style={{ color: M, fontSize: 13 }}> · </span>
+          <button onClick={() => go("payday")} style={{ background: "none", border: "none", color: M, fontSize: 13, textDecoration: "underline", cursor: "pointer" }}>Payday Calendar</button>
+          <span style={{ color: M, fontSize: 13 }}> · </span>
+          <button onClick={() => go("privacy")} style={{ background: "none", border: "none", color: M, fontSize: 13, textDecoration: "underline", cursor: "pointer" }}>Privacy</button>
+          <span style={{ color: M, fontSize: 13 }}> · </span>
+          <button onClick={() => go("terms")} style={{ background: "none", border: "none", color: M, fontSize: 13, textDecoration: "underline", cursor: "pointer" }}>Terms of sale</button>
+          <span style={{ color: M, fontSize: 13 }}> · Sol — Time, fixed.</span>
         </div>
       </div>
       <nav style={{

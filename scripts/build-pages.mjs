@@ -60,12 +60,12 @@ const css = `:root{--navy:#1A1A2E;--card:#22223A;--line:#34344F;--gold:#D4A017;-
 *{box-sizing:border-box}body{margin:0;background:var(--navy);color:var(--text);font:16px/1.65 system-ui,-apple-system,"Segoe UI",sans-serif}
 main{max-width:640px;margin:0 auto;padding:24px 16px 48px}a{color:var(--gold)}
 h1,h2{font-family:Georgia,"Times New Roman",serif;color:var(--white);line-height:1.25}h1{font-size:30px;margin:8px 0 4px}h2{font-size:21px;margin:0 0 10px}
-.tag{font-size:11px;letter-spacing:4px;color:var(--gold);font-weight:700;text-decoration:none}
+.tag{font-size:12px;letter-spacing:4px;color:var(--gold);font-weight:700;text-decoration:none}
 .card{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:20px;margin:14px 0}
 .gold{border-color:var(--gold);background:rgba(212,160,23,.06)}
 .big{font-family:Georgia,serif;font-size:30px;color:var(--white);font-weight:700}.big span{color:var(--gold)}
 .muted{color:var(--muted);font-size:14px}.btn{display:block;text-align:center;background:var(--gold);color:var(--navy);font-weight:700;letter-spacing:1px;padding:13px;border-radius:8px;text-decoration:none;margin-top:12px}
-table{width:100%;border-collapse:collapse;font-size:15px}td,th{padding:8px 6px;border-bottom:1px solid var(--line);text-align:left}th{color:var(--muted);font-size:12px;letter-spacing:1px}
+table{width:100%;border-collapse:collapse;font-size:15px}td,th{padding:8px 6px;border-bottom:1px solid var(--line);text-align:left}th{color:var(--muted);font-size:13px;letter-spacing:1px}
 .grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(130px,1fr));gap:6px}.grid a{display:block;padding:6px 8px;background:var(--card);border-radius:6px;text-decoration:none;font-size:14px}
 .tl{border-left:2px solid var(--gold);margin-left:8px;padding-left:18px}.tl .card{position:relative}.tl .card:before{content:"";position:absolute;left:-27px;top:24px;width:14px;height:14px;border-radius:50%;background:var(--gold)}
 nav.foot{margin-top:32px;font-size:14px;color:var(--muted);display:flex;flex-wrap:wrap;gap:14px}`
@@ -87,7 +87,7 @@ function page({ path, title, description, body, image = "default", noindex = fal
 </head><body><main>
 <a class="tag" href="/">SOL</a>
 ${body}
-<nav class="foot"><a href="/?go=birthday">Find your True Birthday</a><a href="/dates">Every date</a><a href="/months">The 13 months</a><a href="/lost-days">Lost Days</a><a href="/ethiopia">Ethiopia</a><a href="/calendar">Sol in your calendar</a><a href="/garden">Gardening</a><a href="/birds">Birdwatching</a><a href="/routine">Routine and autism</a><a href="/payday">Payday Calendar</a><a href="/?go=privacy">Privacy</a></nav>
+<nav class="foot"><a href="/?go=birthday">Find your True Birthday</a><a href="/dates">Every date</a><a href="/months">The 13 months</a><a href="/lost-days">Lost Days</a><a href="/ethiopia">Ethiopia</a><a href="/calendar">Sol in your calendar</a><a href="/garden">Gardening</a><a href="/birds">Birdwatching</a><a href="/routine">Routine and autism</a><a href="/payday">Payday Calendar</a><a href="/about">About</a><a href="/embed">Put Sol on your site</a><a href="/?go=privacy">Privacy</a></nav>
 <p class="muted">Sol — Time, fixed.</p>
 </main></body></html>`
 }
@@ -416,6 +416,51 @@ document.getElementById("nowline").textContent=s;var pb=document.getElementById(
 
 urls.push("/payday")
 
+// ── About
+write("about.html", page({ path: "/about", title: "About Sol — who makes it and why", description: "Sol is a 13-month calendar made by one person in Liverpool: 13 months of 28 days, every date on the same weekday, every year.",
+  body: `<h1>About Sol</h1><p class="lead">A calendar where every month is the same four weeks, and your birthday never changes weekday.</p>
+<div class="card"><h2>What it is</h2>
+<p>Sol is the International Fixed Calendar: 13 months of 28 days, plus one Year Day that belongs to no week. In leap years there is a Leap Day too. Every month starts on a Monday and ends on a Sunday, so the 13th is always a Saturday and Friday the 13th cannot happen.</p>
+<p>The design is not ours. Moses Cotsworth, who worked for the North Eastern Railway in York, proposed it in the early 1900s. It is in the public domain: nobody owns it. His version started the week on Sunday; Sol starts on Monday, the international standard today. Cotsworth named the thirteenth month, at midsummer, Sol. The name is his, not ours.</p></div>
+<div class="card"><h2>Who makes it</h2>
+<p>Sol is made by Stephen Rooney in Liverpool. He spent thirty-five years working on holographic head-up displays, the glass that puts flight data in a pilot's line of sight, for aircraft including the F-16 Fighting Falcon, the Eurofighter Typhoon and the F-22 Raptor.</p>
+<p>That work is about showing someone exactly what they need at the moment they need it, with nothing left to work out. A calendar should do the same. The one we all use doesn't: you can't say what weekday a date falls on without looking it up.</p>
+<p>There is no company behind Sol and no investors. It is one person, a website and a book.</p></div>
+<div class="card"><h2>What we promise</h2>
+<p><strong>We never repeat a myth as fact.</strong> Calendar history is full of good stories that turn out to be untrue. Everything here is checked against a source, and the sources for the book are published in full on the <a href="/notes">notes pages</a>. If you find a mistake, tell us and we will fix it.</p>
+<p><strong>We don't sell your details.</strong> The birthday you type in stays on your device. See the <a href="/?go=privacy">privacy page</a>.</p>
+<p><strong>We are not trying to abolish your calendar.</strong> Sol runs alongside the ordinary one. Use it for a habit, a budget or a birthday and see whether a year that repeats is easier to live in.</p></div>
+<div class="card"><h2>Get in touch</h2>
+<p>Email <a href="mailto:hello@sol28.co.uk">hello@sol28.co.uk</a>. On social media Sol is @sol28official.</p>
+<p class="muted">Sol, Level One, Basecamp Liverpool, 49 Jamaica Street, Liverpool L1 0AH, United Kingdom. SOL28 is the subject of UK trade mark application UK00004474331.</p></div>
+<a class="btn" href="/?go=birthday">FIND YOUR TRUE BIRTHDAY</a>` }))
+urls.push("/about")
+
+// ── Today in Sol badge (the only page other sites are allowed to frame; see vercel.json) and its instructions
+{
+  mkdirSync(join(OUT, "js"), { recursive: true })
+  writeFileSync(join(OUT, "js/badge.js"), `(function(){try{var M=${JSON.stringify(SOL_MONTHS)},W=${JSON.stringify(WEEKDAYS)};var t=new Date(),y=t.getFullYear(),L=(y%4===0&&(y%100!==0||y%400===0));
+var n=Math.round((Date.UTC(y,t.getMonth(),t.getDate())-Date.UTC(y,0,1))/864e5)+1,s;
+if(n===(L?366:365))s="Year Day";else if(L&&n===169)s="Leap Day";else{var a=L&&n>169?n-1:n,m=Math.ceil(a/28),d=(a-1)%28+1;s=W[(d-1)%7]+" "+d+" "+M[m-1];}
+document.getElementById("sol").textContent=s;
+document.getElementById("greg").textContent=t.toLocaleDateString("en-GB",{weekday:"short",day:"numeric",month:"short",year:"numeric"})+" on the ordinary calendar";}catch(e){}})();
+`)
+  write("badge.html", `<!doctype html><html lang="en-GB"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Today in the Sol calendar</title><meta name="robots" content="noindex"><link rel="canonical" href="${SITE}/embed">
+<style>html,body{margin:0;height:100%}body{background:#1A1A2E;color:#D6D3C9;font:14px/1.4 system-ui,-apple-system,"Segoe UI",sans-serif;display:flex;align-items:center;justify-content:center;text-align:center}
+a{display:block;padding:14px 16px;color:inherit;text-decoration:none;border:1px solid #D4A017;border-radius:12px;width:100%;height:100%;box-sizing:border-box;display:flex;flex-direction:column;justify-content:center}
+.t{font-size:12px;letter-spacing:3px;color:#D4A017;font-weight:700}.d{font-family:Georgia,"Times New Roman",serif;font-size:24px;color:#F2EEE3;font-weight:700;margin:4px 0}.g{font-size:13px;color:#9A98AE}</style></head>
+<body><a href="${SITE}/?go=birthday" target="_blank" rel="noopener"><div class="t">TODAY IN SOL</div><div class="d" id="sol">The 13-month calendar</div><div class="g" id="greg">sol28.co.uk</div></a><script src="/js/badge.js" defer></script></body></html>`)
+  const code = `<iframe src="${SITE}/badge" title="Today in the Sol calendar" width="280" height="120" style="border:0;max-width:100%" loading="lazy"></iframe>`
+  write("embed.html", page({ path: "/embed", title: "Put today's Sol date on your website", description: "A free badge showing today's date in the 13-month Sol calendar. Copy one line of code into any website or blog.",
+    body: `<h1>Put today's Sol date on your site</h1><p class="lead">A small badge that shows today's date in the 13-month calendar. It updates itself every day. Free to use.</p>
+<div class="card"><h2>What it looks like</h2><iframe src="/badge" title="Today in the Sol calendar" width="280" height="120" style="border:0;max-width:100%"></iframe></div>
+<div class="card"><h2>The code</h2><p>Copy this one line and paste it into your page wherever you want the badge. In WordPress use a Custom HTML block; most other site builders have an Embed or Code block that does the same job.</p>
+<textarea readonly rows="5" style="width:100%;font:13px/1.5 ui-monospace,Menlo,Consolas,monospace;background:var(--navy);color:var(--white);border:1px solid var(--line);border-radius:8px;padding:10px">${esc(code)}</textarea>
+<p class="muted">The badge sets no cookies and collects nothing about your visitors. Tapping it opens sol28.co.uk in a new tab.</p></div>
+<div class="card"><h2>Rather just link?</h2><p>A plain link to <a href="/">sol28.co.uk</a> is always welcome. If you run a school, club or blog and want something different, a larger size or a month view, email hello@sol28.co.uk.</p></div>` }))
+  urls.push("/embed")
+}
+
 // ── Sitemap and robots
 const today = new Date().toISOString().slice(0, 10)
 writeFileSync(join(OUT, "sitemap.xml"), `<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n${urls.map(u => `<url><loc>${SITE}${u}</loc><lastmod>${today}</lastmod></url>`).join("\n")}\n</urlset>\n`)
@@ -442,5 +487,5 @@ console.log(`Wrote ${urls.length - 1} pages + sitemap`)
 // so links to these pages work when shared, bookmarked or opened fresh.
 {
   const shell = readFileSync(join(OUT, "index.html"), "utf8")
-  for (const p of ["today", "convert", "birthday", "history", "shop", "waitlist", "privacy", "terms", "payday"]) writeFileSync(join(OUT, `${p}.html`), shell)
+  for (const p of ["today", "convert", "birthday", "history", "shop", "waitlist", "privacy", "terms", "payday", "ig", "tt", "fb", "x", "yt"]) writeFileSync(join(OUT, `${p}.html`), shell)
 }
