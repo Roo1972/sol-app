@@ -88,7 +88,7 @@ function page({ path, title, description, body, image = "default", noindex = fal
 </head><body><main>
 <a class="tag" href="/">SOL</a>
 ${body}
-<nav class="foot"><a href="/?go=birthday">Find your True Birthday</a><a href="/dates">Every date</a><a href="/months">The 13 months</a><a href="/lost-days">Lost Days</a><a href="/ethiopia">Ethiopia</a><a href="/calendar">Sol in your calendar</a><a href="/garden">Gardening</a><a href="/birds">Birdwatching</a><a href="/routine">Routine and autism</a><a href="/payday">Payday Calendar</a><a href="/facts">Facts</a><a href="/about">About</a><a href="/embed">Put Sol on your site</a><a href="/?go=privacy">Privacy</a></nav>
+<nav class="foot"><a href="/?go=birthday">Find your True Birthday</a><a href="/dates">Every date</a><a href="/months">The 13 months</a><a href="/lost-days">Lost Days</a><a href="/ethiopia">Ethiopia</a><a href="/calendar">Sol in your calendar</a><a href="/garden">Gardening</a><a href="/birds">Birdwatching</a><a href="/routine">Routine and autism</a><a href="/payday">Payday Calendar</a><a href="/facts">Facts</a><a href="/teachers">For teachers</a><a href="/about">About</a><a href="/embed">Put Sol on your site</a><a href="/?go=privacy">Privacy</a></nav>
 <p class="muted">Sol — Time, fixed.</p>
 </main></body></html>`
 }
@@ -489,6 +489,45 @@ write("about.html", page({ path: "/about", title: "About Sol — who makes it an
 <p class="muted">Sol, Level One, Basecamp Liverpool, 49 Jamaica Street, Liverpool L1 0AH, United Kingdom. SOL28 is the subject of UK trade mark application UK00004474331.</p></div>
 <a class="btn" href="/?go=birthday">FIND YOUR TRUE BIRTHDAY</a>` }))
 urls.push("/about")
+
+// ── Teachers: one free lesson with a printable worksheet
+{
+  const head = `<style>.ws{background:#fff;color:#1A1A2E;border-radius:12px;padding:24px;margin:14px 0}.ws h2,.ws h3{color:#1A1A2E;font-family:Georgia,serif}.ws ol li{margin:0 0 14px}.ws .box{border-bottom:1px solid #999;height:26px;margin-top:6px}
+.cal7{border-collapse:collapse;width:100%;table-layout:fixed}.cal7 td,.cal7 th{border:1px solid #999;text-align:center;padding:6px 2px;font-family:Georgia,serif;color:#1A1A2E}
+@media print{@page{size:A4;margin:12mm}body{background:#fff!important}main>*:not(.ws){display:none!important}.ws{padding:0;margin:0}.ws ol li{margin-bottom:6px}.ws .box{height:18px}.ws p{margin:4px 0}.ws h2{margin:0 0 6px}.cal7 td,.cal7 th{padding:3px 2px}.ws.answers{break-before:page}}</style>`
+  const grid = `<table class="cal7"><tr>${WEEKDAYS.map(w => `<th>${w.slice(0, 3)}</th>`).join("")}</tr>${[0, 1, 2, 3].map(r => `<tr>${[1, 2, 3, 4, 5, 6, 7].map(i => `<td>${r * 7 + i}</td>`).join("")}</tr>`).join("")}</table>`
+  const body = `<h1>For teachers: design a better calendar</h1><p class="lead">A free, ready-to-teach lesson. One hour, ages 9 to 14, no preparation beyond printing the worksheet.</p>
+<div class="card"><h2>What pupils do</h2><p>They find out why their birthday lands on a different weekday every year, using division with remainders, then design a calendar where it never moves. Along the way they meet a real calendar used by a whole country, and a retail calendar that big shops use today.</p>
+<p><strong>Maths practised:</strong> division with remainders, multiples of 7, multiplication, reasoning and explaining. <strong>Also good for:</strong> history (how calendars are made), debate and persuasive speaking.</p></div>
+<div class="card"><h2>Lesson plan</h2>
+<p><strong>Starter, 10 minutes.</strong> Ask: "What day of the week was your birthday this year? What will it be next year?" Pupils check on a calendar or phone. Most move on by one day; some by two. Why?</p>
+<p><strong>Explain, 5 minutes.</strong> A year has 365 days. 365 ÷ 7 = 52 remainder 1. Fifty-two whole weeks fit, and one day is left over, so every date slides one weekday each year. In a leap year there are two left over.</p>
+<p><strong>Design challenge, 20 minutes.</strong> "Design a calendar where every month holds whole weeks, so dates never change weekday." Pupils test month lengths. 30 days? Not a multiple of 7. 28 days is exactly four weeks, and 13 × 28 = 364, one short of a year. One spare day is left: what should happen to it? Groups decide and justify.</p>
+<p><strong>Reveal, 10 minutes.</strong> This design is real. In the early 1900s Moses Cotsworth, who worked for the North Eastern Railway in York, proposed 13 months of 28 days plus one extra day belonging to no week. He called the extra month Sol. Then show:</p>
+<ul><li>Ethiopia uses a calendar with 13 months today: twelve of 30 days, and a short thirteenth.</li><li>Many big retailers report on a 4-4-5 calendar: each quarter is 13 weeks, split 4, 4 and 5.</li><li>Kodak ran 13 equal 28-day accounting periods, 1928–1989; employees lived by the Gregorian calendar.</li></ul>
+<p><strong>Plenary, 15 minutes.</strong> Debate: should we switch? For: birthdays and dates never change weekday; every month the same length. Against: 13 is a prime number, so the year no longer splits into halves or quarters of whole months; and some people object that a day outside the week breaks the seven-day cycle. Vote at the end.</p></div>
+<div class="card"><h2>Extension ideas</h2><p>Use the <a href="/?go=birthday">True Birthday</a> tool to convert pupils' birthdays. Look up any date at <a href="/dates">every date</a>. Read short sourced answers on the <a href="/facts">facts pages</a>. For a maths-and-nature follow-up, the <a href="/birds">birding year</a> shows how scientists count days of the year.</p>
+<p class="muted">Free to print and use in your classroom. We'd love to hear how it went, and what to improve: hello@sol28.co.uk.</p>
+<button class="btn noprint" style="width:100%;border:0;cursor:pointer;font-size:14px" id="printws">PRINT THE WORKSHEET</button></div>
+<div class="ws"><h2>Design a better calendar</h2><p>Name: ______________________</p>
+<ol>
+<li>A normal year has 365 days. How many whole weeks is that, and how many days are left over?<div class="box"></div></li>
+<li>A leap year has 366 days. How many days are left over after the whole weeks?<div class="box"></div></li>
+<li>Your birthday is on a Tuesday this year. There is no 29 February before your next birthday. What day will it be next year?<div class="box"></div></li>
+<li>A calendar has 13 months of 28 days. How many days is that? How many days are left over in a normal year?<div class="box"></div></li>
+<li>In this calendar every month starts on a Monday. Use the grid to answer: what weekday is the 13th? What weekday is the 25th?${grid}<div class="box"></div></li>
+<li>Can Friday the 13th ever happen in this calendar? Explain why.<div class="box"></div><div class="box"></div></li>
+<li>13 is a prime number. Why might that be a problem for a business that reports every quarter (every three months)?<div class="box"></div><div class="box"></div></li>
+<li>Challenge: design your own calendar for 365 days. How many months? How long is each? What happens to any spare days?<div class="box"></div><div class="box"></div><div class="box"></div></li>
+</ol><p style="font-size:12px;color:#555">sol28.co.uk · Time, fixed.</p></div>
+<div class="ws answers"><h3>Answers for teachers</h3><ol>
+<li>52 weeks, 1 day left over (365 = 52 × 7 + 1).</li><li>2 days left over (366 = 52 × 7 + 2).</li><li>Wednesday.</li><li>364 days; 1 day left over.</li><li>The 13th is a Saturday. The 25th is a Thursday.</li>
+<li>No. Every 13th is a Saturday, in every month, every year.</li><li>Thirteen months can't be split into four equal quarters of whole months. Businesses that want equal quarters use 13 weeks instead (4 + 4 + 5 weeks).</li><li>Any reasoned answer. Look for months built from whole weeks and a clear rule for spare days.</li></ol></div>
+<script src="/js/teachers.js" defer></script>`
+  writeFileSync(join(OUT, "js/teachers.js"), `(function(){var b=document.getElementById("printws");if(b)b.addEventListener("click",function(){window.print()})})();`)
+  write("teachers.html", page({ path: "/teachers", title: "Free calendar maths lesson: design a better calendar — Sol", description: "A free one-hour lesson for ages 9 to 14: why birthdays change weekday, division with remainders, and designing a 13-month calendar. Printable worksheet and answers.", body, head }))
+  urls.push("/teachers")
+}
 
 // ── Fact pages: one checked fact per page, each with its source. Only facts marked safe in the project's claim rules go here.
 {
