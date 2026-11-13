@@ -87,7 +87,7 @@ function page({ path, title, description, body, image = "default", noindex = fal
 </head><body><main>
 <a class="tag" href="/">SOL</a>
 ${body}
-<nav class="foot"><a href="/?go=birthday">Find your True Birthday</a><a href="/dates">Every date</a><a href="/months">The 13 months</a><a href="/lost-days">Lost Days</a><a href="/ethiopia">Ethiopia</a><a href="/calendar">Sol in your calendar</a><a href="/garden">Gardening</a><a href="/birds">Birdwatching</a><a href="/routine">Routine and autism</a><a href="/payday">Payday Calendar</a><a href="/about">About</a><a href="/embed">Put Sol on your site</a><a href="/?go=privacy">Privacy</a></nav>
+<nav class="foot"><a href="/?go=birthday">Find your True Birthday</a><a href="/dates">Every date</a><a href="/months">The 13 months</a><a href="/lost-days">Lost Days</a><a href="/ethiopia">Ethiopia</a><a href="/calendar">Sol in your calendar</a><a href="/garden">Gardening</a><a href="/birds">Birdwatching</a><a href="/routine">Routine and autism</a><a href="/payday">Payday Calendar</a><a href="/facts">Facts</a><a href="/about">About</a><a href="/embed">Put Sol on your site</a><a href="/?go=privacy">Privacy</a></nav>
 <p class="muted">Sol — Time, fixed.</p>
 </main></body></html>`
 }
@@ -435,6 +435,50 @@ write("about.html", page({ path: "/about", title: "About Sol — who makes it an
 <p class="muted">Sol, Level One, Basecamp Liverpool, 49 Jamaica Street, Liverpool L1 0AH, United Kingdom. SOL28 is the subject of UK trade mark application UK00004474331.</p></div>
 <a class="btn" href="/?go=birthday">FIND YOUR TRUE BIRTHDAY</a>` }))
 urls.push("/about")
+
+// ── Fact pages: one checked fact per page, each with its source. Only facts marked safe in the project's claim rules go here.
+{
+  const FACTS = [
+    { slug: "friday-the-13th", q: "Can Friday the 13th happen in a 13-month calendar?", a: "Not in Sol. The 13th is always a Saturday.",
+      p: ["Every Sol month starts on a Monday and has exactly 28 days, so each date keeps the same weekday in every month of every year. The 13th always lands on a Saturday.", "Moses Cotsworth's original version started the week on Sunday. In his calendar the 13th fell on a Friday in all thirteen months: thirteen Friday the 13ths a year. Sol's Monday start removes every one of them."],
+      src: "Arithmetic: 28 days is exactly four weeks. Monday start follows ISO 8601, the international standard for dates.", more: ["/friday13", "Friday the 13th in Sol"] },
+    { slug: "kodak", q: "Did Kodak really use a 13-month calendar?", a: "Not quite. Kodak ran 13 equal 28-day accounting periods, 1928–1989.",
+      p: ["Kodak ran 13 equal 28-day accounting periods, 1928–1989; employees lived by the Gregorian calendar.", "The periods were a tool for the company's books: every period the same length, so one could be compared fairly with the next. The story often gets stretched into a whole company living on a different calendar. We have found no evidence for that, so we don't say it."],
+      src: "Kodak's own period calendars for 1985 to 1990, and an Associated Press report of 11 September 1988 on the company's move to the ordinary calendar.", more: ["/notes", "Sources for the book"] },
+    { slug: "retail-4-4-5", q: "Do big shops already use a different calendar?", a: "Yes. Many retailers report on a 4-4-5 calendar, not on ordinary months.",
+      p: ["In a 4-4-5 calendar each quarter is three periods of four, four and five weeks. Every quarter is exactly 13 weeks and every period starts on the same weekday, so this year's trading can be compared with last year's week for week.", "The US National Retail Federation publishes a version, arranged 4-5-4. Walmart, Tesco and Marks & Spencer are among the retailers that use this kind of calendar, and accounting software from SAP, Oracle and QuickBooks supports it. The ordinary month is awkward enough that some of the largest businesses in the world don't use it to compare their trading."],
+      src: "National Retail Federation 4-5-4 calendar; company annual reports; vendor documentation.", more: ["/payday", "The Payday Calendar"] },
+    { slug: "ethiopia", q: "Does any country use 13 months today?", a: "Yes. Ethiopia's calendar has 13 months.",
+      p: ["Ethiopia's calendar has twelve months of 30 days and a short thirteenth month. Its year count also runs seven or eight years behind the one used in most of the world.", "It is a different design from Sol, which has 13 months of 28 days. But it shows that a country can run on thirteen months without difficulty."],
+      src: "The Ethiopian calendar as used in Ethiopia today.", more: ["/ethiopia", "Convert a date to the Ethiopian calendar"] },
+    { slug: "igbo", q: "Was the 13 × 28 calendar invented more than once?", a: "Yes. The Igbo of Nigeria developed a 13 × 28 structure independently.",
+      p: ["The traditional Igbo calendar divides the year into thirteen months of 28 days. It was developed in what is now Nigeria, with no connection to Cotsworth or to European calendar reform.", "When separate peoples arrive at the same structure, it suggests the structure follows from the arithmetic: 13 times 28 is 364, one day short of a year."],
+      src: "The traditional Igbo calendar.", more: ["/months", "The 13 months of Sol"] },
+    { slug: "month-and-moon", q: "Are the words month and moon related?", a: "Yes. Month, moon and measure share one ancient root.",
+      p: ["Linguists trace moon, month, menses, measure, metre and meniscus back to a single Proto-Indo-European root, written *me-, to do with measuring.", "The Moon was the first clock most people had. The word for it and the word for measuring grew from the same place."],
+      src: "Standard etymological dictionaries, under the Proto-Indo-European root *me-.", more: ["/?go=birthday", "See the Moon on the day you were born"] },
+    { slug: "history-his-story", q: "Does history mean 'his story'?", a: "No. That is a false etymology.",
+      p: ["History comes from the Greek historia, meaning inquiry. It has nothing to do with the English word his.", "It is a neat line and it gets repeated a great deal. It is also untrue, which is why it is on this page: Sol does not repeat a myth as fact, even a popular one."],
+      src: "Greek historia, 'inquiry', in any standard etymological dictionary.", more: ["/about", "What Sol promises"] },
+    { slug: "league-of-nations", q: "How many calendar reforms were proposed to the League of Nations?", a: "185 schemes.",
+      p: ["In the 1920s the League of Nations set up a committee to look at reforming the calendar. It received 185 different schemes.", "You will sometimes read that one plan was judged the best of 130, or of 150. The contemporary report gives 185, so that is the number we use."],
+      src: "Nature, 27 November 1926, reporting the League of Nations' 1926 report.", more: ["/notes", "Sources for the book"] },
+    { slug: "who-named-sol", q: "Where does the month name Sol come from?", a: "Moses Cotsworth chose it himself.",
+      p: ["Cotsworth's calendar needed a name for its extra month, placed at midsummer between June and July. He called it Sol, the Latin word for the Sun.", "So the name of this website is his, not ours. He proposed the calendar in the early 1900s and it is in the public domain."],
+      src: "Finding aid to the Moses B. Cotsworth papers, University of British Columbia Library, Rare Books and Special Collections.", more: ["/about", "About Sol"] },
+  ]
+  const list = FACTS.map(f => `<a class="card" href="/facts/${f.slug}" style="display:block;text-decoration:none"><div class="muted">${esc(f.q)}</div><div class="big" style="font-size:20px">${esc(f.a)}</div></a>`).join("")
+  write("facts.html", page({ path: "/facts", title: "Calendar facts, checked — Sol", description: "Short answers to calendar questions, each with its source. Kodak, Friday the 13th, Ethiopia's 13 months and more.",
+    body: `<h1>Calendar facts, checked</h1><p class="lead">One question per page, a short answer and where it comes from. We never repeat a myth as fact.</p>${list}<a class="btn" href="/?go=birthday">FIND YOUR TRUE BIRTHDAY</a>` }))
+  urls.push("/facts")
+  for (const f of FACTS) {
+    const others = FACTS.filter(o => o !== f).slice(0, 8).map(o => `<li><a href="/facts/${o.slug}">${esc(o.q)}</a></li>`).join("")
+    const ld = `<script type="application/ld+json">${JSON.stringify({ "@context": "https://schema.org", "@type": "FAQPage", mainEntity: [{ "@type": "Question", name: f.q, acceptedAnswer: { "@type": "Answer", text: `${f.a} ${f.p[0]}` } }] }).replace(/</g, "\\u003c")}</script>`
+    write(`facts/${f.slug}.html`, page({ path: `/facts/${f.slug}`, title: `${f.q} — Sol`, description: `${f.a} ${f.p[0]}`.slice(0, 155), head: ld,
+      body: `<p class="muted"><a href="/facts">All facts</a></p><h1>${esc(f.q)}</h1><div class="card gold"><div class="big" style="font-size:24px">${esc(f.a)}</div></div>${f.p.map(x => `<p>${esc(x)}</p>`).join("")}<p class="muted">Source: ${esc(f.src)}</p><a class="btn" href="${f.more[0]}">${esc(f.more[1].toUpperCase())}</a><div class="card"><h2>More facts</h2><ul>${others}</ul></div>` }))
+    urls.push(`/facts/${f.slug}`)
+  }
+}
 
 // ── Today in Sol badge (the only page other sites are allowed to frame; see vercel.json) and its instructions
 {
