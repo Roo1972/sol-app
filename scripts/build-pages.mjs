@@ -585,5 +585,5 @@ console.log(`Wrote ${urls.length - 1} pages + sitemap`)
 // so links to these pages work when shared, bookmarked or opened fresh.
 {
   const shell = readFileSync(join(OUT, "index.html"), "utf8")
-  for (const p of ["today", "convert", "birthday", "history", "shop", "waitlist", "privacy", "terms", "payday", "ig", "tt", "fb", "x", "yt"]) writeFileSync(join(OUT, `${p}.html`), shell)
+  for (const p of ["today", "convert", "birthday", "history", "shop", "waitlist", "privacy", "terms", "payday", "certificate", "ig", "tt", "fb", "x", "yt"]) writeFileSync(join(OUT, `${p}.html`), shell)
 }

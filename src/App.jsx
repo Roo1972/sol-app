@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react'
+import { createPortal } from 'react-dom'
 import { bookDatesFor } from './bookdates.js'
 import { sunAngle, moonInfo, solarReturn } from './sky.js'
 import { schedule, doubleMonths, extraPaydayPeriods, solRuns, toICS, key as dayKey } from './payday.js'
@@ -732,6 +733,7 @@ function BirthdayPage() {
 
             <button onClick={share} style={{ ...btn, marginBottom: 8 }}>{copied ? "LINK COPIED" : "SHARE MY TRUE BIRTHDAY"}</button>
             <button onClick={downloadCard} style={{ ...btnOutline, marginBottom: 8 }}>DOWNLOAD STORY CARD</button>
+            <a href={`/certificate?d=${result.date.getFullYear()}-${String(result.date.getMonth() + 1).padStart(2, "0")}-${String(result.date.getDate()).padStart(2, "0")}${/^\d\d:\d\d$/.test(birthTime) ? `&t=${birthTime}` : ""}`} style={{ ...btnOutline, display: "block", textAlign: "center", textDecoration: "none", boxSizing: "border-box", marginBottom: 8 }}>MAKE A PRINTABLE CERTIFICATE</a>
             {!result.ifc.special && <button onClick={downloadICS} style={btnOutline}>ADD YEARLY REMINDER TO CALENDAR</button>}
             <a href="/calendar" style={{ display: "block", marginTop: 12, fontSize: 13, color: G }}>Or see every Sol date in your calendar →</a>
           </div>
@@ -1008,23 +1010,92 @@ function TermsPage() {
   )
 }
 
+
+// ═══ TRUE BIRTHDAY CERTIFICATE ═══
+// Made on the visitor's device and printed (or saved as PDF) from the browser. Nothing is sent anywhere.
+function CertificatePage() {
+  const q = (() => { try { return new URLSearchParams(window.location.search) } catch { return new URLSearchParams() } })()
+  const [dateStr, setDateStr] = useState(/^\d{4}-\d\d-\d\d$/.test(q.get("d") || "") ? q.get("d") : "")
+  const [birthTime, setBirthTime] = useState(/^\d\d:\d\d$/.test(q.get("t") || "") ? q.get("t") : "")
+  const [name, setName] = useState("")
+  useEffect(() => { const t = document.title; document.title = "Your True Birthday certificate — Sol"; return () => { document.title = t } }, [])
+  const d = dateStr ? new Date(dateStr + "T12:00:00") : null
+  const ok = d && !isNaN(d) && d <= new Date()
+  const CREAM = "#F6F1E4", INK = "#1A1A2E"
+  let body = null
+  if (ok) {
+    const ifc = toIFC(d)
+    const timed = /^\d\d:\d\d$/.test(birthTime)
+    const at = timed ? ukTime(d.getFullYear(), d.getMonth(), d.getDate(), +birthTime.slice(0, 2), +birthTime.slice(3)) : new Date(Date.UTC(d.getFullYear(), d.getMonth(), d.getDate(), 12))
+    const moon = moonInfo(at)
+    const f13 = countFriday13ths(d, new Date())
+    const born = d.toLocaleDateString("en-GB", { weekday: "long", day: "numeric", month: "long", year: "numeric" })
+    const small = { fontSize: 13, letterSpacing: 3, color: G, fontWeight: 700 }
+    body = (
+      <div className="cert" style={{ background: CREAM, color: INK, border: `10px double ${G}`, borderRadius: 4, padding: "40px 28px", textAlign: "center", fontFamily: SERIF, maxWidth: 640, margin: "0 auto" }}>
+        <div style={{ ...small, letterSpacing: 8 }}>S O L</div>
+        <div style={{ fontSize: 15, letterSpacing: 4, marginTop: 18, color: INK }}>CERTIFICATE OF TRUE BIRTHDAY</div>
+        <div style={{ fontSize: 15, marginTop: 28, fontStyle: "italic" }}>This certifies that</div>
+        <div style={{ fontSize: 34, margin: "8px 0", minHeight: 44, borderBottom: `1px solid ${G}`, display: "inline-block", minWidth: "70%" }}>{name || "\u00A0"}</div>
+        <div style={{ fontSize: 16, marginTop: 10 }}>was born on {born}{timed ? `, at ${birthTime} UK time` : ""},</div>
+        <div style={{ fontSize: 15, marginTop: 18, fontStyle: "italic" }}>which in the Sol calendar is</div>
+        {ifc.special
+          ? <div style={{ fontSize: 46, fontWeight: 700, color: G, margin: "6px 0" }}>{ifc.special}</div>
+          : <><div style={{ fontSize: 40, fontWeight: 700, marginTop: 6 }}>{ifc.weekday}</div><div style={{ fontSize: 40, fontWeight: 700, color: G }}>{ifc.day} {ifc.month}</div></>}
+        <div style={{ fontSize: 16, marginTop: 8 }}>{ifc.special ? "Outside every week and every month." : "The same day, every year, for life."}</div>
+        <div style={{ borderTop: `1px solid ${G}`, margin: "28px auto 0", paddingTop: 18, maxWidth: 440 }}>
+          <div style={small}>THE SKY THAT DAY</div>
+          <div style={{ fontSize: 16, marginTop: 8, lineHeight: 1.7 }}>
+            The Sun {Math.round(sunAngle(at)) % 360}° past the March equinox<br />
+            The Moon on day {moon.day}, {moon.phase.toLowerCase()}<br />
+            Lunation {moon.lunation.toLocaleString("en-GB")}
+          </div>
+          <div style={{ fontSize: 14, marginTop: 14 }}>Friday the 13ths lived through so far: {f13}. In Sol: none.</div>
+        </div>
+        <div style={{ marginTop: 30, fontSize: 18, fontWeight: 700, color: G }}>sol28.co.uk</div>
+        <div style={{ fontSize: 14, fontStyle: "italic" }}>Time, fixed.</div>
+        <div style={{ fontSize: 11, marginTop: 14, color: "#6B6A7A", fontFamily: "system-ui, sans-serif" }}>Issued {new Date().toLocaleDateString("en-GB", { day: "numeric", month: "long", year: "numeric" })}. Sky positions worked out for {timed ? "the time given" : "midday on the birth date"}.</div>
+      </div>
+    )
+  }
+  return (
+    <div>
+      <style>{`#certprint{display:none}@media print{@page{size:A4;margin:10mm}html,body{background:#fff!important;height:auto!important}body>*:not(#certprint){display:none!important}#certprint{display:block}#certprint .cert{max-width:none!important;min-height:262mm;box-sizing:border-box;display:flex;flex-direction:column;justify-content:center;-webkit-print-color-adjust:exact;print-color-adjust:exact}}`}</style>
+      {body && createPortal(<div id="certprint">{body}</div>, document.body)}
+      <div style={{ ...card, marginBottom: 16 }}>
+        <h1 style={{ fontSize: 28, color: W, fontFamily: SERIF, fontWeight: 400, margin: "4px 0 6px" }}>Your True Birthday certificate</h1>
+        <p style={{ ...sub, lineHeight: 1.6 }}>Add a name, then print it or save it as a PDF. It's made on your device: nothing you type is sent anywhere. Free while Sol is new.</p>
+        <label htmlFor="c-date" style={{ ...label, display: "block", marginTop: 12 }}>DATE OF BIRTH</label>
+        <input id="c-date" type="date" value={dateStr} onChange={e => setDateStr(e.target.value)} style={{ ...input, marginTop: 6 }} />
+        <label htmlFor="c-time" style={{ ...label, display: "block", marginTop: 12 }}>TIME OF BIRTH, UK TIME (OPTIONAL)</label>
+        <input id="c-time" type="time" value={birthTime} onChange={e => setBirthTime(e.target.value)} style={{ ...input, marginTop: 6 }} />
+        <label htmlFor="c-name" style={{ ...label, display: "block", marginTop: 12 }}>NAME ON THE CERTIFICATE</label>
+        <input id="c-name" type="text" maxLength={40} value={name} onChange={e => setName(e.target.value)} placeholder="e.g. Grace Rooney" style={{ ...input, marginTop: 6 }} />
+      </div>
+      {body}
+      {ok && <button onClick={() => window.print()} style={{ ...btn, marginTop: 16 }}>PRINT OR SAVE AS PDF</button>}
+      {ok && <p style={{ fontSize: 13, color: M, textAlign: "center", marginTop: 8, lineHeight: 1.6 }}>On a phone, choose Print and then "Save as PDF". Printing in colour on A4 gives the best result.</p>}
+    </div>
+  )
+}
+
 // ═══ MAIN APP ═══
 
 export default function App() {
   const [page, setPage] = useState(() => {
     if (sharedBirthday()) return "birthday"
-    try { const go = new URLSearchParams(window.location.search).get("go"); if (["convert","birthday","history","waitlist","shop","privacy","terms","payday"].includes(go)) return go } catch {}
-    try { const path = window.location.pathname.replace(/^\/+|\/+$/g, ""); const byPath = { today: "home", convert: "convert", birthday: "birthday", history: "history", shop: "shop", waitlist: "waitlist", privacy: "privacy", terms: "terms", payday: "payday" }[path]; if (byPath) return byPath } catch {}
+    try { const go = new URLSearchParams(window.location.search).get("go"); if (["convert","birthday","history","waitlist","shop","privacy","terms","payday","certificate"].includes(go)) return go } catch {}
+    try { const path = window.location.pathname.replace(/^\/+|\/+$/g, ""); const byPath = { today: "home", convert: "convert", birthday: "birthday", history: "history", shop: "shop", waitlist: "waitlist", privacy: "privacy", terms: "terms", payday: "payday", certificate: "certificate" }[path]; if (byPath) return byPath } catch {}
     return "birthday"
   })
   // Give every tab its own web address, so it can be shared and bookmarked
-  const PATHS = { home: "/today", convert: "/convert", birthday: "/birthday", history: "/history", shop: "/shop", waitlist: "/waitlist", privacy: "/privacy", terms: "/terms", payday: "/payday" }
+  const PATHS = { home: "/today", convert: "/convert", birthday: "/birthday", history: "/history", shop: "/shop", waitlist: "/waitlist", privacy: "/privacy", terms: "/terms", payday: "/payday", certificate: "/certificate" }
   const go = id => { setPage(id); try { if (window.location.pathname !== PATHS[id]) window.history.pushState({ page: id }, "", PATHS[id]) } catch {} ; window.scrollTo(0, 0) }
   useEffect(() => {
-    const onPop = () => { const p = window.location.pathname.replace(/^\/+|\/+$/g, ""); const id = { today: "home", convert: "convert", birthday: "birthday", history: "history", shop: "shop", waitlist: "waitlist", privacy: "privacy", terms: "terms", payday: "payday", "": "birthday" }[p]; if (id) setPage(id) }
+    const onPop = () => { const p = window.location.pathname.replace(/^\/+|\/+$/g, ""); const id = { today: "home", convert: "convert", birthday: "birthday", history: "history", shop: "shop", waitlist: "waitlist", privacy: "privacy", terms: "terms", payday: "payday", certificate: "certificate", "": "birthday" }[p]; if (id) setPage(id) }
     window.addEventListener("popstate", onPop); return () => window.removeEventListener("popstate", onPop)
   }, [])
-  const pages = { home: HomePage, convert: ConverterPage, birthday: BirthdayPage, history: HistoryPage, waitlist: WaitlistPage, shop: ShopPage, privacy: PrivacyPage, terms: TermsPage, payday: PaydayPage }
+  const pages = { home: HomePage, convert: ConverterPage, birthday: BirthdayPage, history: HistoryPage, waitlist: WaitlistPage, shop: ShopPage, privacy: PrivacyPage, terms: TermsPage, payday: PaydayPage, certificate: CertificatePage }
   const Page = pages[page]
   const navItems = [
     { id: "birthday", label: "BIRTHDAY" },
