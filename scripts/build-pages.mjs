@@ -9,6 +9,7 @@
 import { mkdirSync, writeFileSync, readFileSync } from "node:fs"
 import { join } from "node:path"
 import { toEthiopian, ETH_MONTHS, toIFC } from "../src/engine.js"
+import { bankHolidays } from "../src/payday.js"
 
 const OUT = "dist"
 const SITE = "https://sol28.co.uk"
@@ -298,6 +299,13 @@ function show(){if(!i.value)return;var p=i.value.split("-"),r=eth(new Date(+p[0]
   urls.push("/calendar")
 }
 
+// ── "You are here" marker for month-by-month pages
+mkdirSync(join(OUT, "js"), { recursive: true })
+writeFileSync(join(OUT, "js/nowmonth.js"), `(function(){try{var t=new Date(),y=t.getFullYear(),L=(y%4===0&&(y%100!==0||y%400===0));
+var n=Math.round((Date.UTC(y,t.getMonth(),t.getDate())-Date.UTC(y,0,1))/864e5)+1;if(n===(L?366:365))return;var a=L&&n>169?n-1:n,m=Math.ceil(a/28)-1,d=(a-1)%28+1;
+var el=document.querySelector('[data-m="'+m+'"]');if(!el)return;var p=document.createElement("div");p.className="muted";p.style.color="#D4A017";p.style.fontWeight="700";
+p.textContent="YOU ARE HERE: DAY "+d+" OF 28";el.insertBefore(p,el.firstChild);el.style.borderColor="#D4A017";}catch(e){}})();`)
+
 // ── Gardening by Sol month (Liverpool / NW England)
 // Day length is calculated, not looked up: sunrise-to-sunset at 53.41°N, including refraction.
 function dayLength(doy, lat = 53.41) {
@@ -326,18 +334,21 @@ const GARDEN = [
 {
   let body = `<h1>The gardening year in Sol</h1>
 <p>Thirteen months of exactly four weeks fit the garden better than twelve uneven ones: the same weekday for the same job, every month. This guide is written for Liverpool and North West England.</p>
-<p class="muted">Day lengths are calculated for 53.4°N, sunrise to sunset. Timings shift with your local weather, so treat each month as a guide and check your own frost dates. For detailed advice, the Royal Horticultural Society is the place to go.</p>`
+<p class="muted">Day lengths are calculated for 53.4°N, sunrise to sunset. Timings shift with your local weather, so treat each month as a guide and check your own frost dates. For detailed advice, the Royal Horticultural Society is the place to go.</p>
+<div class="card gold"><h2>The fortnightly sowing rule</h2><p>Lettuce, radish, rocket and spinach crop best sown little and often, every two weeks. On the ordinary calendar "every two weeks" drifts through the month. In Sol it never moves: <strong>sow on Saturday the 6th and Saturday the 20th</strong>, every month, all year. That is 26 sowings, on dates you never have to look up.</p><p class="muted">Feeding every week? Every Saturday is the 6th, 13th, 20th or 27th. Every four weeks? The same date each month.</p></div>
+<div class="card"><h2>Frost in the North West</h2><p>The Met Office notes that frost can occur well into late spring, and that further north the average last frost often runs into May. Cities are a little kinder: the urban heat island effect makes frost less likely in built-up areas than in the countryside around them. A Liverpool back garden may plant out a little earlier than a garden on the hills. <a href="https://www.metoffice.gov.uk/blog/2026/why-frost-can-still-occur-in-late-spring" target="_blank" rel="noopener">Met Office</a></p></div>`
   for (let n = 0; n < 13; n++) {
     const first = new Date(Date.UTC(ORD_YEAR, 0, n * 28 + 1)), last = new Date(Date.UTC(ORD_YEAR, 0, n * 28 + 28))
     const span = `${first.getUTCDate()} ${G_MONTHS[first.getUTCMonth()].slice(0, 3)} – ${last.getUTCDate()} ${G_MONTHS[last.getUTCMonth()].slice(0, 3)}`
     const a = dayLength(n * 28 + 1), b = dayLength(n * 28 + 28)
     const g = GARDEN[n]
-    body += `<div class="card${n === 6 ? " gold" : ""}" id="${monthSlug(n)}"><div class="muted">MONTH ${n + 1} · ${span} · DAYLIGHT ${hm(a)} → ${hm(b)}</div>
+    body += `<div class="card${n === 6 ? " gold" : ""}" id="${monthSlug(n)}" data-m="${n}"><div class="muted">MONTH ${n + 1} · ${span} · DAYLIGHT ${hm(a)} → ${hm(b)}</div>
 <h2>${SOL_MONTHS[n]}</h2>
 <p><strong>Sow and plant.</strong> ${g.sow}</p><p><strong>In season.</strong> ${g.harvest}</p><p><strong>Jobs.</strong> ${g.jobs}</p></div>`
   }
   body += `<div class="card"><h2>Year Day</h2><p>The day outside every week and month: no sowing, no jobs. Walk the garden and note what worked.</p></div>
-<a class="btn" href="/?go=birthday">FIND YOUR TRUE BIRTHDAY</a>`
+<div class="card"><h2>Keep a garden record</h2><p>Note the Sol date of your first sowing, first flower and first frost each year. A Sol date is also the day of the year (the 10th of Sol May is day 122), so years line up without a table. The Woodland Trust's <a href="https://naturescalendar.woodlandtrust.org.uk/" target="_blank" rel="noopener">Nature's Calendar</a> collects first-flowering and first-leaf records from gardeners to track how the seasons are shifting.</p></div>
+<a class="btn" href="/?go=birthday">FIND YOUR TRUE BIRTHDAY</a><script src="/js/nowmonth.js" defer></script>`
   write("garden.html", page({ path: "/garden", title: "The gardening year in 13 months — Sol", description: "What to sow, harvest and do in each of Sol's 13 four-week months, for Liverpool and North West England, with calculated day lengths.", body }))
   urls.push("/garden")
 }
@@ -350,32 +361,56 @@ const GARDEN = [
     august: "https://www.rspb.org.uk/birds-and-wildlife/the-year-in-nature/the-year-in-nature-august",
     october: "https://www.rspb.org.uk/birds-and-wildlife/birds-of-the-month/october-birds-of-the-month",
     bgbw: "https://www.rspb.org.uk/whats-happening/big-garden-birdwatch/faqs",
+    bgbwInfo: "https://www.rspb.org.uk/whats-happening/big-garden-birdwatch/info",
+    february: "https://www.rspb.org.uk/birds-and-wildlife/natures-calendar/natures-calendar-february",
+    febExpert: "https://www.rspb.org.uk/birds-and-wildlife/ask-an-rspb-expert/february",
+    cuckoo: "https://www.rspb.org.uk/birds-and-wildlife/cuckoo",
+    octExpert: "https://www.rspb.org.uk/birds-and-wildlife/ask-an-rspb-expert/october",
   }
   const BIRDS = [
     [0, "The RSPB's Big Garden Birdwatch runs over a weekend in late January: one hour counting the birds in one spot.", S.bgbw, "Late January falls at the end of Sol January or the start of Sol February."],
+    [1, "National Nest Box Week runs from 14 February every year, a reminder that a nest box is one of the easiest ways to help birds.", S.february, "14 February is always Wednesday 17 February in Sol, so the week starts on the same Sol date every year."],
+    [1, "Many garden birds are already choosing nest sites and even building. Grey herons start breeding from around February, with chicks hatching in March and April.", S.febExpert, ""],
     [2, "Chiffchaffs return in early March, wheatears arrive in growing numbers through March, and the first swallows appear from early March.", S.arrivals, ""],
     [3, "Lesser whitethroats usually begin to return in April.", S.arrivals, ""],
     [4, "The dawn chorus is at its peak in early May, loudest just before and after sunrise. International Dawn Chorus Day is the first Sunday in May. Swifts return in May, nightjars arrive, and Arctic terns come up from the Antarctic in late April and May.", S.chorus, "Sol May runs 23 April – 20 May in an ordinary year, so it holds the whole peak."],
+    [4, "Cuckoos arrive in spring and lay their eggs from late April through June, in the nests of other birds.", S.cuckoo, ""],
+    [5, "Cuckoos are still laying, in other birds' nests. Listen for them now: from late June they start to leave.", S.cuckoo, ""],
+    [6, "Cuckoos usually begin leaving the UK from late June.", S.cuckoo, "Sol's own month, 18 June – 15 July, is when the cuckoo's short summer starts to end."],
+    [7, "Most cuckoos have gone by August.", S.cuckoo, ""],
     [8, "Swifts prepare to leave for Africa, and young swifts make their first journey south.", S.august, ""],
+    [9, "Some swallows and house martins are still nesting into September, so the last chicks may not fledge until September or October. Late birds are normal.", S.octExpert, ""],
     [9, "Redwings and fieldfares arrive for the winter in October.", S.october, "October begins in the last week of Sol September and runs on into Sol October."],
     [10, "Redwings and fieldfares are arriving for the winter.", S.october, ""],
+    [11, "Swallows and house martins have been recorded in November and later, and a few swallows now try to stay the winter. The RSPB links this to warmer winters.", S.octExpert, ""],
+    [12, "Registration for the next Big Garden Birdwatch opens in December.", S.bgbwInfo, "The RSPB has announced that registration for the 2027 Birdwatch opens on 9 December. In Sol that is Sunday 7 December."],
   ]
   let body = `<h1>The birding year in Sol</h1>
 <p>Every Sol month is four identical weeks, so a note you make in week 2 of Sol May lines up day for day with week 2 of Sol May next year. Birders' records become directly comparable, year on year.</p>
-<p class="muted">Every timing below is taken from the RSPB's own pages, linked beside it. Months without an entry are months we haven't yet sourced, not months without birds.</p>`
+<p class="muted">Every timing below is taken from the RSPB's own pages, linked beside it. Timings are typical: birds arrive early and leave late every year, and that variation is exactly what is worth recording.</p>
+<div class="card gold"><h2>Why birders like a fixed calendar</h2><p>A Sol date is also the day of the year. The 10th of Sol May is day 122: four whole months of 28 days, plus 10. On the ordinary calendar you would need a table to work that out.</p><p>Scientists who study the timing of the seasons (phenology) count in days of the year for exactly this reason: it makes one spring comparable with the next. The Woodland Trust's <a href="https://naturescalendar.woodlandtrust.org.uk/what-we-record-and-why/species-we-record/birds/swallow/first-recorded/" target="_blank" rel="noopener">Nature's Calendar</a> asks volunteers to record the first swallow they see each spring, to track how early or late they arrive. In Sol your record and the day count are the same number.</p></div>`
   for (let n = 0; n < 13; n++) {
     const items = BIRDS.filter(b => b[0] === n)
     if (!items.length) continue
+    const slug = monthSlug(n)
     const first = new Date(Date.UTC(ORD_YEAR, 0, n * 28 + 1)), last = new Date(Date.UTC(ORD_YEAR, 0, n * 28 + 28))
     const span = `${first.getUTCDate()} ${G_MONTHS[first.getUTCMonth()].slice(0, 3)} – ${last.getUTCDate()} ${G_MONTHS[last.getUTCMonth()].slice(0, 3)}`
-    body += `<div class="card${n === 4 ? " gold" : ""}"><div class="muted">MONTH ${n + 1} · ${span}</div><h2>${SOL_MONTHS[n]}</h2>`
+    body += `<div class="card${n === 4 ? " gold" : ""}" id="${slug}" data-m="${n}"><div class="muted">MONTH ${n + 1} · ${span}</div><h2>${SOL_MONTHS[n]}</h2>`
     for (const [, txt, src, note] of items) body += `<p>${txt} <a href="${src}" target="_blank" rel="noopener">RSPB</a></p>${note ? `<p class="muted">${note}</p>` : ""}`
     body += `</div>`
   }
-  body += `<div class="card"><h2>Keep a Sol bird diary</h2><p>Print the <a href="/routine">same-every-month chart</a> and note first sightings by Sol date. Next year, the same square is the same point in the season.</p></div>
+  body += `<div class="card"><h2>Keep a Sol bird diary</h2><p>Print the <a href="/routine">same-every-month chart</a> and note first sightings by Sol date. Next year, the same square is the same point in the season.</p><p>Worth recording: first chiffchaff, first swallow, first swift, first cuckoo heard, last swallow seen, first redwing. Add your sightings to <a href="https://naturescalendar.woodlandtrust.org.uk/" target="_blank" rel="noopener">Nature's Calendar</a> too, so they help the science.</p><p class="muted">In leap years, add one to the day count for dates after Leap Day, as you would on the ordinary calendar.</p></div>
 <a class="btn" href="/?go=birthday">FIND YOUR TRUE BIRTHDAY</a>`
+  body += `<script src="/js/nowmonth.js" defer></script>`
   write("birds.html", page({ path: "/birds", title: "The birding year in 13 months — Sol", description: "Spring arrivals, the dawn chorus peak and winter visitors placed in Sol's 13 four-week months, with every timing sourced from the RSPB.", body }))
   urls.push("/birds")
+}
+
+// Bank holidays in England and Wales with names, for the routine page's "Changes coming up" list.
+const BH_NAMED = {}
+for (let y = 2026; y <= 2031; y++) {
+  const names = ["New Year's Day bank holiday", "Good Friday", "Easter Monday", "Early May bank holiday", "Spring bank holiday", "Summer bank holiday", "Christmas bank holiday", "Boxing Day bank holiday"]
+  bankHolidays(y).forEach((k, i) => { const sub = (i === 0 && !k.endsWith("-01-01")) || (i === 6 && !k.endsWith("-12-25")) || (i === 7 && !k.endsWith("-12-26")); BH_NAMED[k] = names[i] + (sub ? " (substitute day)" : "") })
 }
 
 // ── Routine page (Autism vertical): one printable month that is the same every month
@@ -396,6 +431,10 @@ button.pr{background:var(--gold);color:var(--navy);border:0;border-radius:8px;pa
 <p>The ordinary calendar keeps shifting: months run from 28 to 31 days, and the 1st lands on a different weekday each month. A Sol month never moves, so one chart can stay on the wall all year.</p>
 <p class="muted">Sol isn't a support service and we make no claim that it suits everyone. If you're autistic, or support someone who is, we'd like to hear whether this is useful: hello@sol28.co.uk.</p></div>
 <div class="card"><h2>Every Sol month</h2><p class="muted">The same grid for all 13 months. The 13th is outlined: always a Saturday.</p>${cal}</div>
+<div class="card"><h2>This month, with ordinary dates</h2><p class="muted">The world still runs on the ordinary calendar. This chart shows both: the Sol day in large type, and the ordinary date and weekday underneath. Print it to bridge the two.</p><div id="bridge"></div></div>
+<div class="card noprint"><h2>Changes coming up</h2><p class="muted">Changes are easier when they are expected. These are the next fixed changes to the ordinary routine in England and Wales: clock changes and bank holidays.</p><div id="coming"></div>
+<p class="muted">The National Autistic Society suggests visual supports such as timetables and calendars to help with change (<a href="https://www.autism.org.uk/advice-and-guidance/topics/communication/communication-tools/visual-supports" target="_blank" rel="noopener">NAS: visual supports</a>).</p></div>
+<div class="card"><h2>A word about weekdays</h2><p>Sol has its own weekdays: the 1st of every Sol month is a Monday. Today's ordinary weekday will usually be different. If two different weekdays would be confusing, use Sol as a 28-day pattern (day 1 to day 28) and keep the ordinary weekdays for school, work and appointments. The charts on this page show both, so nothing has to be worked out in your head.</p></div>
 <div class="card"><h2>My week</h2><p class="muted">Write a routine once; it lands on the same dates in every month.</p>${lines}</div>
 <div class="card"><h2>The two days outside the week</h2>
 <p><strong>Year Day</strong> comes after the 28th of December, on what the ordinary calendar calls 31 December. It belongs to no week and no month.</p>
@@ -409,6 +448,21 @@ button.pr{background:var(--gold);color:var(--navy);border:0;border-radius:8px;pa
 var n=Math.round((Date.UTC(y,t.getMonth(),t.getDate())-Date.UTC(y,0,1))/864e5)+1;var s;
 if(n===(L?366:365))s="Today is Year Day.";else if(L&&n===169)s="Today is Leap Day.";else{var a=L&&n>169?n-1:n,m=Math.ceil(a/28),d=(a-1)%28+1;s="Today is "+W[(d-1)%7]+" "+d+" "+M[m-1]+" — day "+d+" on the chart above.";}
 document.getElementById("nowline").textContent=s;var pb=document.getElementById("printbtn");if(pb)pb.addEventListener("click",function(){window.print()});}catch(e){}})();
+(function(){try{var M=${JSON.stringify(SOL_MONTHS)},W=${JSON.stringify(WEEKDAYS)},BH=${JSON.stringify(BH_NAMED)};
+var DS=["Sun","Mon","Tue","Wed","Thu","Fri","Sat"],MS=["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];
+function lp(y){return y%4===0&&(y%100!==0||y%400===0)}
+function sol(dt){var y=dt.getFullYear(),L=lp(y),n=Math.round((Date.UTC(y,dt.getMonth(),dt.getDate())-Date.UTC(y,0,1))/864e5)+1;if(n===(L?366:365))return"Year Day";if(L&&n===169)return"Leap Day";var a=L&&n>169?n-1:n,m=Math.ceil(a/28),d=(a-1)%28+1;return W[(d-1)%7]+" "+d+" "+M[m-1]}
+var t=new Date();t=new Date(t.getFullYear(),t.getMonth(),t.getDate());var y=t.getFullYear(),L=lp(y),n=Math.round((Date.UTC(y,t.getMonth(),t.getDate())-Date.UTC(y,0,1))/864e5)+1;
+var a=L&&n>169?n-1:n;if(n===(L?366:365)||(L&&n===169))a=L&&n===169?168:364;var m=Math.ceil(a/28);
+var h='<p style="font-family:Georgia,serif;font-size:20px;color:#F2EEE3;margin:0 0 8px">Sol '+M[m-1]+'</p><table class="cal"><thead><tr>'+W.map(function(w){return"<th>"+w.slice(0,3)+"</th>"}).join("")+"</tr></thead><tbody>";
+for(var w=0;w<4;w++){h+="<tr>";for(var i=1;i<=7;i++){var d=w*7+i,base=(m-1)*28+d,dt=new Date(y,0,base+(L&&base>=169?1:0));var today=dt.getTime()===t.getTime();
+h+='<td'+(d===13?' class="sat13"':"")+(today?' style="background:rgba(212,160,23,.18)"':"")+'>'+d+'<div style="font-family:system-ui,sans-serif;font-size:12px;color:#9A98AE;line-height:1.3">'+DS[dt.getDay()]+" "+dt.getDate()+" "+MS[dt.getMonth()]+"</div></td>"}h+="</tr>"}
+document.getElementById("bridge").innerHTML=h+"</tbody></table>";
+var ev=[];for(var yy=y;yy<=y+1;yy++){[2,9].forEach(function(mo){var e=new Date(yy,mo+1,0);e.setDate(e.getDate()-e.getDay());ev.push([e,mo===2?"Clocks go forward one hour (1am becomes 2am). Lighter evenings.":"Clocks go back one hour (2am becomes 1am). Darker evenings."])});ev.push([new Date(yy,11,31),"Year Day: the day outside every Sol week and month."]);if(lp(yy))ev.push([new Date(yy,5,17),"Leap Day: an extra day outside the Sol week."])}
+Object.keys(BH).forEach(function(k){var p=k.split("-");ev.push([new Date(+p[0],+p[1]-1,+p[2]),BH[k]])});
+ev=ev.filter(function(e){return e[0]>=t}).sort(function(p,q){return p[0]-q[0]}).slice(0,6);
+document.getElementById("coming").innerHTML=ev.map(function(e){var dd=Math.round((e[0]-t)/864e5);return'<div style="padding:10px 0;border-bottom:1px solid #34344F"><div style="color:#F2EEE3;font-weight:700">'+e[0].toLocaleDateString("en-GB",{weekday:"long",day:"numeric",month:"long",year:"numeric"})+'</div><div>'+e[1]+'</div><div class="muted">In Sol: '+sol(e[0])+" · "+(dd===0?"today":dd===1?"tomorrow":"in "+dd+" days")+"</div></div>"}).join("");
+}catch(e){}})();
 `)
   write("routine.html", page({ path: "/routine", title: "A calendar that doesn't change — printable Sol month", description: "Every Sol month is identical: 28 days, Monday to Sunday. Print one chart and use it all year.", body }))
   urls.push("/routine")
@@ -443,7 +497,7 @@ urls.push("/about")
       p: ["Every Sol month starts on a Monday and has exactly 28 days, so each date keeps the same weekday in every month of every year. The 13th always lands on a Saturday.", "Moses Cotsworth's original version started the week on Sunday. In his calendar the 13th fell on a Friday in all thirteen months: thirteen Friday the 13ths a year. Sol's Monday start removes every one of them."],
       src: "Arithmetic: 28 days is exactly four weeks. Monday start follows ISO 8601, the international standard for dates.", more: ["/friday13", "Friday the 13th in Sol"] },
     { slug: "kodak", q: "Did Kodak really use a 13-month calendar?", a: "Not quite. Kodak ran 13 equal 28-day accounting periods, 1928–1989.",
-      p: ["Kodak ran 13 equal 28-day accounting periods, 1928–1989; employees lived by the Gregorian calendar.", "The periods were a tool for the company's books: every period the same length, so one could be compared fairly with the next. The story often gets stretched into a whole company living on a different calendar. We have found no evidence for that, so we don't say it."],
+      p: ["Kodak ran 13 equal 28-day accounting periods, 1928–1989; employees lived by the Gregorian calendar.", "The periods were a tool for the company's books: every period the same length, so one could be compared fairly with the next. You will sometimes read that the whole company lived on a different calendar. As far as we can tell, day-to-day life at Kodak ran on ordinary dates, and the 13 periods were used for the accounts. We are still researching this, and will update this page if we learn more."],
       src: "Kodak's own period calendars for 1985 to 1990, and an Associated Press report of 11 September 1988 on the company's move to the ordinary calendar.", more: ["/notes", "Sources for the book"] },
     { slug: "retail-4-4-5", q: "Do big shops already use a different calendar?", a: "Yes. Many retailers report on a 4-4-5 calendar, not on ordinary months.",
       p: ["In a 4-4-5 calendar each quarter is three periods of four, four and five weeks. Every quarter is exactly 13 weeks and every period starts on the same weekday, so this year's trading can be compared with last year's week for week.", "The US National Retail Federation publishes a version, arranged 4-5-4. Walmart, Tesco and Marks & Spencer are among the retailers that use this kind of calendar, and accounting software from SAP, Oracle and QuickBooks supports it. The ordinary month is awkward enough that some of the largest businesses in the world don't use it to compare their trading."],
