@@ -228,6 +228,7 @@ function ConverterPage() {
           )}
         </div>
       )}
+      {result && <BirthdaySignup />}
 
       <p style={{ textAlign: "center", margin: "8px 0 0" }}><a href="/dates" style={{ color: G, fontSize: 14 }}>Browse every date in Sol →</a></p>
 
@@ -674,6 +675,8 @@ function BirthdayPage() {
               )
             })()}
 
+            <BirthdaySignup inline />
+
             <div style={{ borderTop: `1px solid ${BD}`, margin: "16px 0", paddingTop: 16 }}>
               <div style={{ fontSize: 30, fontWeight: 700, color: G, fontFamily: SERIF }}>{result.f13}</div>
               <p style={{ ...sub, lineHeight: 1.6 }}>Friday the 13ths you've lived through so far. Cotsworth's original calendar would have given you thirteen a year. In Sol you'd have had none: the 13th is always a Saturday.</p>
@@ -739,8 +742,6 @@ function BirthdayPage() {
           </div>
         </div>
       )}
-
-      {result && revealed && <BirthdaySignup />}
 
       <div style={{ ...card, marginTop: 16 }}>
         <p style={{ fontSize: 13, color: M, lineHeight: 1.7 }}>
@@ -824,19 +825,20 @@ function useKitSignup() {
 const GIFT_URL = "/gift/sol-perpetual-calendar.pdf"
 
 // Sign-up shown straight after the True Birthday result: the moment interest is highest.
-function BirthdaySignup() {
+function BirthdaySignup({ inline }) {
   const k = useKitSignup()
+  const box = inline ? { borderTop: `1px solid ${BD}`, margin: "16px 0", paddingTop: 16, textAlign: "left" } : { ...card, marginTop: 16 }
   if (k.status === "done") return (
-    <div style={{ ...card, marginTop: 16, textAlign: "center" }}>
+    <div style={{ ...box, textAlign: "center" }}>
       <h2 style={h2}>Check your inbox</h2>
       <p style={{ ...sub, lineHeight: 1.6 }}>Click the link in the confirmation email and you're on the list. Your calendar is ready now:</p>
       <a href={GIFT_URL} download style={{ ...btn, display: "block", boxSizing: "border-box", textAlign: "center", textDecoration: "none", marginTop: 12 }}>DOWNLOAD THE SOL CALENDAR (PDF)</a>
     </div>
   )
   return (
-    <div style={{ ...card, marginTop: 16 }}>
-      <h2 style={{ ...h2, marginBottom: 6 }}>Keep your Sol date to hand</h2>
-      <p style={{ fontSize: 14, color: T, lineHeight: 1.6, marginBottom: 12 }}>Get the free one-page Sol calendar, a single sheet that never goes out of date, and hear first when the book and shop open.</p>
+    <div style={box}>
+      <h2 style={{ ...h2, marginBottom: 6, textAlign: inline ? "center" : undefined }}>Free: the Sol calendar on one page</h2>
+      <p style={{ fontSize: 14, color: T, lineHeight: 1.6, marginBottom: 12 }}>Every Sol date on a single printable sheet that never goes out of date. Pop your email in and it's yours, plus first news when the book and shop open.</p>
       <input type="email" aria-label="Email address" value={k.email} placeholder="you@example.com" onChange={e => k.setEmail(e.target.value)} onKeyDown={e => { if (e.key === "Enter") k.submit() }} style={input} />
       <button onClick={k.submit} disabled={k.status === "sending"} style={{ ...btn, marginTop: 10 }}>{k.status === "sending" ? "SENDING…" : "SEND ME THE CALENDAR"}</button>
       {k.status === "invalid" && <p style={{ fontSize: 13, color: G, marginTop: 8, textAlign: "center" }}>Please enter a valid email address.</p>}
