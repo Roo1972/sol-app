@@ -695,8 +695,8 @@ function BirthdayPage() {
               const retTime = ret.toLocaleTimeString("en-GB", { hour: "2-digit", minute: "2-digit", timeZone: "Europe/London" })
               const row = { display: "flex", justifyContent: "space-between", alignItems: "baseline", gap: 12, padding: "8px 0", borderBottom: `1px solid ${BD}` }
               return (
-                <div style={{ borderTop: `1px solid ${BD}`, margin: "0 0 16px", paddingTop: 16, textAlign: "left" }}>
-                  <div style={{ ...label, textAlign: "center" }}>THE SKY ON THE DAY YOU WERE BORN</div>
+                <details style={{ borderTop: `1px solid ${BD}`, margin: "0 0 16px", paddingTop: 16, textAlign: "left" }}>
+                  <summary style={{ cursor: "pointer", color: G, fontSize: 13, letterSpacing: 2, textAlign: "center", fontWeight: 700, padding: "4px 0" }}>THE SKY ON THE DAY YOU WERE BORN</summary>
                   <div style={row}><span style={{ fontSize: 13, color: M }}>The Sun</span><span style={{ fontSize: 15, color: W, fontFamily: SERIF, textAlign: "right" }}><strong style={{ color: G }}>{Math.round(angle) % 360}°</strong> past the March equinox</span></div>
                   <div style={row}><span style={{ fontSize: 13, color: M }}>The Moon</span><span style={{ fontSize: 15, color: W, fontFamily: SERIF, textAlign: "right" }}><strong style={{ color: G }}>Day {moon.day}</strong> · {moon.phase}</span></div>
                   <div style={row}><span style={{ fontSize: 13, color: M }}>The week</span><span style={{ fontSize: 15, color: W, fontFamily: SERIF, textAlign: "right" }}>A <strong style={{ color: G }}>{b.toLocaleDateString("en-GB", { weekday: "long" })}</strong> on the ordinary calendar</span></div>
@@ -706,7 +706,7 @@ function BirthdayPage() {
                     <input id="birth-time" type="time" value={birthTime} onChange={e => setBirthTime(e.target.value)} style={{ ...input, marginTop: 6 }} />
                   </div>
                   <p style={{ fontSize: 13, color: M, lineHeight: 1.6, marginTop: 6 }}>{timed ? `Worked out for ${birthTime} UK time on your birth date, to within a few minutes.` : "Worked out for midday on your birth date. Add your birth time above and the solar birthday becomes exact to within a few minutes."} Born abroad? Convert your birth time to UK time first. Nothing you type here leaves your device. You were born in lunation {moon.lunation.toLocaleString("en-GB")}, counting new moons the way astronomers do. Three clocks, the Sun, the Moon and the week, and none of them divides evenly into the others.</p>
-                </div>
+                </details>
               )
             })()}
 
@@ -715,8 +715,8 @@ function BirthdayPage() {
               const d = hits[0].diff
               const when = d === 0 ? "ON YOUR TRUE BIRTHDAY" : `${Math.abs(d)} DAY${Math.abs(d) === 1 ? "" : "S"} ${d > 0 ? "AFTER" : "BEFORE"} YOUR TRUE BIRTHDAY`
               return (
-                <div style={{ borderTop: `1px solid ${BD}`, margin: "0 0 16px", paddingTop: 16, textAlign: "left" }}>
-                  <div style={{ ...label, textAlign: "center" }}>{when}, IN HISTORY</div>
+                <details style={{ borderTop: `1px solid ${BD}`, margin: "0 0 16px", paddingTop: 16, textAlign: "left" }}>
+                  <summary style={{ cursor: "pointer", color: G, fontSize: 13, letterSpacing: 2, textAlign: "center", fontWeight: 700, padding: "4px 0" }}>{when}, IN HISTORY</summary>
                   {hits.map((h, i) => (
                     <div key={i} style={{ marginTop: 8 }}>
                       <div style={{ fontSize: 15, color: G, fontFamily: SERIF }}>{h.ifc.special || `${h.ifc.weekday} ${h.ifc.day} ${h.ifc.month}`} (Sol calendar)</div>
@@ -724,7 +724,7 @@ function BirthdayPage() {
                       <p style={{ fontSize: 13, color: M }}>From {h.from}.{h.converted ? " Sol date converted from the Julian calendar." : ""}</p>
                     </div>
                   ))}
-                </div>
+                </details>
               )
             })()}
 
@@ -750,6 +750,10 @@ function BirthdayPage() {
         </p>
         <p style={{ fontSize: 12, color: M, lineHeight: 1.6, marginTop: 8 }}>Your birthday is worked out on your device and never sent anywhere. Shared links include only your Sol date, never your year of birth.</p>
       </div>
+      <a href="/about" style={{ ...card, display: "block", marginTop: 16, textDecoration: "none" }}>
+        <div style={label}>WHO MADE THIS</div>
+        <p style={{ fontSize: 14, color: T, lineHeight: 1.6 }}>An engineer from Liverpool who spent 35 years on head-up displays for fighter jets, then turned to the calendar. <span style={{ color: G }}>Read why →</span></p>
+      </a>
     </div>
   )
 }
@@ -861,15 +865,7 @@ function ShopPage() {
       <div style={{ textAlign: "center", marginBottom: 20 }}>
         <div style={tag}>SOL</div>
         <h1 style={h1}>The Sol Shop</h1>
-        <p style={sub}>The book, and undated printables that never go out of date. Join the waitlist to hear first.</p>
-      </div>
-      <WaitlistPage embedded />
-      <div style={{ ...goldCard, marginTop: 16 }}>
-        <div style={label}>THE BOOK · OUT MONDAY 1 FEBRUARY 2027</div>
-        <h2 style={{ ...h2, marginBottom: 4 }}>Still Ruled by Rome</h2>
-        <p style={{ fontStyle: "italic", color: G, fontSize: 15, marginBottom: 10 }}>How an Empire Set the Calendar You Live By</p>
-        <p style={{ fontSize: 14, color: T, lineHeight: 1.6 }}>October means eight. It is the tenth month. Nineteen chapters on how the calendar you live by was built, who tried to replace it, and why nobody did. Every claim sourced; every chapter's sources online at <a href="/notes" style={{ color: G }}>sol28.co.uk/notes</a>.</p>
-        <p style={{ fontSize: 13, color: M, marginTop: 8 }}>Paperback and Kindle. Join the waitlist above to hear the day it's out.</p>
+        <p style={sub}>One poster on sale now, a free certificate, and the book on its way.</p>
       </div>
       <div style={{ ...goldCard, marginTop: 16 }}>
         <img src="/shop/poster.jpg" alt="The Sol Year poster in cream and in navy with gold" loading="lazy" style={{ width: "100%", borderRadius: 8, display: "block", marginBottom: 12 }} />
@@ -882,26 +878,30 @@ function ShopPage() {
       </div>
       <div style={{ ...card, marginTop: 16 }}>
         <img src="/shop/certificate.jpg" alt="True Birthday certificate, sample" loading="lazy" style={{ width: "100%", borderRadius: 8, display: "block", marginBottom: 12 }} />
-        <div style={label}>PERSONALISED · COMING SOON</div>
+        <div style={label}>PERSONALISED · FREE</div>
         <h2 style={{ ...h2, marginBottom: 6 }}>Your True Birthday Certificate</h2>
         <p style={{ fontSize: 14, color: T, lineHeight: 1.6 }}>An A4 certificate made for one person: their name, the day they were born, and their True Birthday, the Sol date and weekday it falls on every year for life. A gift for anyone who loves history, maths or calendars.</p>
-        <p style={{ fontSize: 13, color: M, marginTop: 8 }}>Personalised PDF, print at home. Join the waitlist above to hear when it's available.</p>
+        <p style={{ fontSize: 13, color: M, marginTop: 8 }}>Free. Make it on screen and print it at home.</p>
+        <a href="/certificate" style={{ ...btnOutline, display: "block", boxSizing: "border-box", textAlign: "center", textDecoration: "none", marginTop: 12 }}>MAKE A CERTIFICATE · FREE</a>
       </div>
-      <div style={{ marginTop: 16 }}>
+      <div style={{ ...goldCard, marginTop: 16 }}>
+        <div style={label}>THE BOOK · OUT MONDAY 1 FEBRUARY 2027</div>
+        <h2 style={{ ...h2, marginBottom: 4 }}>Still Ruled by Rome</h2>
+        <p style={{ fontStyle: "italic", color: G, fontSize: 15, marginBottom: 10 }}>How an Empire Set the Calendar You Live By</p>
+        <p style={{ fontSize: 14, color: T, lineHeight: 1.6 }}>October means eight. It is the tenth month. Nineteen chapters on how the calendar you live by was built, who tried to replace it, and why nobody did. Every claim sourced; every chapter's sources online at <a href="/notes" style={{ color: G }}>sol28.co.uk/notes</a>.</p>
+        <p style={{ fontSize: 13, color: M, marginTop: 8 }}>Paperback and Kindle. Join the list below to hear the day it's out.</p>
+      </div>
+      <div style={{ ...card, marginTop: 16 }}>
+        <div style={label}>COMING DECEMBER 2026</div>
         {PRODUCTS.map(p => (
-          <div key={p.name} style={{ ...card, marginBottom: 12 }}>
-            <img src={p.img} alt={`${p.name}, sample pages`} loading="lazy" style={{ width: "100%", borderRadius: 8, display: "block", marginBottom: 12 }} />
-            <h2 style={{ ...h2, marginBottom: 6 }}>{p.name}</h2>
+          <div key={p.name} style={{ padding: "10px 0", borderBottom: `1px solid ${BD}` }}>
+            <div style={{ fontSize: 16, color: W, fontFamily: SERIF }}>{p.name}</div>
             <p style={{ fontSize: 14, color: T, lineHeight: 1.6 }}>{p.text}</p>
-            <p style={{ fontSize: 13, color: M, marginTop: 8 }}>Instant PDF download, A4, print at home. Coming December 2026.</p>
           </div>
         ))}
-        <div style={{ ...card, textAlign: "center" }}>
-          <h2 style={h2}>Free now</h2>
-          <p style={{ fontSize: 14, color: T, lineHeight: 1.6 }}>The one-page Sol calendar: every Sol month on a single sheet.</p>
-          <a href={GIFT_URL} download style={{ ...btnOutline, display: "block", boxSizing: "border-box", textAlign: "center", textDecoration: "none", marginTop: 12 }}>DOWNLOAD THE FREE CALENDAR</a>
-        </div>
+        <p style={{ fontSize: 13, color: M, marginTop: 10 }}>Instant PDF downloads, A4, print at home. Join the list below to hear when they are out.</p>
       </div>
+      <BirthdaySignup />
     </div>
   )
 }
