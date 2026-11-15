@@ -88,7 +88,7 @@ function page({ path, title, description, body, image = "default", noindex = fal
 </head><body><main>
 <a class="tag" href="/">SOL</a>
 ${body}
-<nav class="foot"><a href="/?go=birthday">Find your True Birthday</a><a href="/dates">Every date</a><a href="/months">The 13 months</a><a href="/lost-days">Lost Days</a><a href="/ethiopia">Ethiopia</a><a href="/calendar">Sol in your calendar</a><a href="/garden">Gardening</a><a href="/birds">Birdwatching</a><a href="/routine">Routine and autism</a><a href="/payday">Payday Calendar</a><a href="/facts">Facts</a><a href="/teachers">For teachers</a><a href="/about">About</a><a href="/embed">Put Sol on your site</a><a href="/?go=privacy">Privacy</a></nav>
+<nav class="foot"><a href="/?go=birthday">Find your True Birthday</a><a href="/dates">Every date</a><a href="/months">The 13 months</a><a href="/lost-days">Lost Days</a><a href="/ethiopia">Ethiopia</a><a href="/china">China</a><a href="/calendar">Sol in your calendar</a><a href="/garden">Gardening</a><a href="/birds">Birdwatching</a><a href="/routine">Routine and autism</a><a href="/payday">Payday Calendar</a><a href="/facts">Facts</a><a href="/teachers">For teachers</a><a href="/about">About</a><a href="/embed">Put Sol on your site</a><a href="/?go=privacy">Privacy</a></nav>
 <p class="muted">Sol — Time, fixed.</p>
 </main></body></html>`
 }
@@ -210,6 +210,51 @@ ${n === 12 ? `<p class="muted">Year Day follows 28 December and belongs to no we
   for (const [yr, t, txt, src] of events) body += `<div class="card"><div class="muted">${yr}</div><h2>${t}</h2><p>${txt}</p><p class="muted"><a href="${src}" target="_blank" rel="noopener">Source</a></p></div>`
   body += `</div><h2 style="margin-top:2.5rem">And the year that never was</h2><div class="tl"><div class="card"><div class="muted">1 BC → AD 1</div><h2>There is no year 0</h2><p>No days vanished here — a number did. When the 6th-century scholar Dionysius Exiguus began counting years from the birth of Christ, he started at AD 1, and 1 BC sits directly before it. With no year 0, the first century ran from AD 1 to AD 100, which is why the third millennium began on 1 January 2001, not 2000. Astronomers quietly put the missing zero back: in their numbering, year 0 is 1 BC.</p><p class="muted"><a href="https://www.scientificamerican.com/article/when-is-the-beginning-of" target="_blank" rel="noopener">Source</a> · <a href="https://eclipse.gsfc.nasa.gov/SEhelp/dates.html" target="_blank" rel="noopener">Source</a></p></div></div><a class="btn" href="/?go=birthday">FIND YOUR TRUE BIRTHDAY</a>`
   write("lost-days.html", page({ path: "/lost-days", title: "Lost Days: seven times the calendar skipped — Sol", description: "From Caesar's 445-day year to Greece's 1923 switch: the seven times whole days vanished from the calendar — and the year 0 that never existed.", body }))
+}
+
+// ── China: the lunisolar calendar whose leap years have 13 months. Dates come from the Unicode calendar data built into Node and browsers (Intl, ca-chinese).
+{
+  const f = new Intl.DateTimeFormat("en-u-ca-chinese", { year: "numeric", month: "numeric", day: "numeric", timeZone: "UTC" })
+  const P = d => Object.fromEntries(f.formatToParts(d).map(x => [x.type, x.value]))
+  const yearInfo = ry => { const s = new Set(); let ny = null; for (let t = Date.UTC(ry, 0, 1); t < Date.UTC(ry + 1, 2, 5); t += 864e5) { const q = P(new Date(t)); if (+q.relatedYear === ry) { s.add(q.month); if (!ny) ny = new Date(t) } } const leap = [...s].find(m => /bis/.test(m)); return { ry, n: s.size, leap: leap ? parseInt(leap) : null, ny } }
+  const thisY = new Date().getUTCFullYear()
+  const years = []; for (let y = thisY - 3; y <= thisY + 8; y++) years.push(yearInfo(y))
+  const next13 = years.find(y => y.n === 13 && y.ry >= thisY)
+  const ord = n => n + (n % 10 === 1 && n !== 11 ? "st" : n % 10 === 2 && n !== 12 ? "nd" : n % 10 === 3 && n !== 13 ? "rd" : "th")
+  const fmt = d => d.toLocaleDateString("en-GB", { day: "numeric", month: "long", timeZone: "UTC" })
+  const rows = years.map(y => `<tr${y.n === 13 ? ' style="color:var(--gold)"' : ""}><td>${y.ry}</td><td>${fmt(y.ny)}</td><td>${y.n}</td><td>${y.leap ? `a second ${ord(y.leap)} month` : "—"}</td></tr>`).join("")
+  const body = `
+<h1>China already has 13-month years.</h1>
+<p>About seven years in every nineteen, the traditional Chinese calendar has thirteen months, not twelve. The next one is ${next13.ry}.</p>
+<div class="card gold"><div class="muted">TODAY IN THE CHINESE CALENDAR</div><div class="big" id="cn-today">&nbsp;</div><p class="muted">Worked out on your device for today's date.</p></div>
+<div class="card"><h2>Why a thirteenth month appears</h2>
+<p>A Chinese month runs from one new moon to the next, so it has 29 or 30 days. Twelve of those come to about 354 days, roughly eleven days short of a year by the Sun. Left alone, New Year would drift through the seasons.</p>
+<p>So every two or three years a whole extra month is added. It takes the number of the month before it: a year can have two fifth months, one after the other. That year has thirteen months and about 384 days.</p></div>
+<div class="card"><h2>Twelve or thirteen: year by year</h2>
+<table><thead><tr><th>YEAR</th><th>NEW YEAR</th><th>MONTHS</th><th>EXTRA MONTH</th></tr></thead><tbody>${rows}</tbody></table>
+<p class="muted">Year shown is the ordinary year in which the Chinese year begins.</p></div>
+<div class="card"><h2>Sol and the Chinese calendar, side by side</h2>
+<table><thead><tr><th></th><th>SOL</th><th>CHINESE</th></tr></thead><tbody>
+<tr><td>Months</td><td>13, every year</td><td>12, or 13 in a leap year</td></tr>
+<tr><td>Month length</td><td>28 days, always</td><td>29 or 30 days</td></tr>
+<tr><td>Follows</td><td>The Sun</td><td>The Moon, corrected to the Sun</td></tr>
+<tr><td>How it stays in step</td><td>One day outside the week (two in a leap year)</td><td>A whole extra month</td></tr>
+<tr><td>Same weekday every year?</td><td>Yes</td><td>No</td></tr>
+</tbody></table>
+<p>They solve the same problem from opposite ends. The Chinese calendar keeps faith with the Moon and patches the year with a month. Sol keeps faith with the week and patches the year with a day.</p></div>
+<div class="card"><h2>Convert a date</h2><label class="muted" for="cn-in">ORDINARY DATE</label><br><input id="cn-in" type="date" style="font-size:16px;padding:8px;margin:6px 0 10px;border-radius:6px;border:1px solid var(--line);background:var(--navy);color:var(--white)">
+<div class="big" id="cn-out"></div></div>
+<a class="btn" href="/?go=birthday">NOW FIND YOUR SOL BIRTHDAY</a>
+<p class="muted">Sources: <a href="https://www.timeanddate.com/calendar/about-chinese.html" target="_blank" rel="noopener">timeanddate.com, The Chinese Calendar</a> for the rules. Dates come from the Unicode calendar data built into your browser. China uses the ordinary calendar for everyday civil dates; the traditional calendar sets festivals such as New Year.</p>
+<script src="/js/china.js" defer></script>`
+  mkdirSync(join(OUT, "js"), { recursive: true }); writeFileSync(join(OUT, "js/china.js"), `(function(){try{var f=new Intl.DateTimeFormat("en-u-ca-chinese",{year:"numeric",month:"numeric",day:"numeric",timeZone:"UTC"});
+function o(n){return n+(n%10==1&&n!=11?"st":n%10==2&&n!=12?"nd":n%10==3&&n!=13?"rd":"th")}
+function cn(y,m,d){var p={};f.formatToParts(new Date(Date.UTC(y,m,d))).forEach(function(x){p[x.type]=x.value});if(!p.relatedYear||!p.month)return null;var leap=/bis/.test(p.month),mn=parseInt(p.month,10);return "Day "+p.day+" <span>of the "+(leap?"second ":"")+o(mn)+" month, "+p.relatedYear+"</span>"}
+var t=new Date(),a=cn(t.getFullYear(),t.getMonth(),t.getDate()),T=document.getElementById("cn-today");T.innerHTML=a||"Not available in this browser";
+var i=document.getElementById("cn-in"),O=document.getElementById("cn-out");i.value=t.getFullYear()+"-"+("0"+(t.getMonth()+1)).slice(-2)+"-"+("0"+t.getDate()).slice(-2);
+function show(){if(!i.value)return;var q=i.value.split("-");O.innerHTML=cn(+q[0],q[1]-1,+q[2])||""}i.addEventListener("input",show);show()}catch(e){}})()`)
+  write("china.html", page({ path: "/china", title: "China already has 13-month years: the Chinese calendar and Sol", description: `About seven years in nineteen, the traditional Chinese calendar has 13 months. See today's Chinese date, the next 13-month year (${next13.ry}) and how it compares with Sol.`, body }))
+  urls.push("/china")
 }
 
 // ── Ethiopia: the country already living on 13 months. Sources: FCDO blog (2015), WHO Africa (2019).
